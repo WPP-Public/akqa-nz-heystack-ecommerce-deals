@@ -1,0 +1,59 @@
+parameters:
+  
+  deal.data.class: Deal
+  
+  deal.handler.class: Heystack\Subsystem\Deals\DealHandler
+  
+  deal.subscriber.class: Heystack\Subsystem\Deals\Subscriber
+  
+  deal.condition.configuration.class: Heystack\Subsystem\Deals\AdaptableConfiguration
+  deal.condition.time.class: Heystack\Subsystem\Deals\Condition\Time
+  deal.condition.purchasable.class: Heystack\Subsystem\Deals\Condition\Purchasable
+  
+  deal.result.configuration.class: Heystack\Subsystem\Deals\AdaptableConfiguration
+  deal.result.fixedprice.class: Heystack\Subsystem\Deals\Result\FixedPrice
+  deal.result.relativeprice.class: Heystack\Subsystem\Deals\Result\RelativePrice
+  deal.result.freepurchasables.class: Heystack\Subsystem\Deals\Result\FreePurchasables
+  
+services:
+  deals.deal_handler:
+    class: %deal.handler.class%
+    arguments: [@state, @event_dispatcher]
+    abstract: true
+    
+  deals.subscriber:
+    class: %deal.subscriber.class%
+    arguments: [@event_dispatcher]
+    abstract: true
+    
+  deals.condition.configuration:
+    class: %deal.condition.configuration.class%
+    abstract: true
+    
+  deals.condition.time:
+    class: %deal.condition.time.class%
+    abstract: true
+    
+  deals.condition.purchasable:
+    class: %deal.condition.purchasable.class%
+    arguments: [@productholder]
+    abstract: true
+    
+  deals.result.configuration:
+    class: %deal.result.configuration.class%
+    abstract: true
+    
+  deals.result.fixedprice:
+    class: %deal.result.fixedprice.class%
+    arguments: [@event_dispatcher, @productholder]
+    abstract: true
+    
+  deals.result.relativeprice:
+    class: %deal.result.relativeprice.class%
+    arguments: [@event_dispatcher, @productholder]
+    abstract: true
+    
+  deals.result.freepurchasables:
+    class: %deal.result.freepurchasables.class%
+    arguments: [@event_dispatcher, @productholder, @state]
+    abstract: true

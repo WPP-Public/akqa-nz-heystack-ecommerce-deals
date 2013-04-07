@@ -1,0 +1,29 @@
+data_provider_id: shippinghandler
+id: Shipping
+flat:
+  AddressLine1: Varchar(255)
+  AddressLine2: Varchar(255)
+  City: Varchar(255)
+  Postcode: Varchar(255)
+  Country: Varchar(255)
+  Title: Varchar(255)
+  FirstName: Varchar(255)
+  Surname: Varchar(255)
+  Email: Varchar(255)
+  Phone: Varchar(255)
+  BillingAddressLine1: Varchar(255)
+  BillingAddressLine2: Varchar(255)
+  BillingCity: Varchar(255)
+  BillingPostcode: Varchar(255)
+  BillingCountry: Varchar(255)
+  BillingTitle: Varchar(255)
+  BillingFirstName: Varchar(255)
+  BillingSurname: Varchar(255)
+  BillingEmail: Varchar(255)
+  BillingPhone: Varchar(255)
+  BillingAsShipping: Boolean
+  Total: Decimal(10,2)
+related:
+parent:
+  Parent: +Transaction
+children:
