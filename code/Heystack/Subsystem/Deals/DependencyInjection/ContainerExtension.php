@@ -10,15 +10,17 @@
  */
 namespace Heystack\Subsystem\Deals\DependencyInjection;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
-
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-
+use Heystack\Subsystem\Core\Services as CoreServices;
+use Heystack\Subsystem\Deals\Config\ContainerConfig;
+use Heystack\Subsystem\Deals\Interfaces\DealDataInterface;
+use Heystack\Subsystem\Ecommerce\Services as EcommerceServices;
 use Symfony\Component\Config\Definition\Processor;
-
-use Heystack\Subsystem\Core\DependencyInjection\ContainerExtensionConfigProcessor;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\DefinitionDecorator;
+use Symfony\Component\DependencyInjection\Extension\Extension;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * Container extension for Heystack.
@@ -31,49 +33,189 @@ use Heystack\Subsystem\Core\DependencyInjection\ContainerExtensionConfigProcesso
  * @author Glenn Bautista <glenn@heyday.co.nz>
  * @package Ecommerce-Deals
  */
-class ContainerExtension  extends ContainerExtensionConfigProcessor implements ExtensionInterface
+class ContainerExtension extends Extension
 {
-    protected $config;
-
     /**
      * Loads a services.yml file into a fresh container, ready to me merged
      * back into the main container
      *
-     * @param  array            $config
+     * @param  array            $configs
      * @param  ContainerBuilder $container
      * @return null
      */
-    public function load(array $config, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container)
     {
-		
-		//YamlFileLoader
-		$loader = new YamlFileLoader(
+        (new YamlFileLoader(
             $container,
             new FileLocator(ECOMMERCE_DEALS_BASE_PATH . '/config')
+        ))->load('services.yml');
+
+        if (isset($config['deals_db'])) {
+            $dealsDbConfig = array(
+                'deals' => array()
+            );
+            $dealsQuery = new \SQLQuery(
+                $config['deals_db']['select'],
+                $config['deals_db']['from'],
+                $config['deals_db']['where']
+            );
+            (new DBClosureLoader(
+                function (DealDataInterface $record) use ($dealsDbConfig) {
+                    $dealsDbConfig['deals'][$record->getLabel()] = $record->getConfigArray();
+                }
+            ))->load($dealsQuery);
+            $configs[] = $dealsDbConfig;
+        }
+
+        $config = (new Processor())->processConfiguration(
+            new ContainerConfig(),
+            $configs
         );
 
-        $loader->load('services.yml');
-        
-        $this->processConfig($config, $container);
-        
-        $dealClass = $container->getParameter('deal.data.class');
-        
-        $deals = \DataObject::get($dealClass);
-        
-        $dealconfig = array();
-        
-        if($deals instanceof \DataObjectSet ) foreach($deals->toArray() as $deal){
-            
-            $dealconfig[$deal->getLabel()] = $deal->getConfigArray();
-            
+        foreach ($config['deals'] as $dealId => $deal) {
+            $this->addDeal($container, $dealId, $deal);
         }
-        
-        $processor = new Processor();
-		$configuration = new DealsConfiguration();
-		$this->config = $processor->processConfiguration(
-			$configuration,
-			array($dealconfig)
-		);
+
+    }
+    /**
+     * @param ContainerBuilder $container
+     * @param                  $dealId
+     * @param                  $deal
+     * @return mixed
+     */
+    protected function addDeal(ContainerBuilder $container, $dealId, $deal)
+    {
+        $dealDefintionID = "deals.deal.$dealId";
+        $dealDefinition = $this->getDealDefinition($dealId);
+
+        //Add all conditions
+        foreach ($deal['conditions'] as $conditionId => $condition) {
+            $this->addCondition($container, $dealId, $condition, $conditionId, $dealDefinition);
+        }
+
+        //Add the result processor
+        if (isset($deal['result']) && isset($deal['result']['configuration']) && isset($deal['result']['type'])) {
+            $this->addResult($container, $dealId, $deal, $dealDefintionID, $dealDefinition);
+        }
+
+        //Create the deal subscriber and add it to the event dispatcher
+        $this->addSubscriber($container, $dealDefintionID);
+
+        //Put the deal in the container
+        $container->setDefinition($dealDefintionID, $dealDefinition);
+
+        return $deal;
+    }
+    /**
+     * @param $dealId
+     * @return DefinitionDecorator
+     * @return \Heystack\Subsystem\Deals\DependencyInjection\DefinitionDecorator
+     */
+    protected function getDealDefinition($dealId)
+    {
+        $dealDefinition = new DefinitionDecorator('deals.deal_handler');
+        $dealDefinition->addArgument($dealId);
+        $dealDefinition->addTag(EcommerceServices::TRANSACTION . '.modifier');
+
+        return $dealDefinition;
+    }
+    /**
+     * @param ContainerBuilder $container
+     * @param                  $dealDefintionID
+     * @return void
+     */
+    protected function addSubscriber(ContainerBuilder $container, $dealDefintionID)
+    {
+        $subscriberDefinition = new DefinitionDecorator('deals.subscriber');
+        $subscriberDefinition->addArgument(new Reference($dealDefintionID));
+        $subscriberDefinition->addTag(CoreServices::EVENT_DISPATCHER . '.subscriber');
+        $container->setDefinition($dealDefintionID . '.subscriber', $subscriberDefinition);
+    }
+    /**
+     * @param ContainerBuilder $container
+     * @param                  $dealId
+     * @param                  $deal
+     * @param                  $dealDefintionID
+     * @param                  $dealDefinition
+     */
+    protected function addResult(ContainerBuilder $container, $dealId, $deal, $dealDefintionID, $dealDefinition)
+    {
+        $resultConfigurationID = $this->addResultConfiguration($container, $dealId, $deal);
+
+        $resultDefinition = new DefinitionDecorator('deals.result.' . strtolower($deal['result']['type']));
+        $resultDefinition->addArgument(new Reference($resultConfigurationID));
+        $resultDefinition->addMethodCall('setDealHandler', array(new Reference($dealDefintionID)));
+
+        //Set the result definition on the container
+        $resultID = "deals.deal.$dealId.result";
+        $container->setDefinition($resultID, $resultDefinition);
+
+        //Set the result on the deal
+        $dealDefinition->addMethodCall(
+            'setResult',
+            array(
+                new Reference($resultID)
+            )
+        );
+    }
+    /**
+     * @param ContainerBuilder $container
+     * @param                  $dealId
+     * @param                  $deal
+     * @return string
+     */
+    protected function addResultConfiguration(ContainerBuilder $container, $dealId, $deal)
+    {
+        $resultConfigurationDefinition = new DefinitionDecorator('deals.result.configuration');
+        $resultConfigurationDefinition->addArgument($deal['result']['configuration']);
+        $resultConfigurationID = "deals.deal.$dealId.result.configuration";
+        $container->setDefinition($resultConfigurationID, $resultConfigurationDefinition);
+
+        return $resultConfigurationID;
+    }
+    /**
+     * @param ContainerBuilder $container
+     * @param                  $dealId
+     * @param                  $condition
+     * @param                  $conditionId
+     * @param                  $dealDefinition
+     */
+    protected function addCondition(ContainerBuilder $container, $dealId, $condition, $conditionId, $dealDefinition)
+    {
+        //Create the configuration for the condition
+        $conditionConfigurationID = $this->addConditionConfiguration($container, $dealId, $condition, $conditionId);
+
+        //Create the condition and pass the configuration to the constructor
+        $conditionDefinition = new DefinitionDecorator("deals.condition." . strtolower($condition['type']));
+        $conditionDefinition->addArgument(new Reference($conditionConfigurationID));
+
+        $conditionDefinitionID = "deals.deal.$dealId.condition_$conditionId";
+
+        $container->setDefinition($conditionDefinitionID, $conditionDefinition);
+
+        //Add the condition to the deal
+        $dealDefinition->addMethodCall(
+            'addCondition',
+            array(
+                new Reference($conditionDefinitionID)
+            )
+        );
+    }
+    /**
+     * @param ContainerBuilder $container
+     * @param                  $dealId
+     * @param                  $condition
+     * @param                  $conditionId
+     * @return string
+     */
+    protected function addConditionConfiguration(ContainerBuilder $container, $dealId, $condition, $conditionId)
+    {
+        $conditionConfigurationDefinition = new DefinitionDecorator('deals.condition.configuration');
+        $conditionConfigurationDefinition->addArgument($condition['configuration']);
+        $conditionConfigurationID = "deals.deal.$dealId.condition_$conditionId.configuration";
+        $container->setDefinition($conditionConfigurationID, $conditionConfigurationDefinition);
+
+        return $conditionConfigurationID;
     }
 
     /**
@@ -102,10 +244,4 @@ class ContainerExtension  extends ContainerExtensionConfigProcessor implements E
     {
         return 'deals';
     }
-    
-    public function getConfig()
-    {
-        return $this->config;
-    }
-
 }
