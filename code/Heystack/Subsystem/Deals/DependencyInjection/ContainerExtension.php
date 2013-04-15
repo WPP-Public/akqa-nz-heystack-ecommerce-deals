@@ -30,6 +30,7 @@ use Symfony\Component\DependencyInjection\Reference;
  * extension that loads heystacks services.yml
  *
  * @copyright  Heyday
+ * @author Cam Spiers <cameron@heyday.co.nz>
  * @author Glenn Bautista <glenn@heyday.co.nz>
  * @package Ecommerce-Deals
  */
