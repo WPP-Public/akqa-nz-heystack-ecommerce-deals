@@ -21,6 +21,7 @@ use Symfony\Component\DependencyInjection\DefinitionDecorator;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
+use Heystack\Subsystem\Core\Loader\DBClosureLoader;
 
 /**
  * Container extension for Heystack.
@@ -86,7 +87,7 @@ class ContainerExtension extends Extension
      */
     protected function addDeal(ContainerBuilder $container, $dealId, $deal)
     {
-        $dealDefintionID = "deals.deal.$dealId";
+        $dealDefinitionID = "deals.deal.$dealId";
         $dealDefinition = $this->getDealDefinition($dealId);
 
         //Add all conditions
@@ -96,14 +97,14 @@ class ContainerExtension extends Extension
 
         //Add the result processor
         if (isset($deal['result']) && isset($deal['result']['configuration']) && isset($deal['result']['type'])) {
-            $this->addResult($container, $dealId, $deal, $dealDefintionID, $dealDefinition);
+            $this->addResult($container, $dealId, $deal, $dealDefinitionID, $dealDefinition);
         }
 
         //Create the deal subscriber and add it to the event dispatcher
-        $this->addSubscriber($container, $dealDefintionID);
+        $this->addSubscriber($container, $dealDefinitionID);
 
         //Put the deal in the container
-        $container->setDefinition($dealDefintionID, $dealDefinition);
+        $container->setDefinition($dealDefinitionID, $dealDefinition);
 
         return $deal;
     }
