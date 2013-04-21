@@ -14,31 +14,40 @@ use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
  * @package Ecommerce-Deals
  */
 class RelativePrice extends FixedPrice
-{    
+{
     protected $calculatedPrice;
-    
-    public function __construct(EventDispatcherInterface $eventService, PurchasableHolderInterface $purchasableHolder, AdaptableConfigurationInterface $configuration)
-    {
+
+    public function __construct(
+        EventDispatcherInterface $eventService,
+        PurchasableHolderInterface $purchasableHolder,
+        AdaptableConfigurationInterface $configuration
+    ) {
         parent::__construct($eventService, $purchasableHolder, $configuration);
-        
-        $this->calculatedPrice = ($this->purchasable->getPrice() / 100) * $this->value;
     }
-    
+
     public function description()
     {
         return 'The product (' . $this->purchasable->getIdentifier() . ') is now priced at ' . $this->calculatedPrice;
     }
-    
+
     public function process()
     {
+        $this->purchasable = $this->purchasableHolder->getPurchasable(
+            $this->configuration->getConfig('purchasable_identifier')
+        );
+
+        $discount = ($this->purchasable->getPrice() / 100) * $this->value;
+
+        $this->calculatedPrice = $this->purchasable->getPrice() - $discount;
+
         $originalTotal = $this->purchasable->getTotal();
-        
+
         $this->purchasable->setUnitPrice($this->calculatedPrice);
-        
+
         $this->eventService->dispatch(Events::RESULT_PROCESSED);
 
         return $originalTotal - $this->purchasable->getTotal();
-        
+
     }
 
 }

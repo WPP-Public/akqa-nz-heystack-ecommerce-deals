@@ -20,11 +20,13 @@ class ContainerConfig implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('deals');
 
-		$rootNode
+        $rootNode
             ->children()
                 ->arrayNode('deals')
                     ->prototype('array')
                         ->children()
+                            ->scalarNode('promotional_message')->defaultValue('')
+                            ->end()
                             ->arrayNode('conditions')->isRequired()
                                 ->prototype('array')
                                     ->children()
@@ -50,7 +52,6 @@ class ContainerConfig implements ConfigurationInterface
                     ->end()
                 ->end()
             ->end();
-		
         return $treeBuilder;
     }
 }

@@ -36,9 +36,14 @@ class Purchasable implements ConditionInterface
         
     }
 
-    public function met()
+    public function met(Array $data = null)
     {
-        
+        if(!is_null($data) && is_array($data) && isset($data['PurchasableIdentifier'])){
+
+            return $this->purchasableIdentifier == $data['PurchasableIdentifier'];
+
+        }
+
         if($this->purchasableHolder->getPurchasable($this->purchasableIdentifier) instanceof PurchasableInterface){
             
             return true;

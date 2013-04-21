@@ -20,4 +20,6 @@ interface DealHandlerInterface extends TransactionModifierInterface
     
     public function updateTotal();
 
+    public function getPromotionalMessage();
+
 }

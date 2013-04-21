@@ -52,20 +52,26 @@ class ContainerExtension extends Extension
             new FileLocator(ECOMMERCE_DEALS_BASE_PATH . '/config')
         ))->load('services.yml');
 
+        $config = (new Processor())->processConfiguration(
+            new ContainerConfig(),
+            $configs
+        );
+
         if (isset($config['deals_db'])) {
             $dealsDbConfig = array(
                 'deals' => array()
             );
-            $dealsQuery = new \SQLQuery(
-                $config['deals_db']['select'],
-                $config['deals_db']['from'],
-                $config['deals_db']['where']
-            );
             (new DBClosureLoader(
-                function (DealDataInterface $record) use ($dealsDbConfig) {
+                function (DealDataInterface $record) use (&$dealsDbConfig) {
                     $dealsDbConfig['deals'][$record->getLabel()] = $record->getConfigArray();
                 }
-            ))->load($dealsQuery);
+            ))->load(
+                new \SQLQuery(
+                    $config['deals_db']['select'],
+                    $config['deals_db']['from'],
+                    $config['deals_db']['where']
+                )
+            );
             $configs[] = $dealsDbConfig;
         }
 
@@ -88,7 +94,7 @@ class ContainerExtension extends Extension
     protected function addDeal(ContainerBuilder $container, $dealId, $deal)
     {
         $dealDefinitionID = "deals.deal.$dealId";
-        $dealDefinition = $this->getDealDefinition($dealId);
+        $dealDefinition = $this->getDealDefinition($dealId, $deal['promotional_message']);
 
         //Add all conditions
         foreach ($deal['conditions'] as $conditionId => $condition) {
@@ -113,10 +119,11 @@ class ContainerExtension extends Extension
      * @return DefinitionDecorator
      * @return \Heystack\Subsystem\Deals\DependencyInjection\DefinitionDecorator
      */
-    protected function getDealDefinition($dealId)
+    protected function getDealDefinition($dealId, $promotionalMessage)
     {
         $dealDefinition = new DefinitionDecorator('deals.deal_handler');
         $dealDefinition->addArgument($dealId);
+        $dealDefinition->addArgument($promotionalMessage);
         $dealDefinition->addTag(EcommerceServices::TRANSACTION . '.modifier');
 
         return $dealDefinition;

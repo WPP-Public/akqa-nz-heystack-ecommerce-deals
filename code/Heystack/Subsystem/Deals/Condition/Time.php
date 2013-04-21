@@ -37,12 +37,16 @@ class Time implements ConditionInterface
             $this->endTime = strtotime($configuration->getConfig('end'));
 
         }
-
-        $this->currentTime = time();
     }
 
-    public function met()
+    public function met(Array $data = null)
     {
+        if(!is_null($data) && is_array($data) && isset($data['Time'])){
+            $this->currentTime = $data['Time'];
+        }else{
+            $this->currentTime = time();
+        }
+
         if ($this->startTime && $this->endTime) {
             return ($this->currentTime > $this->startTime) && ($this->currentTime < $this->endTime);
         }

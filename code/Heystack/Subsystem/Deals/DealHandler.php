@@ -24,6 +24,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     use TransactionModifierStateTrait;
     use TransactionModifierSerializeTrait;
     use ParentReferenceTrait;
+
     /**
      * Identifier for state
      */
@@ -61,15 +62,29 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     protected $dealID;
 
     /**
-     * @param State                    $stateService
+     * @var
+     */
+    protected $promotionalMessage;
+
+    /**
+     * @param State $stateService
      * @param EventDispatcherInterface $eventService
      * @param                          $dealID
      */
-    public function __construct(State $stateService, EventDispatcherInterface $eventService, $dealID)
+    public function __construct(State $stateService, EventDispatcherInterface $eventService, $dealID, $promotionalMessage)
     {
         $this->stateService = $stateService;
         $this->eventService = $eventService;
         $this->dealID = $dealID;
+        $this->promotionalMessage = $promotionalMessage;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPromotionalMessage()
+    {
+        return $this->promotionalMessage;
     }
 
     /**
@@ -79,6 +94,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     {
         $this->result = $result;
     }
+
     /**
      * @param $condition
      */
@@ -86,6 +102,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     {
         $this->conditions[] = $condition;
     }
+
     /**
      * Returns a unique identifier
      */
@@ -93,6 +110,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     {
         return self::IDENTIFIER . $this->dealID;
     }
+
     /**
      * Returns the total value of the TransactionModifier for use in the Transaction
      */
@@ -101,6 +119,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
         $this->restoreState();
         return isset($this->data[self::TOTAL_KEY]) ? $this->data[self::TOTAL_KEY] : 0;
     }
+
     /**
      * Update the total of the modifier
      */
@@ -108,7 +127,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     {
         $conditionsMet = $this->conditionsMet();
 
-        $total = $conditionsMet ?  $this->result->process() : 0;
+        $total = $conditionsMet ? $this->result->process() : 0;
 
         $this->data[self::TOTAL_KEY] = $total;
 
@@ -116,40 +135,44 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
 
         $this->eventService->dispatch(Events::TOTAL_UPDATED);
     }
+
     /**
      * @return bool
      */
-    public function conditionsMet()
+    public function conditionsMet(Array $data = null)
     {
         foreach ($this->conditions as $condition) {
-            if (!$condition->met()) {
+            if (!$condition->met($data)) {
                 return false;
             }
         }
 
         return true;
     }
+
     /**
      * Indicates the type of amount the modifier will return
      * Must return a constant from TransactionModifierTypes
      */
     public function getType()
     {
-        return TransactionModifierTypes::NEUTRAL;
+        return TransactionModifierTypes::DEDUCTIBLE;
     }
+
     /**
      * @return array
      */
     public function getStorableData()
     {
         return array(
-            'id'     => 'Tax',
+            'id' => 'Tax',
             'parent' => true,
-            'flat'   => array(
+            'flat' => array(
                 'Total' => $this->getTotal()
             )
         );
     }
+
     /**
      * @return string
      */
@@ -157,6 +180,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     {
         return self::IDENTIFIER;
     }
+
     /**
      * Get the name of the schema this system relates to
      * @return string
@@ -166,6 +190,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
         return 'Deal';
 
     }
+
     /**
      * @return array
      */
