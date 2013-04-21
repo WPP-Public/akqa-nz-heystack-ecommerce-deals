@@ -21,15 +21,15 @@ class Time implements ConditionInterface
 
     public function __construct(AdaptableConfigurationInterface $configuration)
     {
-        
-        if($configuration->hasConfig('start')){
-            
+
+        if ($configuration->hasConfig('start')) {
+
             $this->startTime = strtotime($configuration->getConfig('start'));
-            
-        }else{
-            
+
+        } else {
+
             throw new \Exception('Time Condition needs a start time configuration');
-            
+
         }
 
         if ($configuration->hasConfig('end')) {
@@ -39,11 +39,11 @@ class Time implements ConditionInterface
         }
     }
 
-    public function met(Array $data = null)
+    public function met(array $data = null)
     {
-        if(!is_null($data) && is_array($data) && isset($data['Time'])){
+        if (!is_null($data) && is_array($data) && isset($data['Time'])) {
             $this->currentTime = $data['Time'];
-        }else{
+        } else {
             $this->currentTime = time();
         }
 
@@ -65,15 +65,24 @@ class Time implements ConditionInterface
     public function description()
     {
         if ($this->startTime && $this->endTime) {
-            return 'current time: ' . date(self::$time_format, $this->currentTime) .  ' is between start time: ' . date(self::$time_format,$this->startTime) . ' and end time: ' . date(self::$time_format,$this->endTime);
+            return 'current time: ' . date(self::$time_format, $this->currentTime) . ' is between start time: ' . date(
+                self::$time_format,
+                $this->startTime
+            ) . ' and end time: ' . date(self::$time_format, $this->endTime);
         }
 
         if ($this->startTime && !$this->endTime) {
-            return 'current time: ' . date(self::$time_format, $this->currentTime) .  ' is after start time: ' . date(self::$time_format,$this->startTime);
+            return 'current time: ' . date(self::$time_format, $this->currentTime) . ' is after start time: ' . date(
+                self::$time_format,
+                $this->startTime
+            );
         }
 
         if ($this->endTime && !$this->endTime) {
-            return 'current time: ' . date(self::$time_format, $this->currentTime) .  ' is before end time: ' . date(self::$time_format,$this->endTime);
+            return 'current time: ' . date(self::$time_format, $this->currentTime) . ' is before end time: ' . date(
+                self::$time_format,
+                $this->endTime
+            );
         }
 
         return 'condition is invalid, please investigate';

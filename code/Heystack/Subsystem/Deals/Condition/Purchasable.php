@@ -36,7 +36,7 @@ class Purchasable implements ConditionInterface
         
     }
 
-    public function met(Array $data = null)
+    public function met(array $data = null)
     {
         if(!is_null($data) && is_array($data) && isset($data['PurchasableIdentifier'])){
 

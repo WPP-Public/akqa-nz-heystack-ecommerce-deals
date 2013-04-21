@@ -17,7 +17,7 @@ interface ConditionInterface
      * @param array $data If present this is the data that will be used to determine whether the condition has been met
      * @return mixed
      */
-    public function met(Array $data = null);
+    public function met(array $data = null);
 
     /**
      * Returns a short string that describes what the condition does
