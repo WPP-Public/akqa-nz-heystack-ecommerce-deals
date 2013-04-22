@@ -2,6 +2,7 @@
 
 namespace Heystack\Subsystem\Deals;
 
+use Heystack\Subsystem\Core\Identifier\Identifier;
 use Heystack\Subsystem\Core\State\State;
 use Heystack\Subsystem\Core\State\StateableInterface;
 use Heystack\Subsystem\Core\Storage\Backends\SilverStripeOrm\Backend;
@@ -60,19 +61,22 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
      * @var
      */
     protected $dealID;
-
     /**
      * @var
      */
     protected $promotionalMessage;
-
     /**
-     * @param State $stateService
+     * @param State                    $stateService
      * @param EventDispatcherInterface $eventService
      * @param                          $dealID
+     * @param                          $promotionalMessage
      */
-    public function __construct(State $stateService, EventDispatcherInterface $eventService, $dealID, $promotionalMessage)
-    {
+    public function __construct(
+        State $stateService,
+        EventDispatcherInterface $eventService,
+        $dealID,
+        $promotionalMessage
+    ) {
         $this->stateService = $stateService;
         $this->eventService = $eventService;
         $this->dealID = $dealID;
@@ -105,10 +109,11 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
 
     /**
      * Returns a unique identifier
+     * @return \Heystack\Subsystem\Core\Identifier\Identifier
      */
     public function getIdentifier()
     {
-        return self::IDENTIFIER . $this->dealID;
+        return new Identifier(self::IDENTIFIER . $this->dealID);
     }
 
     /**

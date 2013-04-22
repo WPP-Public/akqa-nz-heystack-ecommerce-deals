@@ -9,16 +9,16 @@ trait ResultTrait
     protected $dealHandler;
     
     protected $dealIdentifier;
-    
+
     /**
      * Set the deal handler on the result
-     * 
-     * @param Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface $dealHandler
+     *
+     * @param \Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface $dealHandler
      */
     public function setDealHandler(DealHandlerInterface $dealHandler)
     {
         $this->dealHandler = $dealHandler;
         
-        $this->dealIdentifier = $dealHandler->getIdentifier();
+        $this->dealIdentifier = $dealHandler->getIdentifier()->getPrimary();
     }
 }

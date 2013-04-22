@@ -70,7 +70,7 @@ class FreePurchasables implements ResultInterface
     
     public function description()
     {
-        return 'The product (' . $this->purchasable->getIdentifier() . ') is now priced at ' . $this->value;
+        return 'The product (' . $this->purchasable->getIdentifier()->getPrimary() . ') is now priced at ' . $this->value;
     }
 
     public function process()

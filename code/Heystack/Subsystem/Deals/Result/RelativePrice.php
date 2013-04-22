@@ -27,7 +27,7 @@ class RelativePrice extends FixedPrice
 
     public function description()
     {
-        return 'The product (' . $this->purchasable->getIdentifier() . ') is now priced at ' . $this->calculatedPrice;
+        return 'The product (' . $this->purchasable->getIdentifier()->getPrimary() . ') is now priced at ' . $this->calculatedPrice;
     }
 
     public function process()
