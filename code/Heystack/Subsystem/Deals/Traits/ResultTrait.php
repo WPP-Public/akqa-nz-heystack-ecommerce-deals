@@ -19,6 +19,6 @@ trait ResultTrait
     {
         $this->dealHandler = $dealHandler;
         
-        $this->dealIdentifier = $dealHandler->getIdentifier()->getPrimary();
+        $this->dealIdentifier = $dealHandler->getIdentifier()->getFull();
     }
 }

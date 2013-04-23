@@ -62,7 +62,7 @@ class FixedPrice implements ResultInterface
             $this->configuration->getConfig('purchasable_identifier')
         );
 
-        return 'The product (' . $this->purchasable->getIdentifier()->getPrimary() . ') is now priced at ' . $this->value;
+        return 'The product (' . $this->purchasable->getIdentifier()->getFull() . ') is now priced at ' . $this->value;
     }
 
     public function process()
