@@ -135,7 +135,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
      */
     public function updateTotal()
     {
-        $total = $this->conditionsMet() ? $this->result->process() : 0;
+        $total = $this->conditionsMet() ? $this->result->process($this) : 0;
 
         $this->data[self::TOTAL_KEY] = $total;
 
