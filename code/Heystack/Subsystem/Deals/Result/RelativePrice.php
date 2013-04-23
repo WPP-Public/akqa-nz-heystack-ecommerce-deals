@@ -33,7 +33,7 @@ class RelativePrice extends FixedPrice
 
     public function process()
     {
-        $this->purchasable = $this->purchasableHolder->getPurchasable(
+        $this->purchasable = $this->purchasableHolder->getPurchasableByPrimaryIdentifier(
             new Identifier($this->configuration->getConfig('purchasable_identifier'))
         );
 

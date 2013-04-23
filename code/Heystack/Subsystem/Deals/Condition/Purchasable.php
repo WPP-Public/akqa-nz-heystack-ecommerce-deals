@@ -41,13 +41,14 @@ class Purchasable implements ConditionInterface
 
     public function met(array $data = null)
     {
+
         if(!is_null($data) && is_array($data) && isset($data['PurchasableIdentifier'])){
 
             return $this->purchasableIdentifier->isMatch($data['PurchasableIdentifier']);
 
         }
 
-        if($this->purchasableHolder->getPurchasable($this->purchasableIdentifier) instanceof PurchasableInterface){
+        if($this->purchasableHolder->getPurchasableByPrimaryIdentifier($this->purchasableIdentifier) instanceof PurchasableInterface){
             
             return true;
             
