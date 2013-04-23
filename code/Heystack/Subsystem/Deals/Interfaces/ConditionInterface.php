@@ -10,7 +10,6 @@ namespace Heystack\Subsystem\Deals\Interfaces;
  */
 interface ConditionInterface
 {
-
     /**
      * Return a boolean indicating whether the condition has been met
      *
@@ -18,9 +17,8 @@ interface ConditionInterface
      * @return mixed
      */
     public function met(array $data = null);
-
     /**
      * Returns a short string that describes what the condition does
      */
-    public function description();
+    public function getDescription();
 }

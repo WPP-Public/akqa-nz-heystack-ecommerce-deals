@@ -174,15 +174,34 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
      */
     public function getStorableData()
     {
+        //loop of conditions, use result to prepare a combined description
         return array(
             'id' => 'Tax',
             'parent' => true,
             'flat' => array(
-                'Total' => $this->getTotal()
+                'Total' => $this->getTotal(),
+                'Description' => $this->getDescription()
             )
         );
     }
-
+    /**
+     *
+     */
+    protected function getDescription()
+    {
+        $conditionDescriptions = array();
+        foreach ($this->conditions as $condition) {
+            $conditionDescriptions[] = $condition->getDescription();
+        }
+        $conditionDescription = implode(PHP_EOL, $conditionDescriptions);
+        $resultDescription = $this->result->getDescription();
+        return <<<DESCRIPTION
+Conditions:
+$conditionDescription
+Result:
+$resultDescription
+DESCRIPTION;
+    }
     /**
      * @return string
      */
