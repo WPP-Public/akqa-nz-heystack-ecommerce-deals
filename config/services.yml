@@ -14,6 +14,7 @@ parameters:
   deal.result.fixedprice.class: Heystack\Subsystem\Deals\Result\FixedPrice
   deal.result.relativeprice.class: Heystack\Subsystem\Deals\Result\RelativePrice
   deal.result.freepurchasables.class: Heystack\Subsystem\Deals\Result\FreePurchasables
+  deal.result.freeshipping.class: Heystack\Subsystem\Deals\Result\FreeShipping
 
 services:
   deals.deal_handler:
@@ -53,7 +54,12 @@ services:
     arguments: [@event_dispatcher, @productholder]
     abstract: true
 
-  deals.result.freepurchasables:
-    class: %deal.result.freepurchasables.class%
+  deals.result.freepurchasable:
+    class: %deal.result.freepurchasable.class%
     arguments: [@event_dispatcher, @productholder, @state]
+    abstract: true
+
+  deals.result.freeshipping:
+    class: %deal.result.freeshipping.class%
+    arguments: [@event_dispatcher, @shipping_service]
     abstract: true
