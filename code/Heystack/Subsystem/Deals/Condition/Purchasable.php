@@ -48,7 +48,7 @@ class Purchasable implements ConditionInterface
 
         }
 
-        if($this->purchasableHolder->getPurchasableByPrimaryIdentifier($this->purchasableIdentifier) instanceof PurchasableInterface){
+        if(is_array($this->purchasableHolder->getPurchasablesByPrimaryIdentifier($this->purchasableIdentifier))){
             
             return true;
             

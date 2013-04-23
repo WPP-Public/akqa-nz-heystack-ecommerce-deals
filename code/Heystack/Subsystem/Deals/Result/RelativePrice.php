@@ -28,26 +28,33 @@ class RelativePrice extends FixedPrice
 
     public function description()
     {
-        return 'The product (' . $this->purchasable->getIdentifier()->getFull() . ') is now priced at ' . $this->calculatedPrice;
+//        return 'The product (' . $this->purchasable->getIdentifier()->getFull() . ') is now priced at ' . $this->calculatedPrice;
+        return 'under development';
     }
 
     public function process()
     {
-        $this->purchasable = $this->purchasableHolder->getPurchasableByPrimaryIdentifier(
+        $this->purchasables = $this->purchasableHolder->getPurchasablesByPrimaryIdentifier(
             new Identifier($this->configuration->getConfig('purchasable_identifier'))
         );
 
-        $discount = ($this->purchasable->getPrice() / 100) * $this->value;
+        $totalDiscount = 0;
 
-        $this->calculatedPrice = $this->purchasable->getPrice() - $discount;
+        foreach($this->purchasables as $purchasable){
 
-        $originalTotal = $this->purchasable->getTotal();
+            $discount = ($purchasable->getPrice() / 100) * $this->value;
 
-        $this->purchasable->setUnitPrice($this->calculatedPrice);
+            $newPrice = $purchasable->getPrice() - $discount;
+
+            $purchasable->setUnitPrice($newPrice);
+
+            $totalDiscount += $discount * $purchasable->getQuantity();
+
+        }
 
         $this->eventService->dispatch(Events::RESULT_PROCESSED);
 
-        return $originalTotal - $this->purchasable->getTotal();
+        return $totalDiscount;
 
     }
 

@@ -25,7 +25,7 @@ class FixedPrice implements ResultInterface
 
     protected $eventService;
     protected $purchasableHolder;
-    protected $purchasable;
+    protected $purchasables;
     protected $value;
     protected $configuration;
 
@@ -59,26 +59,36 @@ class FixedPrice implements ResultInterface
 
     public function description()
     {
-        $this->purchasable = $this->purchasableHolder->getPurchasable(
-            $this->configuration->getConfig('purchasable_identifier')
-        );
+//        $this->purchasable = $this->purchasableHolder->getPurchasable(
+//            $this->configuration->getConfig('purchasable_identifier')
+//        );
+//
+//        return 'The product (' . $this->purchasable->getIdentifier()->getFull() . ') is now priced at ' . $this->value;
 
-        return 'The product (' . $this->purchasable->getIdentifier()->getFull() . ') is now priced at ' . $this->value;
+        return 'under development';
     }
 
     public function process()
     {
-        $this->purchasable = $this->purchasableHolder->getPurchasable(
+        $this->purchasable = $this->purchasableHolder->getPurchasablesByPrimaryIdentifier(
             new Identifier($this->configuration->getConfig('purchasable_identifier'))
         );
 
-        $originalTotal = $this->purchasable->getTotal();
+        $totalDiscount = 0;
 
-        $this->purchasable->setUnitPrice($this->value);
+        foreach($this->purchasables as $purchasable){
+
+            $originalTotal = $purchasable->getTotal();
+
+            $purchasable->setUnitPrice($this->value);
+
+            $totalDiscount += $originalTotal - $purchasable->getTotal();
+
+        }
 
         $this->eventService->dispatch(Events::RESULT_PROCESSED);
 
-        return $originalTotal - $this->purchasable->getTotal();
+        return $totalDiscount;
 
     }
 
