@@ -52,6 +52,7 @@ class ContainerConfig implements ConfigurationInterface
                     ->end()
                 ->end()
             ->end();
+
         return $treeBuilder;
     }
 }

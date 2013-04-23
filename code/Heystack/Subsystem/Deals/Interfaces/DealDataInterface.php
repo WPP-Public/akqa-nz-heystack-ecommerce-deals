@@ -12,13 +12,13 @@ interface DealDataInterface
 {
     /**
      * Retrieve the config array for the deal
-     * @return Array 
+     * @return Array
      */
     public function getConfigArray();
-    
+
     /**
      * Retrieve the name of the deal
-     * @return String 
+     * @return String
      */
     public function getName();
 

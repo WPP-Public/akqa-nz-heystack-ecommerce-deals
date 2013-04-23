@@ -122,6 +122,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     public function getTotal()
     {
         $this->restoreState();
+
         return isset($this->data[self::TOTAL_KEY]) ? $this->data[self::TOTAL_KEY] : 0;
     }
 
@@ -139,10 +140,9 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
         $this->eventService->dispatch(Events::TOTAL_UPDATED);
     }
 
-
     /**
      * Checks if all the conditions are met
-     * @param array $data Optional data array that will be passed onto the conditions for checking whether the conditions have been met.
+     * @param  array $data Optional data array that will be passed onto the conditions for checking whether the conditions have been met.
      * @return bool
      */
     public function conditionsMet(Array $data = null)

@@ -11,6 +11,6 @@ namespace Heystack\Subsystem\Deals\Interfaces;
 interface AdaptableConfigurationInterface
 {
     public function getConfig($identifier);
-    
+
     public function hasConfig($identifier);
 }

@@ -40,7 +40,7 @@ class RelativePrice extends FixedPrice
 
         $totalDiscount = 0;
 
-        foreach($this->purchasables as $purchasable){
+        foreach ($this->purchasables as $purchasable) {
 
             $discount = ($purchasable->getPrice() / 100) * $this->value;
 

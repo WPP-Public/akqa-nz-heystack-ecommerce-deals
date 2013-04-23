@@ -29,7 +29,6 @@ class FixedPrice implements ResultInterface
     protected $value;
     protected $configuration;
 
-
     public function __construct(
         EventDispatcherInterface $eventService,
         PurchasableHolderInterface $purchasableHolder,
@@ -64,7 +63,6 @@ class FixedPrice implements ResultInterface
 //        );
 //
 //        return 'The product (' . $this->purchasable->getIdentifier()->getFull() . ') is now priced at ' . $this->value;
-
         return 'under development';
     }
 
@@ -76,7 +74,7 @@ class FixedPrice implements ResultInterface
 
         $totalDiscount = 0;
 
-        foreach($this->purchasables as $purchasable){
+        foreach ($this->purchasables as $purchasable) {
 
             $originalTotal = $purchasable->getTotal();
 

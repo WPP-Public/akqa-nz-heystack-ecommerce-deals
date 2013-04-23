@@ -4,10 +4,10 @@ namespace Heystack\Subsystem\Deals\Traits;
 
 use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
 
-trait ResultTrait 
+trait ResultTrait
 {
     protected $dealHandler;
-    
+
     protected $dealIdentifier;
 
     /**
@@ -18,7 +18,7 @@ trait ResultTrait
     public function setDealHandler(DealHandlerInterface $dealHandler)
     {
         $this->dealHandler = $dealHandler;
-        
+
         $this->dealIdentifier = $dealHandler->getIdentifier()->getFull();
     }
 }

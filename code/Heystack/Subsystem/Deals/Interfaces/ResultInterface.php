@@ -21,10 +21,10 @@ interface ResultInterface
      * Main function that determines what the result does
      */
     public function process();
-    
+
     /**
      * Set the deal handler on the result
-     * 
+     *
      * @param Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface $dealHandler
      */
     public function setDealHandler(DealHandlerInterface $dealHandler);

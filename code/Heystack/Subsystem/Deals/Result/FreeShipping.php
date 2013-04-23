@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Heystack\Subsystem\Deals\Result;
 
 use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;

@@ -86,9 +86,9 @@ class ContainerExtension extends Extension
 
     }
     /**
-     * @param ContainerBuilder $container
-     * @param                  $dealId
-     * @param                  $deal
+     * @param  ContainerBuilder $container
+     * @param                   $dealId
+     * @param                   $deal
      * @return mixed
      */
     protected function addDeal(ContainerBuilder $container, $dealId, $deal)
@@ -129,8 +129,8 @@ class ContainerExtension extends Extension
         return $dealDefinition;
     }
     /**
-     * @param ContainerBuilder $container
-     * @param                  $dealDefintionID
+     * @param  ContainerBuilder $container
+     * @param                   $dealDefintionID
      * @return void
      */
     protected function addSubscriber(ContainerBuilder $container, $dealDefintionID)
@@ -168,9 +168,9 @@ class ContainerExtension extends Extension
         );
     }
     /**
-     * @param ContainerBuilder $container
-     * @param                  $dealId
-     * @param                  $deal
+     * @param  ContainerBuilder $container
+     * @param                   $dealId
+     * @param                   $deal
      * @return string
      */
     protected function addResultConfiguration(ContainerBuilder $container, $dealId, $deal)
@@ -211,10 +211,10 @@ class ContainerExtension extends Extension
         );
     }
     /**
-     * @param ContainerBuilder $container
-     * @param                  $dealId
-     * @param                  $condition
-     * @param                  $conditionId
+     * @param  ContainerBuilder $container
+     * @param                   $dealId
+     * @param                   $condition
+     * @param                   $conditionId
      * @return string
      */
     protected function addConditionConfiguration(ContainerBuilder $container, $dealId, $condition, $conditionId)

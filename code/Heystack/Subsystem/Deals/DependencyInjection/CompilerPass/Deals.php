@@ -12,13 +12,6 @@ namespace Heystack\Subsystem\Deals\DependencyInjection\CompilerPass;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
-use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\DependencyInjection\DefinitionDecorator;
-
-use Heystack\Subsystem\Deals\DependencyInjection\ContainerExtension as DealsContainerExtension;
-
-use Heystack\Subsystem\Ecommerce\Services as EcommerceServices;
-use Heystack\Subsystem\Core\Services as CoreServices;
 
 /**
  * Merges extensions definition calls into the container builder.
@@ -39,5 +32,5 @@ class Deals implements CompilerPassInterface
     {
 
     }
-    
+
 }
