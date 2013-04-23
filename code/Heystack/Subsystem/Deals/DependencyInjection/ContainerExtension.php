@@ -116,8 +116,9 @@ class ContainerExtension extends Extension
     }
     /**
      * @param $dealId
+     * @param $promotionalMessage
      * @return DefinitionDecorator
-     * @return \Heystack\Subsystem\Deals\DependencyInjection\DefinitionDecorator
+     * @return \Symfony\Component\DependencyInjection\DefinitionDecorator
      */
     protected function getDealDefinition($dealId, $promotionalMessage)
     {

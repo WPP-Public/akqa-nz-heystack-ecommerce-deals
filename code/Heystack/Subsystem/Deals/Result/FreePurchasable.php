@@ -2,18 +2,15 @@
 
 namespace Heystack\Subsystem\Deals\Result;
 
-use Heystack\Subsystem\Core\State\State;
-use Heystack\Subsystem\Deals\Interfaces\ResultInterface;
-use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
-use Heystack\Subsystem\Deals\Events;
-
-use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
-
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-
-use Heystack\Subsystem\Deals\Traits\ResultTrait;
-
 use Heystack\Subsystem\Core\Identifier\Identifier;
+use Heystack\Subsystem\Core\State\State;
+use Heystack\Subsystem\Deals\Events;
+use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
+use Heystack\Subsystem\Deals\Interfaces\ResultInterface;
+use Heystack\Subsystem\Deals\Traits\ResultTrait;
+use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
+use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  *
@@ -46,6 +43,10 @@ class FreePurchasable implements ResultInterface
      */
     protected $configuration;
     /**
+     * @var
+     */
+    protected $purchaseable;
+    /**
      * @var bool
      */
     protected $processed = false;
@@ -58,6 +59,7 @@ class FreePurchasable implements ResultInterface
      * @param PurchasableHolderInterface      $purchasableHolder
      * @param State                           $stateService
      * @param AdaptableConfigurationInterface $configuration
+     * @throws \Exception
      */
     public function __construct(
         EventDispatcherInterface $eventService,
@@ -102,7 +104,7 @@ class FreePurchasable implements ResultInterface
      */
     public function description()
     {
-        return 'The product (' . $this->purchasable->getIdentifier()->getFull() . ') is now priced at ' . $this->value;
+        return 'The product (' . $this->getPurchaseable()->getIdentifier()->getFull() . ') is now priced at ' . $this->value;
     }
 
     /**
@@ -114,25 +116,33 @@ class FreePurchasable implements ResultInterface
 
         if (!$this->processed) {
 
-            //Seaparate the ID from the ClassName in the Identifier
-            preg_match('|^([a-z]+)([\d]+)$|i', $this->configuration->getConfig('purchasable_identifier'), $match);
-
-            $purchasable = \DataObject::get_by_id($match[1], $match[2]);
-
             //Add the selected purchasable to the purchasableHolder
-
-            $this->purchasableHolder->addPurchasable($purchasable, 1);
-
+            $this->purchasableHolder->addPurchasable($purchasable = $this->getPurchaseable());
             $this->processed = true;
-
             $this->total = $purchasable->getPrice();
-
             $this->saveState();
-
             $this->eventService->dispatch(Events::RESULT_PROCESSED);
 
         }
 
         return $this->total;
+    }
+    /**
+     * @throws \Exception
+     * @return \Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableInterface
+     */
+    protected function getPurchaseable()
+    {
+        if (!$this->purchasable) {
+            //Seaparate the ID from the ClassName in the Identifier
+            preg_match('|^([a-z]+)([\d]+)$|i', $this->configuration->getConfig('purchasable_identifier'), $match);
+
+            $this->purchasable = \DataObject::get_by_id($match[1], $match[2]);
+
+            if (!$this->purchaseable instanceof PurchasableInterface) {
+                throw new \Exception('Purchasable on result free purchasable must an instanceof PurchaseableInterface');
+            }
+        }
+        return $this->purchasable;
     }
 }

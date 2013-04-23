@@ -16,17 +16,15 @@ interface ResultInterface
      * Returns a short string that describes what the result does
      */
     public function description();
-
     /**
      * Main function that determines what the result does
      */
     public function process();
-
     /**
      * Set the deal handler on the result
      *
-     * @param Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface $dealHandler
+     * @param \Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface $dealHandler
+     * @return
      */
     public function setDealHandler(DealHandlerInterface $dealHandler);
-
 }
