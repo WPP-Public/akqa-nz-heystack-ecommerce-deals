@@ -17,9 +17,9 @@ interface DealDataInterface
     public function getConfigArray();
     
     /**
-     * Retrieve the label of the deal
+     * Retrieve the name of the deal
      * @return String 
      */
-    public function getLabel();
+    public function getName();
 
 }

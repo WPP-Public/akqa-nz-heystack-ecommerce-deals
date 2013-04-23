@@ -63,7 +63,7 @@ class ContainerExtension extends Extension
             );
             (new DBClosureLoader(
                 function (DealDataInterface $record) use (&$dealsDbConfig) {
-                    $dealsDbConfig['deals'][$record->getLabel()] = $record->getConfigArray();
+                    $dealsDbConfig['deals'][$record->getName()] = $record->getConfigArray();
                 }
             ))->load(
                 new \SQLQuery(
