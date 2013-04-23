@@ -3,6 +3,7 @@
 namespace Heystack\Subsystem\Deals\Result;
 
 use Heystack\Subsystem\Deals\Events;
+use Heystack\Subsystem\Core\Identifier\Identifier;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
@@ -33,7 +34,7 @@ class RelativePrice extends FixedPrice
     public function process()
     {
         $this->purchasable = $this->purchasableHolder->getPurchasable(
-            $this->configuration->getConfig('purchasable_identifier')
+            new Identifier($this->configuration->getConfig('purchasable_identifier'))
         );
 
         $discount = ($this->purchasable->getPrice() / 100) * $this->value;

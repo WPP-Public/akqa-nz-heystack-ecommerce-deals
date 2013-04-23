@@ -11,6 +11,7 @@ use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterfa
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 use Heystack\Subsystem\Deals\Traits\ResultTrait;
+use Heystack\Subsystem\Core\Identifier\Identifier;
 
 /**
  *
@@ -68,7 +69,7 @@ class FixedPrice implements ResultInterface
     public function process()
     {
         $this->purchasable = $this->purchasableHolder->getPurchasable(
-            $this->configuration->getConfig('purchasable_identifier')
+            new Identifier($this->configuration->getConfig('purchasable_identifier'))
         );
 
         $originalTotal = $this->purchasable->getTotal();

@@ -2,11 +2,11 @@
 
 namespace Heystack\Subsystem\Deals\Condition;
 
-use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
+use Heystack\Subsystem\Core\Identifier\Identifier;
 use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
-
-use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableInterface;
+use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
+use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableInterface;
 
 /**
  *
@@ -17,6 +17,9 @@ use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterfa
 class Purchasable implements ConditionInterface
 {
 
+    /**
+     * @var \Heystack\Subsystem\Core\Identifier\IdentifierInterface
+     */
     protected $purchasableIdentifier;
     protected $purchasableHolder;    
 
@@ -24,7 +27,7 @@ class Purchasable implements ConditionInterface
     {
         if($configuration->hasConfig('purchasable_identifier')){
             
-            $this->purchasableIdentifier = $configuration->getConfig('purchasable_identifier');
+            $this->purchasableIdentifier = new Identifier($configuration->getConfig('purchasable_identifier'));
             
         }else{
             
@@ -40,7 +43,7 @@ class Purchasable implements ConditionInterface
     {
         if(!is_null($data) && is_array($data) && isset($data['PurchasableIdentifier'])){
 
-            return $this->purchasableIdentifier == $data['PurchasableIdentifier'];
+            return $this->purchasableIdentifier->isMatch($data['PurchasableIdentifier']);
 
         }
 

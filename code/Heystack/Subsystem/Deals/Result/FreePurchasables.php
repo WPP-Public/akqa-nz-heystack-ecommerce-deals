@@ -13,6 +13,8 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 use Heystack\Subsystem\Deals\Traits\ResultTrait;
 
+use Heystack\Subsystem\Core\Identifier\Identifier;
+
 /**
  *
  * @copyright  Heyday
