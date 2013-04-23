@@ -103,7 +103,7 @@ class ContainerExtension extends Extension
 
         //Add the result processor
         if (isset($deal['result']) && isset($deal['result']['configuration']) && isset($deal['result']['type'])) {
-            $this->addResult($container, $dealId, $deal, $dealDefinitionID, $dealDefinition);
+            $this->addResult($container, $dealId, $deal, $dealDefinition);
         }
 
         //Create the deal subscriber and add it to the event dispatcher
@@ -148,13 +148,12 @@ class ContainerExtension extends Extension
      * @param                  $dealDefintionID
      * @param                  $dealDefinition
      */
-    protected function addResult(ContainerBuilder $container, $dealId, $deal, $dealDefintionID, $dealDefinition)
+    protected function addResult(ContainerBuilder $container, $dealId, $deal, $dealDefinition)
     {
         $resultConfigurationID = $this->addResultConfiguration($container, $dealId, $deal);
 
         $resultDefinition = new DefinitionDecorator('deals.result.' . strtolower($deal['result']['type']));
         $resultDefinition->addArgument(new Reference($resultConfigurationID));
-        $resultDefinition->addMethodCall('setDealHandler', array(new Reference($dealDefintionID)));
 
         //Set the result definition on the container
         $resultID = "deals.deal.$dealId.result";

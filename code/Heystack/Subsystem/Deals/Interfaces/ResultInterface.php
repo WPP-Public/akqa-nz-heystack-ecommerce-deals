@@ -2,8 +2,6 @@
 
 namespace Heystack\Subsystem\Deals\Interfaces;
 
-use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
-
 /**
  *
  * @copyright  Heyday
@@ -15,16 +13,9 @@ interface ResultInterface
     /**
      * Returns a short string that describes what the result does
      */
-    public function description();
+    public function getDescription();
     /**
      * Main function that determines what the result does
      */
-    public function process();
-    /**
-     * Set the deal handler on the result
-     *
-     * @param \Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface $dealHandler
-     * @return
-     */
-    public function setDealHandler(DealHandlerInterface $dealHandler);
+    public function process(DealHandlerInterface $dealHandler);
 }

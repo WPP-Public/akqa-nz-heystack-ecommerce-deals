@@ -2,16 +2,13 @@
 
 namespace Heystack\Subsystem\Deals\Result;
 
-use Heystack\Subsystem\Deals\Interfaces\ResultInterface;
-use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
-use Heystack\Subsystem\Deals\Events;
-
-use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
-
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-
-use Heystack\Subsystem\Deals\Traits\ResultTrait;
 use Heystack\Subsystem\Core\Identifier\Identifier;
+use Heystack\Subsystem\Deals\Events;
+use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
+use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
+use Heystack\Subsystem\Deals\Interfaces\ResultInterface;
+use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  *
@@ -21,14 +18,32 @@ use Heystack\Subsystem\Core\Identifier\Identifier;
  */
 class FixedPrice implements ResultInterface
 {
-    use ResultTrait;
-
+    /**
+     * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
+     */
     protected $eventService;
+    /**
+     * @var \Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface
+     */
     protected $purchasableHolder;
+    /**
+     * @var
+     */
     protected $purchasables;
+    /**
+     * @var
+     */
     protected $value;
+    /**
+     * @var \Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface
+     */
     protected $configuration;
 
+    /**
+     * @param EventDispatcherInterface        $eventService
+     * @param PurchasableHolderInterface      $purchasableHolder
+     * @param AdaptableConfigurationInterface $configuration
+     */
     public function __construct(
         EventDispatcherInterface $eventService,
         PurchasableHolderInterface $purchasableHolder,
@@ -56,7 +71,10 @@ class FixedPrice implements ResultInterface
 
     }
 
-    public function description()
+    /**
+     * @return string
+     */
+    public function getDescription()
     {
 //        $this->purchasable = $this->purchasableHolder->getPurchasable(
 //            $this->configuration->getConfig('purchasable_identifier')
@@ -66,7 +84,11 @@ class FixedPrice implements ResultInterface
         return 'under development';
     }
 
-    public function process()
+    /**
+     * @param DealHandlerInterface $dealHandler
+     * @return int
+     */
+    public function process(DealHandlerInterface $dealHandler)
     {
         $this->purchasable = $this->purchasableHolder->getPurchasablesByPrimaryIdentifier(
             new Identifier($this->configuration->getConfig('purchasable_identifier'))
@@ -89,5 +111,4 @@ class FixedPrice implements ResultInterface
         return $totalDiscount;
 
     }
-
 }

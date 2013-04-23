@@ -83,5 +83,4 @@ class Subscriber implements EventSubscriberInterface
     {
         $this->eventService->dispatch(TransactionEvents::UPDATE);
     }
-
 }

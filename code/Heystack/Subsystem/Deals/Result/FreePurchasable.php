@@ -6,8 +6,8 @@ use Heystack\Subsystem\Core\Identifier\Identifier;
 use Heystack\Subsystem\Core\State\State;
 use Heystack\Subsystem\Deals\Events;
 use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
+use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
 use Heystack\Subsystem\Deals\Interfaces\ResultInterface;
-use Heystack\Subsystem\Deals\Traits\ResultTrait;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -20,7 +20,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 class FreePurchasable implements ResultInterface
 {
-    use ResultTrait;
     /**
      *
      */
@@ -43,9 +42,9 @@ class FreePurchasable implements ResultInterface
      */
     protected $configuration;
     /**
-     * @var
+     * @var \Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableInterface
      */
-    protected $purchaseable;
+    protected $purchasable;
     /**
      * @var bool
      */
@@ -59,7 +58,6 @@ class FreePurchasable implements ResultInterface
      * @param PurchasableHolderInterface      $purchasableHolder
      * @param State                           $stateService
      * @param AdaptableConfigurationInterface $configuration
-     * @throws \Exception
      */
     public function __construct(
         EventDispatcherInterface $eventService,
@@ -79,10 +77,10 @@ class FreePurchasable implements ResultInterface
     /**
      *
      */
-    protected function saveState()
+    protected function saveState($identifier)
     {
         $this->stateService->setByKey(
-            self::IDENTIFIER . $this->dealIdentifier,
+            self::IDENTIFIER . $identifier,
             array(
                 $this->processed,
                 $this->total
@@ -92,9 +90,9 @@ class FreePurchasable implements ResultInterface
     /**
      *
      */
-    protected function restoreState()
+    protected function restoreState($identifier)
     {
-        $data = $this->stateService->getByKey(self::IDENTIFIER . $this->dealIdentifier);
+        $data = $this->stateService->getByKey(self::IDENTIFIER . $identifier);
         if (is_array($data)) {
             list($this->processed, $this->total) = $data;
         }
@@ -102,27 +100,26 @@ class FreePurchasable implements ResultInterface
     /**
      * @return string
      */
-    public function description()
+    public function getDescription()
     {
         return 'The product (' . $this->getPurchaseable()->getIdentifier()->getFull() . ') is now priced at ' . $this->value;
     }
-
     /**
+     * @param DealHandlerInterface $dealHandler
      * @return mixed
      */
-    public function process()
+    public function process(DealHandlerInterface $dealHandler)
     {
-        $this->restoreState();
+        $dealIdentifier = $dealHandler->getIdentifier()->getFull();
+        $this->restoreState($dealIdentifier);
 
         if (!$this->processed) {
-
             //Add the selected purchasable to the purchasableHolder
-            $this->purchasableHolder->addPurchasable($purchasable = $this->getPurchaseable());
+            $this->purchasableHolder->addPurchasable($purchasable = $this->getPurchasable());
             $this->processed = true;
             $this->total = $purchasable->getPrice();
-            $this->saveState();
+            $this->saveState($dealIdentifier);
             $this->eventService->dispatch(Events::RESULT_PROCESSED);
-
         }
 
         return $this->total;
@@ -131,7 +128,7 @@ class FreePurchasable implements ResultInterface
      * @throws \Exception
      * @return \Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableInterface
      */
-    protected function getPurchaseable()
+    protected function getPurchasable()
     {
         if (!$this->purchasable) {
             //Seaparate the ID from the ClassName in the Identifier
@@ -139,7 +136,7 @@ class FreePurchasable implements ResultInterface
 
             $this->purchasable = \DataObject::get_by_id($match[1], $match[2]);
 
-            if (!$this->purchaseable instanceof PurchasableInterface) {
+            if (!$this->purchasable instanceof PurchasableInterface) {
                 throw new \Exception('Purchasable on result free purchasable must an instanceof PurchaseableInterface');
             }
         }

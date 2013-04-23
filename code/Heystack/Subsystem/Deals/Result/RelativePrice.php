@@ -4,6 +4,7 @@ namespace Heystack\Subsystem\Deals\Result;
 
 use Heystack\Subsystem\Deals\Events;
 use Heystack\Subsystem\Core\Identifier\Identifier;
+use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
@@ -16,8 +17,11 @@ use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
  */
 class RelativePrice extends FixedPrice
 {
-    protected $calculatedPrice;
-
+    /**
+     * @param EventDispatcherInterface        $eventService
+     * @param PurchasableHolderInterface      $purchasableHolder
+     * @param AdaptableConfigurationInterface $configuration
+     */
     public function __construct(
         EventDispatcherInterface $eventService,
         PurchasableHolderInterface $purchasableHolder,
@@ -26,13 +30,19 @@ class RelativePrice extends FixedPrice
         parent::__construct($eventService, $purchasableHolder, $configuration);
     }
 
-    public function description()
+    /**
+     * @return string
+     */
+    public function getDescription()
     {
 //        return 'The product (' . $this->purchasable->getIdentifier()->getFull() . ') is now priced at ' . $this->calculatedPrice;
         return 'under development';
     }
-
-    public function process()
+    /**
+     * @param DealHandlerInterface $dealHandler
+     * @return float|int
+     */
+    public function process(DealHandlerInterface $dealHandler)
     {
         $this->purchasables = $this->purchasableHolder->getPurchasablesByPrimaryIdentifier(
             new Identifier($this->configuration->getConfig('purchasable_identifier'))
@@ -57,5 +67,4 @@ class RelativePrice extends FixedPrice
         return $totalDiscount;
 
     }
-
 }
