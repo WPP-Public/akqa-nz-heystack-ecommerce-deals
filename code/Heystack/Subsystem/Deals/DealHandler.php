@@ -8,7 +8,9 @@ use Heystack\Subsystem\Core\State\StateableInterface;
 use Heystack\Subsystem\Core\Storage\Backends\SilverStripeOrm\Backend;
 use Heystack\Subsystem\Core\Storage\StorableInterface;
 use Heystack\Subsystem\Core\Storage\Traits\ParentReferenceTrait;
+use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
 use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
+use Heystack\Subsystem\Deals\Interfaces\ResultInterface;
 use Heystack\Subsystem\Ecommerce\Transaction\Traits\TransactionModifierSerializeTrait;
 use Heystack\Subsystem\Ecommerce\Transaction\Traits\TransactionModifierStateTrait;
 use Heystack\Subsystem\Ecommerce\Transaction\TransactionModifierTypes;
@@ -46,7 +48,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     protected $conditions = array();
     /**
      * The result of the deal if conditions are met
-     * @var
+     * @var \Heystack\Subsystem\Deals\Interfaces\ResultInterface
      */
     protected $result;
     /**
@@ -92,17 +94,19 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     }
 
     /**
-     * @param $result
+     * @param \Heystack\Subsystem\Deals\Interfaces\ResultInterface $result
+     * @return mixed|void
      */
-    public function setResult($result)
+    public function setResult(ResultInterface $result)
     {
         $this->result = $result;
     }
 
     /**
-     * @param $condition
+     * @param \Heystack\Subsystem\Deals\Interfaces\ConditionInterface $condition
+     * @return mixed|void
      */
-    public function addCondition($condition)
+    public function addCondition(ConditionInterface $condition)
     {
         $this->conditions[] = $condition;
     }
@@ -145,7 +149,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
      * @param  array $data Optional data array that will be passed onto the conditions for checking whether the conditions have been met.
      * @return bool
      */
-    public function conditionsMet(Array $data = null)
+    public function conditionsMet(array $data = null)
     {
         foreach ($this->conditions as $condition) {
             if (!$condition->met($data)) {
@@ -186,7 +190,6 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     {
         return self::IDENTIFIER;
     }
-
     /**
      * Get the name of the schema this system relates to
      * @return string
@@ -194,7 +197,6 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     public function getSchemaName()
     {
         return 'Deal';
-
     }
 
     /**

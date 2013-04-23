@@ -15,13 +15,18 @@ use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterfa
  */
 class Purchasable implements ConditionInterface
 {
-
     /**
      * @var \Heystack\Subsystem\Core\Identifier\IdentifierInterface
      */
     protected $purchasableIdentifier;
+    /**
+     * @var \Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface
+     */
     protected $purchasableHolder;
-
+    /**
+     * @param PurchasableHolderInterface      $purchasableHolder
+     * @param AdaptableConfigurationInterface $configuration
+     */
     public function __construct(PurchasableHolderInterface $purchasableHolder, AdaptableConfigurationInterface $configuration)
     {
         if ($configuration->hasConfig('purchasable_identifier')) {
@@ -37,7 +42,10 @@ class Purchasable implements ConditionInterface
         $this->purchasableHolder = $purchasableHolder;
 
     }
-
+    /**
+     * @param array $data
+     * @return bool
+     */
     public function met(array $data = null)
     {
 
@@ -70,5 +78,4 @@ class Purchasable implements ConditionInterface
 
         return 'condition is invalid, please investigate';
     }
-
 }

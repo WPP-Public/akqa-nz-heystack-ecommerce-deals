@@ -13,12 +13,25 @@ use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
  */
 class Time implements ConditionInterface
 {
-
+    /**
+     * @var string
+     */
     public static $time_format = 'd-m-Y H:i:s';
+    /**
+     * @var int
+     */
     protected $startTime;
+    /**
+     * @var int
+     */
     protected $endTime;
+    /**
+     * @var
+     */
     protected $currentTime;
-
+    /**
+     * @param AdaptableConfigurationInterface $configuration
+     */
     public function __construct(AdaptableConfigurationInterface $configuration)
     {
 
@@ -38,7 +51,10 @@ class Time implements ConditionInterface
 
         }
     }
-
+    /**
+     * @param array $data
+     * @return bool
+     */
     public function met(array $data = null)
     {
         if (!is_null($data) && is_array($data) && isset($data['Time'])) {
@@ -87,5 +103,4 @@ class Time implements ConditionInterface
 
         return 'condition is invalid, please investigate';
     }
-
 }

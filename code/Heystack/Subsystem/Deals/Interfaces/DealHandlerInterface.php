@@ -12,13 +12,22 @@ use Heystack\Subsystem\Ecommerce\Transaction\Interfaces\TransactionModifierInter
  */
 interface DealHandlerInterface extends TransactionModifierInterface
 {
-
-    public function setResult($result);
-
-    public function addCondition($condition);
-
+    /**
+     * @param ResultInterface $result
+     * @return mixed
+     */
+    public function setResult(ResultInterface $result);
+    /**
+     * @param ConditionInterface $condition
+     * @return mixed
+     */
+    public function addCondition(ConditionInterface $condition);
+    /**
+     * @return mixed
+     */
     public function updateTotal();
-
+    /**
+     * @return mixed
+     */
     public function getPromotionalMessage();
-
 }

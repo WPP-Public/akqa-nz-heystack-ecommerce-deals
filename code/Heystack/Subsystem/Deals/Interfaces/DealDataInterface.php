@@ -21,5 +21,4 @@ interface DealDataInterface
      * @return String
      */
     public function getName();
-
 }
