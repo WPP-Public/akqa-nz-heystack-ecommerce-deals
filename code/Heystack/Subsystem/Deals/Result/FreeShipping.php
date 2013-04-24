@@ -4,6 +4,7 @@ namespace Heystack\Subsystem\Deals\Result;
 
 use Heystack\Subsystem\Core\Identifier\Identifier;
 use Heystack\Subsystem\Core\State\State;
+use Heystack\Subsystem\Deals\Events;
 use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
 use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
 use Heystack\Subsystem\Deals\Interfaces\ResultInterface;

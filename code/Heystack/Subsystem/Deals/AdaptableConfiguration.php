@@ -12,22 +12,27 @@ use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
  */
 class AdaptableConfiguration implements AdaptableConfigurationInterface
 {
+    /**
+     * @var array
+     */
     protected $config;
-
-    public function __construct(Array $configuration)
+    /**
+     * @param array $configuration
+     */
+    public function __construct(array $configuration)
     {
-        if (is_array($configuration) && $this->is_assoc($configuration)) {
+        if (is_array($configuration)) {
             $this->config = $configuration;
         } else {
-            throw new \Exception('Configuration needs to be an associative array');
+            throw new \Exception('Configuration needs to be an array');
         }
     }
 
-    protected function is_assoc($array)
-    {
-        return (bool) count(array_filter(array_keys($array), 'is_string'));
-    }
-
+    /**
+     * @param $identifier
+     * @return mixed
+     * @throws \Exception
+     */
     public function getConfig($identifier)
     {
         if (isset($this->config[$identifier])) {
@@ -37,9 +42,12 @@ class AdaptableConfiguration implements AdaptableConfigurationInterface
         throw new \Exception($identifier . ' configuration not found');
     }
 
+    /**
+     * @param $identifier
+     * @return bool
+     */
     public function hasConfig($identifier)
     {
         return isset($this->config[$identifier]);
     }
-
 }

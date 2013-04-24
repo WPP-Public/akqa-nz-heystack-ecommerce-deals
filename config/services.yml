@@ -13,7 +13,7 @@ parameters:
   deal.result.configuration.class: Heystack\Subsystem\Deals\AdaptableConfiguration
   deal.result.fixedprice.class: Heystack\Subsystem\Deals\Result\FixedPrice
   deal.result.relativeprice.class: Heystack\Subsystem\Deals\Result\RelativePrice
-  deal.result.freepurchasables.class: Heystack\Subsystem\Deals\Result\FreePurchasables
+  deal.result.freepurchasable.class: Heystack\Subsystem\Deals\Result\FreePurchasable
   deal.result.freeshipping.class: Heystack\Subsystem\Deals\Result\FreeShipping
 
 services:
@@ -63,3 +63,9 @@ services:
     class: %deal.result.freeshipping.class%
     arguments: [@event_dispatcher, @shipping_service]
     abstract: true
+
+  dealhandler_schema:
+    class: %yaml_data_object_schema.class%
+    arguments: [ ecommerce-deals/config/storage/dealhandler.yml, @state_global ]
+    tags:
+      - { name: dataobject_generator.schema }
