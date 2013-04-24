@@ -10,6 +10,8 @@
  */
 namespace Heystack\Subsystem\Deals;
 
+use Heystack\Subsystem\Core\Storage\Backends\SilverStripeOrm\Backend;
+use Heystack\Subsystem\Core\Storage\Storage;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -17,6 +19,7 @@ use Heystack\Subsystem\Ecommerce\Currency\Events as CurrencyEvents;
 use Heystack\Subsystem\Ecommerce\Locale\Events as LocaleEvents;
 use Heystack\Subsystem\Ecommerce\Transaction\Events as TransactionEvents;
 use Heystack\Subsystem\Products\ProductHolder\Events as ProductHolderEvents;
+use Heystack\Subsystem\Core\Storage\Event as StorageEvent;
 
 use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
 
@@ -43,14 +46,22 @@ class Subscriber implements EventSubscriberInterface
     protected $dealHandler;
 
     /**
-     * Creates the ShippingHandler Subscriber object
-     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventService
-     * @param \Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface   $dealHandler
+     * Holds the storage service
+     * @var \Heystack\Subsystem\Core\Storage\Storage
      */
-    public function __construct(EventDispatcherInterface $eventService, DealHandlerInterface $dealHandler)
+    protected $storageService;
+
+    /**
+     * Creates the ShippingHandler Subscriber object
+     * @param EventDispatcherInterface $eventService
+     * @param Storage $storageService
+     * @param DealHandlerInterface $dealHandler
+     */
+    public function __construct(EventDispatcherInterface $eventService, Storage $storageService, DealHandlerInterface $dealHandler)
     {
         $this->eventService = $eventService;
         $this->dealHandler = $dealHandler;
+        $this->storageService = $storageService;
     }
 
     /**
@@ -63,7 +74,8 @@ class Subscriber implements EventSubscriberInterface
             CurrencyEvents::CHANGED        => array('onUpdateTotal', 0),
             LocaleEvents::CHANGED          => array('onUpdateTotal', 0),
             ProductHolderEvents::UPDATED   => array('onUpdateTotal', 0),
-            Events::TOTAL_UPDATED          => array('onTotalUpdated', 0)
+            Events::TOTAL_UPDATED          => array('onTotalUpdated', 0),
+            Backend::IDENTIFIER . '.' . TransactionEvents::STORED => array('onTransactionStored', 0)
         );
     }
 
@@ -82,5 +94,14 @@ class Subscriber implements EventSubscriberInterface
     public function onTotalUpdated()
     {
         $this->eventService->dispatch(TransactionEvents::UPDATE);
+    }
+
+    public function onTransactionStored(StorageEvent $event)
+    {
+        $this->dealHandler->setParentReference($event->getParentReference());
+
+        $this->storageService->process($this->dealHandler);
+
+        $this->eventService->dispatch(Events::STORED);
     }
 }

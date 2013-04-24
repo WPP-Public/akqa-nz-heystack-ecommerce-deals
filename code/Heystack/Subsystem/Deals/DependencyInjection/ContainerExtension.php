@@ -126,6 +126,7 @@ class ContainerExtension extends Extension
         $dealDefinition->addArgument($dealId);
         $dealDefinition->addArgument($promotionalMessage);
         $dealDefinition->addTag(EcommerceServices::TRANSACTION . '.modifier');
+        $dealDefinition->addTag(CoreServices::SS_ORM_BACKEND . '.data_provider');
 
         return $dealDefinition;
     }

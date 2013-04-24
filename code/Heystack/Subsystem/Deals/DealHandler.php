@@ -31,7 +31,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     /**
      * Identifier for state
      */
-    const IDENTIFIER = 'deal_handler';
+    const IDENTIFIER = 'deal';
     /**
      * The total key for state
      */
@@ -180,7 +180,8 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
             'parent' => true,
             'flat' => array(
                 'Total' => $this->getTotal(),
-                'Description' => $this->getDescription()
+                'Description' => $this->getDescription(),
+                'ParentID' => $this->parentReference
             )
         );
     }
@@ -207,7 +208,7 @@ DESCRIPTION;
      */
     public function getStorableIdentifier()
     {
-        return self::IDENTIFIER;
+        return self::IDENTIFIER . $this->dealID;
     }
     /**
      * Get the name of the schema this system relates to

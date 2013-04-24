@@ -24,7 +24,7 @@ services:
 
   deals.subscriber:
     class: %deal.subscriber.class%
-    arguments: [@event_dispatcher]
+    arguments: [@event_dispatcher, @storage]
     abstract: true
 
   deals.condition.configuration:
@@ -67,5 +67,11 @@ services:
   dealhandler_schema:
     class: %yaml_data_object_schema.class%
     arguments: [ ecommerce-deals/config/storage/dealhandler.yml, @state_global ]
+    tags:
+      - { name: dataobject_generator.schema }
+
+  transaction_dealhandler_schema:
+    class: %yaml_data_object_schema.class%
+    arguments: [ ecommerce-deals/config/storage/transaction_dealhandler.yml, @state_global ]
     tags:
       - { name: dataobject_generator.schema }
