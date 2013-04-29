@@ -75,7 +75,7 @@ class Subscriber implements EventSubscriberInterface
             LocaleEvents::CHANGED          => array('onUpdateTotal', 0),
             ProductHolderEvents::UPDATED   => array('onUpdateTotal', 0),
             Events::TOTAL_UPDATED          => array('onTotalUpdated', 0),
-            Backend::IDENTIFIER . '.' . TransactionEvents::STORED => array('onTransactionStored', 0)
+            Backend::IDENTIFIER . '.' . TransactionEvents::STORED => array('onTransactionStored', 10)
         );
     }
 
@@ -98,10 +98,14 @@ class Subscriber implements EventSubscriberInterface
 
     public function onTransactionStored(StorageEvent $event)
     {
-        $this->dealHandler->setParentReference($event->getParentReference());
+        if($this->dealHandler->getTotal() > 0 ){
 
-        $this->storageService->process($this->dealHandler);
+            $this->dealHandler->setParentReference($event->getParentReference());
 
-        $this->eventService->dispatch(Events::STORED);
+            $this->storageService->process($this->dealHandler);
+
+            $this->eventService->dispatch(Events::STORED);
+
+        }
     }
 }

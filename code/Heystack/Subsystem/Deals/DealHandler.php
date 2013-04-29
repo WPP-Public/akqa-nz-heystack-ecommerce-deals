@@ -83,6 +83,8 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
         $this->eventService = $eventService;
         $this->dealID = $dealID;
         $this->promotionalMessage = $promotionalMessage;
+
+        $this->restoreState();
     }
 
     /**
