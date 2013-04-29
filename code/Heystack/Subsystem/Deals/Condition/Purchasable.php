@@ -66,18 +66,8 @@ class Purchasable implements ConditionInterface
      */
     public function getDescription()
     {
-        if ($this->startTime && $this->endTime) {
-            return 'current time: ' . date(self::$time_format, $this->currentTime) .  ' is between start time: ' . date(self::$time_format,$this->startTime) . ' and end time: ' . date(self::$time_format,$this->endTime);
-        }
 
-        if ($this->startTime && !$this->endTime) {
-            return 'current time: ' . date(self::$time_format, $this->currentTime) .  ' is after start time: ' . date(self::$time_format,$this->startTime);
-        }
+        return 'Must have Purchasable: ' . $this->purchasableIdentifier->getPrimary();
 
-        if ($this->endTime && !$this->endTime) {
-            return 'current time: ' . date(self::$time_format, $this->currentTime) .  ' is before end time: ' . date(self::$time_format,$this->endTime);
-        }
-
-        return 'condition is invalid, please investigate';
     }
 }

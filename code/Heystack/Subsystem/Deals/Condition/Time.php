@@ -16,7 +16,7 @@ class Time implements ConditionInterface
     /**
      * @var string
      */
-    public static $time_format = 'd-m-Y H:i:s';
+    public static $time_format = 'd-m-Y';
     /**
      * @var int
      */
@@ -71,7 +71,7 @@ class Time implements ConditionInterface
             return ($this->currentTime > $this->startTime);
         }
 
-        if ($this->endTime && !$this->endTime) {
+        if ($this->endTime && !$this->startTime) {
             return ($this->currentTime < $this->endTime);
         }
 
@@ -82,27 +82,15 @@ class Time implements ConditionInterface
      */
     public function getDescription()
     {
-        if ($this->startTime && $this->endTime) {
-            return 'current time: ' . date(self::$time_format, $this->currentTime) . ' is between start time: ' . date(
-                self::$time_format,
-                $this->startTime
-            ) . ' and end time: ' . date(self::$time_format, $this->endTime);
+        $description = array();
+
+        if ($this->startTime) {
+            $description[] = 'From: ' . date(self::$time_format, $this->startTime);
+        }
+        if ($this->endTime) {
+            $description[] = 'To: ' . date(self::$time_format, $this->endTime);
         }
 
-        if ($this->startTime && !$this->endTime) {
-            return 'current time: ' . date(self::$time_format, $this->currentTime) . ' is after start time: ' . date(
-                self::$time_format,
-                $this->startTime
-            );
-        }
-
-        if ($this->endTime && !$this->endTime) {
-            return 'current time: ' . date(self::$time_format, $this->currentTime) . ' is before end time: ' . date(
-                self::$time_format,
-                $this->endTime
-            );
-        }
-
-        return 'condition is invalid, please investigate';
+        return implode('; ', $description);
     }
 }

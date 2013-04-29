@@ -76,12 +76,7 @@ class FixedPrice implements ResultInterface
      */
     public function getDescription()
     {
-//        $this->purchasable = $this->purchasableHolder->getPurchasable(
-//            $this->configuration->getConfig('purchasable_identifier')
-//        );
-//
-//        return 'The product (' . $this->purchasable->getIdentifier()->getFull() . ') is now priced at ' . $this->value;
-        return 'under development';
+        return 'New Fixed Price: ' . $this->value;
     }
 
     /**

@@ -102,7 +102,7 @@ class FreePurchasable implements ResultInterface
      */
     public function getDescription()
     {
-        return 'The product (' . $this->getPurchaseable()->getIdentifier()->getFull() . ') is now priced at ' . $this->value;
+        return 'Free Purchasable:' . $this->configuration['purchasable_identifier'];
     }
     /**
      * @param DealHandlerInterface $dealHandler

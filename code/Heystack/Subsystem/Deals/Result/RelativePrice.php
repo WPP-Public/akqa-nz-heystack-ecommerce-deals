@@ -35,8 +35,7 @@ class RelativePrice extends FixedPrice
      */
     public function getDescription()
     {
-//        return 'The product (' . $this->purchasable->getIdentifier()->getFull() . ') is now priced at ' . $this->calculatedPrice;
-        return 'under development';
+        return 'Percentage Discount: ' . $this->value;
     }
     /**
      * @param DealHandlerInterface $dealHandler
