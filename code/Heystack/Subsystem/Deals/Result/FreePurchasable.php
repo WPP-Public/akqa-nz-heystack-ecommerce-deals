@@ -42,21 +42,14 @@ class FreePurchasable implements ResultInterface
      */
     protected $configuration;
     /**
-     * @var \Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableInterface
-     */
-    protected $purchasable;
-    /**
-     * @var bool
-     */
-    protected $processed = false;
-    /**
      * @var int
      */
     protected $total = 0;
+
     /**
-     * @param EventDispatcherInterface        $eventService
-     * @param PurchasableHolderInterface      $purchasableHolder
-     * @param State                           $stateService
+     * @param EventDispatcherInterface $eventService
+     * @param PurchasableHolderInterface $purchasableHolder
+     * @param State $stateService
      * @param AdaptableConfigurationInterface $configuration
      */
     public function __construct(
@@ -74,21 +67,22 @@ class FreePurchasable implements ResultInterface
             throw new \Exception('Free Purchasables Result requires a purchasable_identifier configuration value');
         }
     }
+
     /**
-     *
+     * @param Heystack\Subsystem\Core\Identifier\Identifier the deal handlers identifier
      */
     protected function saveState($identifier)
     {
         $this->stateService->setByKey(
             self::IDENTIFIER . $identifier,
             array(
-                $this->processed,
                 $this->total
             )
         );
     }
+
     /**
-     *
+     * @param Heystack\Subsystem\Core\Identifier\Identifier the deal handler's identifier
      */
     protected function restoreState($identifier)
     {
@@ -97,6 +91,7 @@ class FreePurchasable implements ResultInterface
             list($this->processed, $this->total) = $data;
         }
     }
+
     /**
      * @return string
      */
@@ -104,6 +99,7 @@ class FreePurchasable implements ResultInterface
     {
         return 'Free Purchasable:' . $this->configuration['purchasable_identifier'];
     }
+
     /**
      * @param DealHandlerInterface $dealHandler
      * @return mixed
@@ -113,33 +109,42 @@ class FreePurchasable implements ResultInterface
         $dealIdentifier = $dealHandler->getIdentifier()->getFull();
         $this->restoreState($dealIdentifier);
 
-        if (!$this->processed) {
+        $purchasable = $this->getPurchasable();
+
+        if (!$this->processed($purchasable)) {
+
             //Add the selected purchasable to the purchasableHolder
-            $this->purchasableHolder->addPurchasable($purchasable = $this->getPurchasable());
-            $this->processed = true;
-            $this->total = $purchasable->getPrice();
+            $this->purchasableHolder->addPurchasable($purchasable);
+            $this->total = $purchasable->getUnitPrice();
             $this->saveState($dealIdentifier);
+
             $this->eventService->dispatch(Events::RESULT_PROCESSED);
         }
 
         return $this->total;
     }
+
+    protected function processed(PurchasableInterface $purchasable)
+    {
+        $productHolderPurchasable = $this->purchasableHolder->getPurchasable($purchasable->getIdentifier());
+
+        return $productHolderPurchasable instanceof PurchasableInterface;
+    }
+
     /**
      * @throws \Exception
      * @return \Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableInterface
      */
     protected function getPurchasable()
     {
-        if (!$this->purchasable) {
-            //Seaparate the ID from the ClassName in the Identifier
-            preg_match('|^([a-z]+)([\d]+)$|i', $this->configuration->getConfig('purchasable_identifier'), $match);
+        //Seaparate the ID from the ClassName in the Identifier
+        preg_match('|^([a-z]+)([\d]+)$|i', $this->configuration->getConfig('purchasable_identifier'), $match);
 
-            $this->purchasable = \DataObject::get_by_id($match[1], $match[2]);
+        $purchasable = \DataObject::get_by_id($match[1], $match[2]);
 
-            if (!$this->purchasable instanceof PurchasableInterface) {
-                throw new \Exception('Purchasable on result free purchasable must an instanceof PurchaseableInterface');
-            }
+        if (!$purchasable instanceof PurchasableInterface) {
+            throw new \Exception('Purchasable on result free purchasable must an instanceof PurchaseableInterface');
         }
-        return $this->purchasable;
+        return $purchasable;
     }
 }

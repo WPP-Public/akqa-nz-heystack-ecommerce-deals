@@ -188,7 +188,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
         );
     }
     /**
-     *
+     * @return string
      */
     protected function getDescription()
     {
