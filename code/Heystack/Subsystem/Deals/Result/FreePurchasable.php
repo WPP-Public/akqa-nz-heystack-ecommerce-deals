@@ -7,6 +7,7 @@ use Heystack\Subsystem\Core\State\State;
 use Heystack\Subsystem\Deals\Events;
 use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
 use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
+use Heystack\Subsystem\Deals\Interfaces\PurchasableConditionInterface;
 use Heystack\Subsystem\Deals\Interfaces\ResultInterface;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableInterface;
@@ -88,7 +89,7 @@ class FreePurchasable implements ResultInterface
     {
         $data = $this->stateService->getByKey(self::IDENTIFIER . $identifier);
         if (is_array($data)) {
-            list($this->processed, $this->total) = $data;
+            list($this->total) = $data;
         }
     }
 
@@ -111,11 +112,15 @@ class FreePurchasable implements ResultInterface
 
         $purchasable = $this->getPurchasable();
 
-        if (!$this->processed($purchasable)) {
+        if (!$this->processed($purchasable, $dealHandler)) {
 
             //Add the selected purchasable to the purchasableHolder
             $this->purchasableHolder->addPurchasable($purchasable);
-            $this->total = $purchasable->getUnitPrice();
+
+            //Get the processed purchasable back from the purchasableHolder (could be a different object than the one passed in)
+            $productHolderPurchasable = $this->purchasableHolder->getPurchasable($purchasable->getIdentifier());
+
+            $this->total = $productHolderPurchasable->getUnitPrice();
             $this->saveState($dealIdentifier);
 
             $this->eventService->dispatch(Events::RESULT_PROCESSED);
@@ -124,9 +129,31 @@ class FreePurchasable implements ResultInterface
         return $this->total;
     }
 
-    protected function processed(PurchasableInterface $purchasable)
+    protected function processed(PurchasableInterface $purchasable, DealHandlerInterface $dealHandler)
     {
         $productHolderPurchasable = $this->purchasableHolder->getPurchasable($purchasable->getIdentifier());
+
+        $conditions = $dealHandler->getConditions();
+
+        $purchasableIdentifierFromCondition = null;
+
+        foreach($conditions as $condition){
+
+            if($condition instanceof PurchasableConditionInterface){
+
+                $purchasableIdentifierFromCondition = $condition->getPurchasableIdentifier();
+                break;
+
+            }
+
+        }
+
+        if(!is_null($purchasableIdentifierFromCondition) && $purchasableIdentifierFromCondition->isMatch($purchasable->getIdentifier())){
+
+            return $productHolderPurchasable->getQuantity() >= 2;
+
+        }
+
 
         return $productHolderPurchasable instanceof PurchasableInterface;
     }

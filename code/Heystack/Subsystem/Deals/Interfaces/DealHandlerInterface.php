@@ -17,17 +17,25 @@ interface DealHandlerInterface extends TransactionModifierInterface
      * @return mixed
      */
     public function setResult(ResultInterface $result);
+
     /**
      * @param ConditionInterface $condition
      * @return mixed
      */
     public function addCondition(ConditionInterface $condition);
+
     /**
      * @return mixed
      */
     public function updateTotal();
+
     /**
-     * @return mixed
+     * @return string
      */
     public function getPromotionalMessage();
+
+    /**
+     * @return array
+     */
+    public function getConditions();
 }

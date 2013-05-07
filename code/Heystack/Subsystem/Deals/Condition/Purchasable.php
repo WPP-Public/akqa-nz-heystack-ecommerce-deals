@@ -4,7 +4,7 @@ namespace Heystack\Subsystem\Deals\Condition;
 
 use Heystack\Subsystem\Core\Identifier\Identifier;
 use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
-use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
+use Heystack\Subsystem\Deals\Interfaces\PurchasableConditionInterface;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 
 /**
@@ -13,7 +13,7 @@ use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterfa
  * @author Glenn Bautista <glenn@heyday.co.nz>
  * @package Ecommerce-Deals
  */
-class Purchasable implements ConditionInterface
+class Purchasable implements PurchasableConditionInterface
 {
     /**
      * @var \Heystack\Subsystem\Core\Identifier\IdentifierInterface
@@ -69,5 +69,10 @@ class Purchasable implements ConditionInterface
 
         return 'Must have Purchasable: ' . $this->purchasableIdentifier->getPrimary();
 
+    }
+
+    public function getPurchasableIdentifier()
+    {
+        return $this->purchasableIdentifier;
     }
 }

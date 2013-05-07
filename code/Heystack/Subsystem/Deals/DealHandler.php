@@ -230,4 +230,9 @@ DESCRIPTION;
             Backend::IDENTIFIER
         );
     }
+
+    public function getConditions()
+    {
+        return $this->conditions;
+    }
 }
