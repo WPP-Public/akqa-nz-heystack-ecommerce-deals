@@ -53,10 +53,6 @@ class RelativePrice extends FixedPrice
 
             $discount = ($purchasable->getPrice() / 100) * $this->value;
 
-            $newPrice = $purchasable->getPrice() - $discount;
-
-            $purchasable->setUnitPrice($newPrice);
-
             $totalDiscount += $discount * $purchasable->getQuantity();
 
         }

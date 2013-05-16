@@ -31,6 +31,7 @@ class Time implements ConditionInterface
     protected $currentTime;
     /**
      * @param AdaptableConfigurationInterface $configuration
+     * @throws \Exception if the configuration does not have a 'start' value
      */
     public function __construct(AdaptableConfigurationInterface $configuration)
     {
@@ -57,7 +58,7 @@ class Time implements ConditionInterface
      */
     public function met(array $data = null)
     {
-        if (!is_null($data) && is_array($data) && isset($data['Time'])) {
+        if (is_array($data) && isset($data['Time'])) {
             $this->currentTime = $data['Time'];
         } else {
             $this->currentTime = time();

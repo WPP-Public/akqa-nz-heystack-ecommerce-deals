@@ -85,7 +85,7 @@ class FixedPrice implements ResultInterface
      */
     public function process(DealHandlerInterface $dealHandler)
     {
-        $this->purchasable = $this->purchasableHolder->getPurchasablesByPrimaryIdentifier(
+        $this->purchasables = $this->purchasableHolder->getPurchasablesByPrimaryIdentifier(
             new Identifier($this->configuration->getConfig('purchasable_identifier'))
         );
 
@@ -93,11 +93,7 @@ class FixedPrice implements ResultInterface
 
         foreach ($this->purchasables as $purchasable) {
 
-            $originalTotal = $purchasable->getTotal();
-
-            $purchasable->setUnitPrice($this->value);
-
-            $totalDiscount += $originalTotal - $purchasable->getTotal();
+            $totalDiscount += $purchasable->getTotal() - ($purchasable->getQuantity() * $this->value);
 
         }
 

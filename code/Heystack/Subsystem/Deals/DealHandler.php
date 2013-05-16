@@ -127,8 +127,6 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
      */
     public function getTotal()
     {
-        $this->restoreState();
-
         return isset($this->data[self::TOTAL_KEY]) ? $this->data[self::TOTAL_KEY] : 0;
     }
 
@@ -178,7 +176,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     {
         //loop of conditions, use result to prepare a combined description
         return array(
-            'id' => 'Tax',
+            'id' => 'Deal',
             'parent' => true,
             'flat' => array(
                 'Total' => $this->getTotal(),

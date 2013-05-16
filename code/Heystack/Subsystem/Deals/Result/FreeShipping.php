@@ -42,7 +42,6 @@ class FreeShipping implements ResultInterface
     /**
      * @param EventDispatcherInterface        $eventService
      * @param ShippingHandlerInterface        $shippingService
-     * @param State                           $stateService
      * @param AdaptableConfigurationInterface $configuration
      */
     public function __construct(

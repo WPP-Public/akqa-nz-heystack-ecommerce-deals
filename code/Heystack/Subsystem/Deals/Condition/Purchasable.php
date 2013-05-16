@@ -26,6 +26,7 @@ class Purchasable implements PurchasableConditionInterface
     /**
      * @param PurchasableHolderInterface      $purchasableHolder
      * @param AdaptableConfigurationInterface $configuration
+     * @throws \Exception if the configuration does not have a purchasable identifier
      */
     public function __construct(PurchasableHolderInterface $purchasableHolder, AdaptableConfigurationInterface $configuration)
     {
@@ -49,12 +50,14 @@ class Purchasable implements PurchasableConditionInterface
     public function met(array $data = null)
     {
 
-        if (!is_null($data) && is_array($data) && isset($data['PurchasableIdentifier'])) {
-            return $this->purchasableIdentifier->isMatch($data['PurchasableIdentifier']);
+        if (is_array($data) && isset($data['PurchasableIdentifier'])) {
+            return $this->purchasableIdentifier->isMatch(new Identifier($data['PurchasableIdentifier']));
 
         }
 
-        if (is_array($this->purchasableHolder->getPurchasablesByPrimaryIdentifier($this->purchasableIdentifier))) {
+        $purchasables = $this->purchasableHolder->getPurchasablesByPrimaryIdentifier($this->purchasableIdentifier);
+
+        if (is_array($purchasables) && count($purchasables)) {
             return true;
 
         }
@@ -70,7 +73,9 @@ class Purchasable implements PurchasableConditionInterface
         return 'Must have Purchasable: ' . $this->purchasableIdentifier->getPrimary();
 
     }
-
+    /**
+     * @return Identifier|\Heystack\Subsystem\Core\Identifier\IdentifierInterface
+     */
     public function getPurchasableIdentifier()
     {
         return $this->purchasableIdentifier;
