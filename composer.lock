@@ -1,5 +1,9 @@
 {
-    "hash": "80fd48073a75e14d94748b5993c59412",
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
+    ],
+    "hash": "5dac1242464708b40e98df9e6d70afff",
     "packages": [
         {
             "name": "composer/installers",
@@ -114,12 +118,66 @@
             "time": "2013-04-09 05:12:02"
         },
         {
+            "name": "dflydev/markdown",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/dflydev/dflydev-markdown.git",
+                "reference": "v1.0.2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://github.com/dflydev/dflydev-markdown/zipball/v1.0.2",
+                "reference": "v1.0.2",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "dflydev\\markdown": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "New BSD License"
+            ],
+            "authors": [
+                {
+                    "name": "Dragonfly Development Inc.",
+                    "email": "info@dflydev.com",
+                    "homepage": "http://dflydev.com"
+                },
+                {
+                    "name": "Beau Simensen",
+                    "email": "beau@dflydev.com",
+                    "homepage": "http://beausimensen.com"
+                },
+                {
+                    "name": "Michel Fortin",
+                    "homepage": "http://michelf.com"
+                },
+                {
+                    "name": "John Gruber",
+                    "homepage": "http://daringfireball.net"
+                }
+            ],
+            "description": "PHP Markdown & Extra",
+            "homepage": "http://github.com/dflydev/dflydev-markdown",
+            "keywords": [
+                "markdown"
+            ],
+            "time": "2012-01-15 19:36:37"
+        },
+        {
             "name": "heystack/ecommerce-core",
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "ssh://sls@slsapp.com:110/heyday/ecommerce-core.git",
-                "reference": "91b047c1bfbb293d7ca9648152b534b06b9cc997"
+                "url": "ssh://sls@slsapp.com:1234/heyday/ecommerce-core.git",
+                "reference": "8f6f0dcc4c332ff4b8eee469b2c65e05c432456e"
             },
             "require": {
                 "composer/installers": "~1.0",
@@ -152,15 +210,40 @@
                     "code/SilverStripe"
                 ]
             },
-            "time": "2013-04-25 04:08:17"
+            "time": "2013-04-25 05:03:42"
+        },
+        {
+            "name": "heystack/ecommerce-shipping",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "ssh://sls@slsapp.com:110/heyday/ecommerce-shipping.git",
+                "reference": "b59ee9f17d655a195b1bc39a38064e8b023f28b2"
+            },
+            "require": {
+                "composer/installers": "~1.0.0",
+                "php": ">=5.4.0"
+            },
+            "type": "silverstripe-module",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Heystack": "code/"
+                }
+            },
+            "time": "2013-04-24 03:34:34"
         },
         {
             "name": "heystack/heystack",
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "ssh://sls@slsapp.com:110/heyday/heystack.git",
-                "reference": "21b2895c93397d88340d58c11d87789afb960e79"
+                "url": "ssh://sls@slsapp.com:1234/heyday/heystack.git",
+                "reference": "fb0c789a17dd0b0dc58c54c2e12242baf1683f75"
             },
             "require": {
                 "camspiers/shared-dependency-injection": "~0.4",
@@ -197,7 +280,7 @@
                     "code/SilverStripe"
                 ]
             },
-            "time": "2013-04-25 04:11:30"
+            "time": "2013-04-29 02:50:49"
         },
         {
             "name": "monolog/monolog",
@@ -394,15 +477,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/fabpot/Sami.git",
-                "reference": "d40930dfa56dfa38f65f89972ca70b5fd5a0508e"
+                "reference": "e2a24dfb102d9d3deac6ef0a276351245f8517ee"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/Sami/zipball/d40930dfa56dfa38f65f89972ca70b5fd5a0508e",
-                "reference": "d40930dfa56dfa38f65f89972ca70b5fd5a0508e",
+                "url": "https://api.github.com/repos/fabpot/Sami/zipball/e2a24dfb102d9d3deac6ef0a276351245f8517ee",
+                "reference": "e2a24dfb102d9d3deac6ef0a276351245f8517ee",
                 "shasum": ""
             },
             "require": {
+                "dflydev/markdown": "1.0.*",
                 "nikic/php-parser": "0.9.*",
                 "php": ">=5.3.0",
                 "pimple/pimple": "1.0.*",
@@ -442,7 +526,7 @@
             "keywords": [
                 "phpdoc"
             ],
-            "time": "2013-04-24 20:02:54"
+            "time": "2013-05-04 14:14:44"
         },
         {
             "name": "silverstripe/framework",
@@ -928,16 +1012,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v1.12.3",
+            "version": "v1.13.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fabpot/Twig.git",
-                "reference": "v1.12.3"
+                "reference": "v1.13.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/Twig/zipball/v1.12.3",
-                "reference": "v1.12.3",
+                "url": "https://api.github.com/repos/fabpot/Twig/zipball/v1.13.0",
+                "reference": "v1.13.0",
                 "shasum": ""
             },
             "require": {
@@ -946,7 +1030,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.12-dev"
+                    "dev-master": "1.13-dev"
                 }
             },
             "autoload": {
@@ -973,7 +1057,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2013-04-08 12:40:11"
+            "time": "2013-05-10 15:12:43"
         }
     ],
     "aliases": [
@@ -983,6 +1067,7 @@
     "stability-flags": {
         "heystack/heystack": 20,
         "heystack/ecommerce-core": 20,
+        "heystack/ecommerce-shipping": 20,
         "sami/sami": 20
     },
     "platform": {
