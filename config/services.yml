@@ -56,7 +56,7 @@ services:
 
   deals.result.freepurchasable:
     class: %deal.result.freepurchasable.class%
-    arguments: [@event_dispatcher, @productholder, @state]
+    arguments: [@event_dispatcher, @productholder, @state, @dataobject_handler]
     abstract: true
 
   deals.result.freeshipping:

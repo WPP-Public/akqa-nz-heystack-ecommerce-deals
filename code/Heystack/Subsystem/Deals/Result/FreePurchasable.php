@@ -2,6 +2,7 @@
 
 namespace Heystack\Subsystem\Deals\Result;
 
+use Heystack\Subsystem\Core\DataObjectHandler\DataObjectHandlerInterface;
 use Heystack\Subsystem\Core\Identifier\Identifier;
 use Heystack\Subsystem\Core\State\State;
 use Heystack\Subsystem\Deals\Events;
@@ -39,6 +40,10 @@ class FreePurchasable implements ResultInterface
      */
     protected $stateService;
     /**
+     * @var \Heystack\Subsystem\Core\DataObjectHandler\DataObjectHandlerInterface
+     */
+    protected $dataObjectHandler;
+    /**
      * @var \Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface
      */
     protected $configuration;
@@ -52,16 +57,19 @@ class FreePurchasable implements ResultInterface
      * @param PurchasableHolderInterface $purchasableHolder
      * @param State $stateService
      * @param AdaptableConfigurationInterface $configuration
+     * @throws \Exception when there is no purchasable_identifier in the configuration
      */
     public function __construct(
         EventDispatcherInterface $eventService,
         PurchasableHolderInterface $purchasableHolder,
         State $stateService,
+        DataObjectHandlerInterface $dataObjectHandler,
         AdaptableConfigurationInterface $configuration
     ) {
         $this->eventService = $eventService;
         $this->purchasableHolder = $purchasableHolder;
         $this->stateService = $stateService;
+        $this->dataObjectHandler = $dataObjectHandler;
         $this->configuration = $configuration;
 
         if (!$configuration->hasConfig('purchasable_identifier')) {
@@ -167,7 +175,7 @@ class FreePurchasable implements ResultInterface
         //Seaparate the ID from the ClassName in the Identifier
         preg_match('|^([a-z]+)([\d]+)$|i', $this->configuration->getConfig('purchasable_identifier'), $match);
 
-        $purchasable = \DataObject::get_by_id($match[1], $match[2]);
+        $purchasable = $this->dataObjectHandler->getDataObjectById($match[1], $match[2]);
 
         if (!$purchasable instanceof PurchasableInterface) {
             throw new \Exception('Purchasable on result free purchasable must an instanceof PurchaseableInterface');
