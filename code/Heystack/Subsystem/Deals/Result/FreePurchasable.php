@@ -106,7 +106,7 @@ class FreePurchasable implements ResultInterface
      */
     public function getDescription()
     {
-        return 'Free Purchasable:' . $this->configuration['purchasable_identifier'];
+        return 'Free Purchasable:' . $this->configuration->getConfig('purchasable_identifier');
     }
 
     /**
@@ -129,6 +129,7 @@ class FreePurchasable implements ResultInterface
             $productHolderPurchasable = $this->purchasableHolder->getPurchasable($purchasable->getIdentifier());
 
             $this->total = $productHolderPurchasable->getUnitPrice();
+
             $this->saveState($dealIdentifier);
 
             $this->eventService->dispatch(Events::RESULT_PROCESSED);
