@@ -243,7 +243,7 @@
             "source": {
                 "type": "git",
                 "url": "ssh://sls@slsapp.com:1234/heyday/heystack.git",
-                "reference": "fb0c789a17dd0b0dc58c54c2e12242baf1683f75"
+                "reference": "b531c4c983384d4be7d60bb6a251ae8bb6d4f70a"
             },
             "require": {
                 "camspiers/shared-dependency-injection": "~0.4",
@@ -280,7 +280,7 @@
                     "code/SilverStripe"
                 ]
             },
-            "time": "2013-04-29 02:50:49"
+            "time": "2013-05-22 02:49:53"
         },
         {
             "name": "monolog/monolog",
@@ -533,12 +533,12 @@
             "version": "2.4.10",
             "source": {
                 "type": "git",
-                "url": "https://github.com/silverstripe/sapphire.git",
+                "url": "https://github.com/silverstripe/silverstripe-framework.git",
                 "reference": "2.4.10"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/silverstripe/sapphire/zipball/2.4.10",
+                "url": "https://api.github.com/repos/silverstripe/silverstripe-framework/zipball/2.4.10",
                 "reference": "2.4.10",
                 "shasum": ""
             },
