@@ -37,11 +37,6 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
      */
     const TOTAL_KEY = 'total';
     /**
-     * Stores data for state
-     * @var array
-     */
-    protected $data = array();
-    /**
      * The conditions that need to be met for the deal
      * @var array
      */
