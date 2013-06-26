@@ -13,6 +13,10 @@ use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
  */
 class Time implements ConditionInterface
 {
+    const CONDITION_TYPE = 'Time';
+    const START_KEY = 'start';
+    const END_KEY = 'end';
+
     /**
      * @var string
      */
@@ -35,22 +39,30 @@ class Time implements ConditionInterface
      */
     public function __construct(AdaptableConfigurationInterface $configuration)
     {
+        $startAndEndTimesAbsent = true;
 
-        if ($configuration->hasConfig('start')) {
+        if ($configuration->hasConfig(self::START_KEY)) {
 
-            $this->startTime = strtotime($configuration->getConfig('start'));
+            $this->startTime = strtotime($configuration->getConfig(self::START_KEY));
 
-        } else {
+            $startAndEndTimesAbsent = false;
 
-            throw new \Exception('Time Condition needs a start time configuration');
+        }
+
+        if ($configuration->hasConfig(self::END_KEY)) {
+
+            $this->endTime = strtotime($configuration->getConfig(self::END_KEY));
+
+            $startAndEndTimesAbsent = false;
 
         }
 
-        if ($configuration->hasConfig('end')) {
+        if ($startAndEndTimesAbsent) {
 
-            $this->endTime = strtotime($configuration->getConfig('end'));
+            throw new \Exception('Time Condition requires either a Start time or an End time');
 
         }
+
     }
     /**
      * @param array $data
@@ -58,8 +70,8 @@ class Time implements ConditionInterface
      */
     public function met(array $data = null)
     {
-        if (is_array($data) && isset($data['Time'])) {
-            $this->currentTime = $data['Time'];
+        if (is_array($data) && isset($data[self::CONDITION_TYPE])) {
+            $this->currentTime = $data[self::CONDITION_TYPE];
         } else {
             $this->currentTime = time();
         }
