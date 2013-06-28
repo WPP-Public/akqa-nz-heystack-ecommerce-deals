@@ -9,6 +9,8 @@ parameters:
   deal.condition.configuration.class: Heystack\Subsystem\Deals\AdaptableConfiguration
   deal.condition.time.class: Heystack\Subsystem\Deals\Condition\Time
   deal.condition.purchasable.class: Heystack\Subsystem\Deals\Condition\Purchasable
+  deal.condition.amount.class: Heystack\Subsystem\Deals\Condition\Amount
+  deal.condition.items.class: Heystack\Subsystem\Deals\Condition\Items
 
   deal.result.configuration.class: Heystack\Subsystem\Deals\AdaptableConfiguration
   deal.result.fixedprice.class: Heystack\Subsystem\Deals\Result\FixedPrice
@@ -39,6 +41,16 @@ services:
     class: %deal.condition.purchasable.class%
     arguments: [@productholder]
     abstract: true
+
+  deals.condition.amount:
+      class: %deal.condition.amount.class%
+      arguments: [@productholder, @currency_service]
+      abstract: true
+
+  deals.condition.items:
+      class: %deal.condition.items.class%
+      arguments: [@productholder]
+      abstract: true
 
   deals.result.configuration:
     class: %deal.result.configuration.class%
