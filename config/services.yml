@@ -13,8 +13,6 @@ parameters:
   deal.condition.items.class: Heystack\Subsystem\Deals\Condition\Items
 
   deal.result.configuration.class: Heystack\Subsystem\Deals\AdaptableConfiguration
-  deal.result.fixedprice.class: Heystack\Subsystem\Deals\Result\FixedPrice
-  deal.result.relativeprice.class: Heystack\Subsystem\Deals\Result\RelativePrice
   deal.result.freepurchasable.class: Heystack\Subsystem\Deals\Result\FreePurchasable
   deal.result.shipping.class: Heystack\Subsystem\Deals\Result\Shipping
   deal.result.cartdiscount.class: Heystack\Subsystem\Deals\Result\CartDiscount
@@ -55,16 +53,6 @@ services:
 
   deals.result.configuration:
     class: %deal.result.configuration.class%
-    abstract: true
-
-  deals.result.fixedprice:
-    class: %deal.result.fixedprice.class%
-    arguments: [@event_dispatcher, @productholder]
-    abstract: true
-
-  deals.result.relativeprice:
-    class: %deal.result.relativeprice.class%
-    arguments: [@event_dispatcher, @productholder]
     abstract: true
 
   deals.result.freepurchasable:
