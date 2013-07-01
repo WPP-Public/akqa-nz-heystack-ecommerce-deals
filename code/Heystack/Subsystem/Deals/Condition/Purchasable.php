@@ -17,11 +17,16 @@ use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableInterface;
 class Purchasable implements PurchasableConditionInterface
 {
     const CONDITION_TYPE = 'Purchasable';
-    const CONFIGURATION_KEY = 'purchasables';
+    const PURCHASABLES_CONFIGURATION_KEY = 'purchasables';
     const IDENTIFIER_KEY = 'purchasable_identifier';
     const QUANTITY_KEY = 'purchasable_quantity';
+    const LOGICAL_OPERATOR_KEY = 'logical_operator';
+    const LOGICAL_OPERATOR_AND = 'and';
+    const LOGICAL_OPERATOR_OR = 'or';
 
     protected $configuration = array();
+
+    protected $logicalOperator;
 
     /**
      * @var \Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface
@@ -34,7 +39,7 @@ class Purchasable implements PurchasableConditionInterface
      */
     public function __construct(PurchasableHolderInterface $purchasableHolder, AdaptableConfigurationInterface $configuration)
     {
-        if ($configuration->hasConfig(self::CONFIGURATION_KEY) && is_array($purchasables = $configuration->getConfig(self::CONFIGURATION_KEY))) {
+        if ($configuration->hasConfig(self::PURCHASABLES_CONFIGURATION_KEY) && is_array($purchasables = $configuration->getConfig(self::PURCHASABLES_CONFIGURATION_KEY))) {
 
             foreach($purchasables as $purchasableConfiguration){
 
@@ -65,6 +70,17 @@ class Purchasable implements PurchasableConditionInterface
 
         }
 
+        if ($configuration->hasConfig(self::LOGICAL_OPERATOR_KEY)) {
+
+            $this->logicalOperator = $configuration->getConfig(self::LOGICAL_OPERATOR_KEY);
+
+        } else {
+
+            throw new \Exception('Purchasable Condition requires a logical operator to be configured');
+
+        }
+
+
         $this->purchasableHolder = $purchasableHolder;
 
     }
@@ -80,15 +96,27 @@ class Purchasable implements PurchasableConditionInterface
     public function met(array $data = null)
     {
 
-        if (is_array($data) && is_array($data[self::CONFIGURATION_KEY]) && count($data[self::CONFIGURATION_KEY])) {
+        if (is_array($data) && is_array($data[self::PURCHASABLES_CONFIGURATION_KEY]) && count($data[self::PURCHASABLES_CONFIGURATION_KEY])) {
 
-            foreach($data[self::CONFIGURATION_KEY] as $purchasableConfiguration){
+            foreach($data[self::PURCHASABLES_CONFIGURATION_KEY] as $purchasableConfiguration){
 
                 if(isset($purchasableConfiguration[self::IDENTIFIER_KEY])){
 
-                    if(!$this->matchIdentifierWithConfiguration($purchasableConfiguration[self::IDENTIFIER_KEY])){
+                    if ($this->logicalOperator == self::LOGICAL_OPERATOR_AND){
 
-                        return false;
+                        if(!$this->matchIdentifierWithConfiguration($purchasableConfiguration[self::IDENTIFIER_KEY])){
+
+                            return false;
+
+                        }
+
+                    } else {
+
+                        if($this->matchIdentifierWithConfiguration($purchasableConfiguration[self::IDENTIFIER_KEY])){
+
+                            return true;
+
+                        }
 
                     }
 
@@ -100,21 +128,42 @@ class Purchasable implements PurchasableConditionInterface
 
             }
 
-            return true;
+            if ($this->logicalOperator == self::LOGICAL_OPERATOR_AND) {
+                return true;
+            }
+
+            return false;
 
         }
 
         foreach($this->configuration as $purchasableConfiguration){
 
-            if(!$this->matchConfigurationWithPurchasableHolder($purchasableConfiguration)){
+            if ($this->logicalOperator == self::LOGICAL_OPERATOR_AND){
 
-                return false;
+                if (!$this->matchConfigurationWithPurchasableHolder($purchasableConfiguration)) {
+
+                    return false;
+
+                }
+
+            } else {
+
+                if ($this->matchConfigurationWithPurchasableHolder($purchasableConfiguration)) {
+
+                    return true;
+                }
 
             }
 
+
         }
 
-        return true;
+        if ($this->logicalOperator == self::LOGICAL_OPERATOR_AND) {
+            return true;
+        }
+
+        return false;
+
     }
     /**
      * @return string
