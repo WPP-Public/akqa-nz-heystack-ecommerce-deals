@@ -17,6 +17,7 @@ parameters:
   deal.result.relativeprice.class: Heystack\Subsystem\Deals\Result\RelativePrice
   deal.result.freepurchasable.class: Heystack\Subsystem\Deals\Result\FreePurchasable
   deal.result.shipping.class: Heystack\Subsystem\Deals\Result\Shipping
+  deal.result.cartdiscount.class: Heystack\Subsystem\Deals\Result\CartDiscount
 
 services:
   deals.deal_handler:
@@ -74,6 +75,11 @@ services:
   deals.result.shipping:
     class: %deal.result.shipping.class%
     arguments: [@event_dispatcher, @shipping_service, @currency_service]
+    abstract: true
+
+  deals.result.cartdiscount:
+    class: %deal.result.cartdiscount.class%
+    arguments: [@event_dispatcher, @productholder, @currency_service]
     abstract: true
 
   dealhandler_schema:
