@@ -7,6 +7,7 @@ use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
 use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
 use Heystack\Subsystem\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
+use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\type;
 
 /**
  *
@@ -14,9 +15,9 @@ use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterfa
  * @author Glenn Bautista <glenn@heyday.co.nz>
  * @package Ecommerce-Deals
  */
-class Amount implements ConditionInterface
+class MinimumCartTotal implements ConditionInterface
 {
-    const CONDITION_TYPE = 'Amount';
+    const CONDITION_TYPE = 'MinimumCartTotal';
     const AMOUNTS_KEY = 'amounts';
 
     protected $amounts;
@@ -49,7 +50,7 @@ class Amount implements ConditionInterface
 
         } else {
 
-            throw new \Exception('Amount Condition needs to be configured with all the amounts in the different currencies');
+            throw new \Exception('Minimum Cart Total Condition needs to be configured with all the amounts in the different currencies');
 
         }
 
@@ -57,6 +58,14 @@ class Amount implements ConditionInterface
 
         $this->currencyService = $currencyService;
 
+    }
+
+    /**
+     * @return string that indicates the type of condition this class is implementing
+     */
+    public function getType()
+    {
+        return self::CONDITION_TYPE;
     }
 
     /**
@@ -71,17 +80,15 @@ class Amount implements ConditionInterface
 
         if (is_array($data) && isset($data[self::AMOUNTS_KEY]) && is_array($data[self::AMOUNTS_KEY])) {
 
-            if (isset($this->amounts[$activeCurrencyCode]) && isset($data[self::AMOUNTS_KEY][$activeCurrencyCode]) && $data[self::AMOUNTS_KEY][$activeCurrencyCode] >= $this->amounts[$activeCurrencyCode]) {
+            $total = $data[self::AMOUNTS_KEY][$activeCurrencyCode];
 
-                return true;
+        } else {
 
-            }
-
-            return false;
+            $total =  $this->purchasableHolder->getTotal();
 
         }
 
-        if (isset($this->amounts[$activeCurrencyCode]) && $this->purchasableHolder->getTotal() >= $this->amounts[$activeCurrencyCode]) {
+        if (isset($this->amounts[$activeCurrencyCode]) && $total >= $this->amounts[$activeCurrencyCode]) {
 
             return true;
 

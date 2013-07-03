@@ -12,9 +12,9 @@ use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterfa
  * @author Glenn Bautista <glenn@heyday.co.nz>
  * @package Ecommerce-Deals
  */
-class Items implements ConditionInterface
+class ItemsInCart implements ConditionInterface
 {
-    const CONDITION_TYPE = 'Items';
+    const CONDITION_TYPE = 'ItemsInCart';
     const ITEM_COUNT_KEY = 'item_count';
     const COUNT_BY_PURCHASABLE_QUANTITY_KEY = 'count_by_purchasable';
 
@@ -43,7 +43,7 @@ class Items implements ConditionInterface
 
         } else {
 
-            throw new \Exception('Items Condition requires an item count configuration');
+            throw new \Exception('Items In Cart Condition requires an item count configuration');
 
         }
 
@@ -53,12 +53,20 @@ class Items implements ConditionInterface
 
         } else {
 
-            throw new \Exception('Items Condition requires that it be configured to either count by purchasable quantity or the number of purchasables');
+            throw new \Exception('Items In Cart Condition requires that it be configured to either count by purchasable quantity or the number of purchasables');
 
         }
 
         $this->purchasableHolder = $purchasableHolder;
 
+    }
+
+    /**
+     * @return string that indicates the type of condition this class is implementing
+     */
+    public function getType()
+    {
+        return self::CONDITION_TYPE;
     }
 
     /**
@@ -69,23 +77,15 @@ class Items implements ConditionInterface
      */
     public function met(array $data = null)
     {
-        if (is_array($data) && isset($data[self::ITEM_COUNT_KEY])) {
-
-            if ($data[self::ITEM_COUNT_KEY] >= $this->itemCount) {
-
-                return true;
-
-            }
-
-            return false;
-
-        }
+        $count = 0;
 
         $purchasables = $this->purchasableHolder->getPurchasables();
 
-        if ($this->countByPurchasableQuantity) {
+        if (is_array($data) && isset($data[self::ITEM_COUNT_KEY])) {
 
-            $count = 0;
+            $count = $data[self::ITEM_COUNT_KEY];
+
+        } elseif ($this->countByPurchasableQuantity) {
 
             foreach ($purchasables as $purchasable) {
 
@@ -93,22 +93,13 @@ class Items implements ConditionInterface
 
             }
 
-            if ($count >= $this->itemCount) {
+        } elseif (is_array($purchasables)) {
 
-                return true;
+            $count = count($purchasables);
 
-            }
-
-        } else {
-
-            if (is_array($purchasables) && count($purchasables) >= $this->itemCount) {
-
-                return true;
-
-            }
         }
 
-        return false;
+        return $count >= $this->itemCount;
     }
 
     /**

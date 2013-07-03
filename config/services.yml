@@ -9,13 +9,14 @@ parameters:
   deal.condition.configuration.class: Heystack\Subsystem\Deals\AdaptableConfiguration
   deal.condition.time.class: Heystack\Subsystem\Deals\Condition\Time
   deal.condition.purchasable.class: Heystack\Subsystem\Deals\Condition\Purchasable
-  deal.condition.amount.class: Heystack\Subsystem\Deals\Condition\Amount
-  deal.condition.items.class: Heystack\Subsystem\Deals\Condition\Items
+  deal.condition.minimumcarttotal.class: Heystack\Subsystem\Deals\Condition\MinimumCartTotal
+  deal.condition.itemsincart.class: Heystack\Subsystem\Deals\Condition\ItemsInCart
 
   deal.result.configuration.class: Heystack\Subsystem\Deals\AdaptableConfiguration
   deal.result.freepurchasable.class: Heystack\Subsystem\Deals\Result\FreePurchasable
   deal.result.shipping.class: Heystack\Subsystem\Deals\Result\Shipping
   deal.result.cartdiscount.class: Heystack\Subsystem\Deals\Result\CartDiscount
+  deal.result.purchasablediscount.class: Heystack\Subsystem\Deals\Result\PurchasableDiscount
 
 services:
   deals.deal_handler:
@@ -41,13 +42,13 @@ services:
     arguments: [@productholder]
     abstract: true
 
-  deals.condition.amount:
-      class: %deal.condition.amount.class%
+  deals.condition.minimumcarttotal:
+      class: %deal.condition.minimumcarttotal.class%
       arguments: [@productholder, @currency_service]
       abstract: true
 
-  deals.condition.items:
-      class: %deal.condition.items.class%
+  deals.condition.itemsincart:
+      class: %deal.condition.itemsincart.class%
       arguments: [@productholder]
       abstract: true
 
@@ -67,6 +68,11 @@ services:
 
   deals.result.cartdiscount:
     class: %deal.result.cartdiscount.class%
+    arguments: [@event_dispatcher, @productholder, @currency_service]
+    abstract: true
+
+  deals.result.purchasablediscount:
+    class: %deal.result.purchasablediscount.class%
     arguments: [@event_dispatcher, @productholder, @currency_service]
     abstract: true
 
