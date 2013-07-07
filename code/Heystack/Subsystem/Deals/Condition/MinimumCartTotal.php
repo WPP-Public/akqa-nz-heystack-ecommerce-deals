@@ -72,7 +72,7 @@ class MinimumCartTotal implements ConditionInterface
      * Return a boolean indicating whether the condition has been met
      *
      * @param  array $data If present this is the data that will be used to determine whether the condition has been met
-     * @return mixed
+     * @return int
      */
     public function met(array $data = null)
     {
@@ -90,11 +90,11 @@ class MinimumCartTotal implements ConditionInterface
 
         if (isset($this->amounts[$activeCurrencyCode]) && $total >= $this->amounts[$activeCurrencyCode]) {
 
-            return true;
+            return 1;
 
         }
 
-        return false;
+        return 0;
     }
 
     /**

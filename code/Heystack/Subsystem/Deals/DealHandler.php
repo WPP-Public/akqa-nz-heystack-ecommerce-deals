@@ -59,11 +59,16 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
      */
     protected $dealID;
     /**
+     * @var int the number of times the conditions were met more than once
+     */
+    protected $conditionsRecursivelyMetCount;
+    /**
      * @var
      */
     protected $promotionalMessage;
+
     /**
-     * @param State                    $stateService
+     * @param State $stateService
      * @param EventDispatcherInterface $eventService
      * @param                          $dealID
      * @param                          $promotionalMessage
@@ -105,7 +110,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
      */
     public function addCondition(ConditionInterface $condition)
     {
-        $this->conditions[] = $condition;
+        $this->conditions[$condition->getType()] = $condition;
     }
 
     /**
@@ -140,19 +145,49 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     }
 
     /**
-     * Checks if all the conditions are met
+     * Checks if all the conditions are met.
+     *
+     * If not all conditions are met and the $data array was null, this will dispatch the Conditions not met event.
+     *
+     * The data array is generally used to check if the condition will be met given a certain set of data. (useful on the front end)
+     *
      * @param  array $data Optional data array that will be passed onto the conditions for checking whether the conditions have been met.
      * @return bool
      */
     public function conditionsMet(array $data = null)
     {
+        $met = true;
+
+        $metCounts = array();
+
         foreach ($this->conditions as $condition) {
-            if (!$condition->met($data)) {
-                return false;
+            $metCount = $condition->met($data);
+
+            if (!$metCount) {
+
+                $met = false;
+                break;
+
+            }
+
+            if ($metCount > 1) {
+
+                $metCounts[] = $metCount;
+
             }
         }
 
-        return true;
+        if ($met) {
+
+            $this->conditionsRecursivelyMetCount = empty($metCounts) ? 1 : min($metCounts);
+
+        } elseif (is_null($data)) {
+
+            $this->eventService->dispatch(Events::CONDITIONS_NOT_MET);
+
+        }
+
+        return $met;
     }
 
     /**
@@ -180,6 +215,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
             )
         );
     }
+
     /**
      * @return string
      */
@@ -198,6 +234,7 @@ Result:
 $resultDescription
 DESCRIPTION;
     }
+
     /**
      * @return string
      */
@@ -205,6 +242,7 @@ DESCRIPTION;
     {
         return self::IDENTIFIER . $this->dealID;
     }
+
     /**
      * Get the name of the schema this system relates to
      * @return string
@@ -224,8 +262,21 @@ DESCRIPTION;
         );
     }
 
+    /**
+     * @return array of conditions
+     */
     public function getConditions()
     {
         return $this->conditions;
     }
+
+    /**
+     * Returns the number of times that each condition was met more than once
+     * @return int
+     */
+    public function getConditionsRecursivelyMetCount()
+    {
+        return $this->conditionsRecursivelyMetCount;
+    }
+
 }

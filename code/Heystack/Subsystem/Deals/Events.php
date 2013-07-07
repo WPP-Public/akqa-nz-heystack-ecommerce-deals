@@ -31,5 +31,13 @@ final class Events
      */
     const STORED              = 'deals.stored';
 
+    /**
+     * Indicates that a result has been processed
+     */
     const RESULT_PROCESSED    = 'deals.resultprocessed';
+
+    /**
+     * Indicates that a condition was not met. (not relying on the data array passed into the met function)
+     */
+    const CONDITIONS_NOT_MET  = 'deals.conditionsnotmet';
 }

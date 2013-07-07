@@ -38,4 +38,10 @@ interface DealHandlerInterface extends TransactionModifierInterface
      * @return array
      */
     public function getConditions();
+
+    /**
+     * Returns the number of times that each condition was met more than once
+     * @return int
+     */
+    public function getConditionsRecursivelyMetCount();
 }

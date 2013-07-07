@@ -8,15 +8,16 @@ parameters:
 
   deal.condition.configuration.class: Heystack\Subsystem\Deals\AdaptableConfiguration
   deal.condition.time.class: Heystack\Subsystem\Deals\Condition\Time
-  deal.condition.purchasable.class: Heystack\Subsystem\Deals\Condition\Purchasable
   deal.condition.minimumcarttotal.class: Heystack\Subsystem\Deals\Condition\MinimumCartTotal
   deal.condition.itemsincart.class: Heystack\Subsystem\Deals\Condition\ItemsInCart
+  deal.condition.quantityofpurchasablesincart.class: Heystack\Subsystem\Deals\Condition\QuantityOfPurchasablesInCart
 
   deal.result.configuration.class: Heystack\Subsystem\Deals\AdaptableConfiguration
-  deal.result.freepurchasable.class: Heystack\Subsystem\Deals\Result\FreePurchasable
+  deal.result.freegift.class: Heystack\Subsystem\Deals\Result\FreeGift
   deal.result.shipping.class: Heystack\Subsystem\Deals\Result\Shipping
   deal.result.cartdiscount.class: Heystack\Subsystem\Deals\Result\CartDiscount
   deal.result.purchasablediscount.class: Heystack\Subsystem\Deals\Result\PurchasableDiscount
+  deal.result.cheapestpurchasablediscount.class: Heystack\Subsystem\Deals\Result\CheapestPurchasableDiscount
 
 services:
   deals.deal_handler:
@@ -26,7 +27,7 @@ services:
 
   deals.subscriber:
     class: %deal.subscriber.class%
-    arguments: [@event_dispatcher, @storage]
+    arguments: [@event_dispatcher, @storage, @productholder]
     abstract: true
 
   deals.condition.configuration:
@@ -35,11 +36,6 @@ services:
 
   deals.condition.time:
     class: %deal.condition.time.class%
-    abstract: true
-
-  deals.condition.purchasable:
-    class: %deal.condition.purchasable.class%
-    arguments: [@productholder]
     abstract: true
 
   deals.condition.minimumcarttotal:
@@ -52,13 +48,18 @@ services:
       arguments: [@productholder]
       abstract: true
 
+  deals.condition.quantityofpurchasablesincart:
+      class: %deal.condition.quantityofpurchasablesincart.class%
+      arguments: [@productholder]
+      abstract: true
+
   deals.result.configuration:
     class: %deal.result.configuration.class%
     abstract: true
 
-  deals.result.freepurchasable:
-    class: %deal.result.freepurchasable.class%
-    arguments: [@event_dispatcher, @productholder, @state, @dataobject_handler]
+  deals.result.freegift:
+    class: %deal.result.freegift.class%
+    arguments: [@event_dispatcher, @productholder, @dataobject_handler]
     abstract: true
 
   deals.result.shipping:
@@ -74,6 +75,11 @@ services:
   deals.result.purchasablediscount:
     class: %deal.result.purchasablediscount.class%
     arguments: [@event_dispatcher, @productholder, @currency_service]
+    abstract: true
+
+  deals.result.cheapestpurchasablediscount:
+    class: %deal.result.cheapestpurchasablediscount.class%
+    arguments: [@event_dispatcher, @productholder]
     abstract: true
 
   dealhandler_schema:

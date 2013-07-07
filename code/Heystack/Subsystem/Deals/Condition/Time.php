@@ -65,8 +65,15 @@ class Time implements ConditionInterface
 
     }
     /**
+     * @return string that indicates the type of condition this class is implementing
+     */
+    public function getType()
+    {
+        return self::CONDITION_TYPE;
+    }
+    /**
      * @param array $data
-     * @return bool
+     * @return int
      */
     public function met(array $data = null)
     {
@@ -77,18 +84,18 @@ class Time implements ConditionInterface
         }
 
         if ($this->startTime && $this->endTime) {
-            return ($this->currentTime > $this->startTime) && ($this->currentTime < $this->endTime);
+            return ($this->currentTime > $this->startTime) && ($this->currentTime < $this->endTime) ? 1 : 0;
         }
 
         if ($this->startTime && !$this->endTime) {
-            return ($this->currentTime > $this->startTime);
+            return ($this->currentTime > $this->startTime) ? 1 : 0;
         }
 
         if ($this->endTime && !$this->startTime) {
-            return ($this->currentTime < $this->endTime);
+            return ($this->currentTime < $this->endTime) ? 1 : 0;
         }
 
-        return false;
+        return 0;
     }
     /**
      * @return string

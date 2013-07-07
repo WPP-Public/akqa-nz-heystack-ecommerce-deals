@@ -10,7 +10,7 @@
 namespace Heystack\Subsystem\Deals\Test;
 
 
-use Heystack\Subsystem\Deals\Result\FreePurchasable;
+use Heystack\Subsystem\Deals\Result\FreeGift;
 
 class FreePurchasableTest extends \PHPUnit_Framework_TestCase
 {
@@ -19,7 +19,7 @@ class FreePurchasableTest extends \PHPUnit_Framework_TestCase
     const PURCHASABLE_QUANTITY = 1;
 
     /**
-     * @var FreePurchasable
+     * @var FreeGift
      */
     protected $freePurchasableResult;
 
@@ -110,7 +110,7 @@ class FreePurchasableTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->freePurchasableResult = new FreePurchasable($eventDispatcherStub, $purchasableHolderStub, $stateStub, $dataobjectHandlerStub, $adaptableConfigurationStub);
+        $this->freePurchasableResult = new FreeGift($eventDispatcherStub, $purchasableHolderStub, $stateStub, $dataobjectHandlerStub, $adaptableConfigurationStub);
     }
 
     public function testGetDescription()
