@@ -122,6 +122,8 @@ class Subscriber implements EventSubscriberInterface
             }
 
         }
+
+        $this->purchasableHolder->saveState();
     }
 
     /**

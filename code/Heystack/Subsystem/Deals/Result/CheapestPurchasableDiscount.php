@@ -86,7 +86,7 @@ class CheapestPurchasableDiscount implements ResultInterface
 
         $actionablePurchasables = $this->getActionablePurchasables();
 
-        $total = 0;
+        $cheapestCount = array();
 
         for ($i = 0; $i < $count; $i++) {
 
@@ -94,18 +94,42 @@ class CheapestPurchasableDiscount implements ResultInterface
 
             if($cheapest){
 
-                $total += $cheapest->getPrice();
+                $fullIdentifierString = $cheapest->getIdentifier()->getFull();
 
-                $cheapest->addFreeQuantity($dealHandler->getIdentifier());
+                if(!isset($cheapestCount[$fullIdentifierString])){
 
+                    $cheapestCount[$fullIdentifierString] = array(
+                        'purchasable' => $cheapest,
+                        'count' => 1
+                    );
+
+                }else{
+
+                    $cheapestCount[$fullIdentifierString]['count']++;
+
+                }
 
             }
 
         }
 
-        $this->totalDiscount = $total;
+        foreach($cheapestCount as $countData){
 
-        return $total;
+            $purchasable = $countData['purchasable'];
+
+            $freeQuantity = $purchasable->getFreeQuantity($dealHandler->getIdentifier());
+
+            if($freeQuantity != $countData['count']){
+
+                $purchasable->setFreeQuantity($dealHandler->getIdentifier(), $countData['count']);
+
+            }
+
+            $this->totalDiscount += $purchasable->getUnitPrice() * $countData['count'];
+
+        }
+
+        return $this->totalDiscount;
     }
 
     /**

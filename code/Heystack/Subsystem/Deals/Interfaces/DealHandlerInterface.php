@@ -44,4 +44,9 @@ interface DealHandlerInterface extends TransactionModifierInterface
      * @return int
      */
     public function getConditionsRecursivelyMetCount();
+
+    /**
+     * @return \Heystack\Subsystem\Deals\Interfaces\ResultInterface
+     */
+    public function getResult();
 }

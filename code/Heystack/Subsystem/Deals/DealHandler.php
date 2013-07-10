@@ -111,6 +111,12 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     public function addCondition(ConditionInterface $condition)
     {
         $this->conditions[$condition->getType()] = $condition;
+
+        if(method_exists($condition, 'setDealHandler')){
+
+            $condition->setDealHandler($this);
+
+        }
     }
 
     /**
@@ -277,6 +283,11 @@ DESCRIPTION;
     public function getConditionsRecursivelyMetCount()
     {
         return $this->conditionsRecursivelyMetCount;
+    }
+
+    public function getResult()
+    {
+        return $this->result;
     }
 
 }

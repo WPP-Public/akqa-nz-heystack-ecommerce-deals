@@ -5,7 +5,9 @@ namespace Heystack\Subsystem\Deals\Condition;
 use Heystack\Subsystem\Core\Identifier\Identifier;
 use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
 use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
+use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
 use Heystack\Subsystem\Deals\Interfaces\QuantityOfPurchasablesInCartInterface;
+use Heystack\Subsystem\Deals\Result\FreeGift;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 
 /**
@@ -27,6 +29,11 @@ class QuantityOfPurchasablesInCart implements ConditionInterface
      * @var \Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface
      */
     protected $purchasableHolder;
+
+    /**
+     * @var \Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface
+     */
+    protected $dealHandler;
 
     /**
      * @param PurchasableHolderInterface $purchasableHolder
@@ -76,6 +83,11 @@ class QuantityOfPurchasablesInCart implements ConditionInterface
     public function getType()
     {
         return self::CONDITION_TYPE;
+    }
+
+    public function setDealHandler(DealHandlerInterface $dealHandler)
+    {
+        $this->dealHandler = $dealHandler;
     }
 
     /**
@@ -136,7 +148,12 @@ class QuantityOfPurchasablesInCart implements ConditionInterface
             foreach ($purchasables as $purchasable) {
 
                 $quantity += $purchasable->getQuantity();
-                $quantity -= $purchasable->getFreeQuantity();
+
+                if($this->dealHandler->getResult() instanceof FreeGift){
+
+                    $quantity -= $purchasable->getFreeQuantity();
+
+                }
 
             }
 
