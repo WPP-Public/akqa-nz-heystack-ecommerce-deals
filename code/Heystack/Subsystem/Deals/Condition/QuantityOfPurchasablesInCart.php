@@ -149,7 +149,7 @@ class QuantityOfPurchasablesInCart implements ConditionInterface
 
                 $quantity += $purchasable->getQuantity();
 
-                if($this->dealHandler->getResult() instanceof FreeGift){
+                if ($this->dealHandler->getResult() instanceof FreeGift) {
 
                     $quantity -= $purchasable->getFreeQuantity();
 
