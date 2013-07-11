@@ -30,9 +30,10 @@ interface DealHandlerInterface extends TransactionModifierInterface
     public function updateTotal();
 
     /**
-     * @return string
+     * @param $type
+     * @return mixed
      */
-    public function getPromotionalMessage();
+    public function getPromotionalMessage($type);
 
     /**
      * @return array
