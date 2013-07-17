@@ -82,6 +82,25 @@ class CheapestPurchasableDiscount implements ResultInterface
     {
         $this->eventService->dispatch(Events::RESULT_PROCESSED);
 
+        /**
+         * Reset the free count for this deal of all the purchasables
+         */
+        $purchasables = $this->purchasableHolder->getPurchasables();
+
+        if(is_array($purchasables) && count($purchasables)){
+
+            foreach($purchasables as $purchasable){
+
+                if($purchasable instanceof DealPurchasableInterface){
+
+                    $purchasable->setFreeQuantity($dealHandler->getIdentifier(), 0);
+
+                }
+            }
+
+        }
+
+
         $count = $dealHandler->getConditionsRecursivelyMetCount();
 
         $actionablePurchasables = $this->getActionablePurchasables();
