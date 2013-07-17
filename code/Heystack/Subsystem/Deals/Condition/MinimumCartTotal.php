@@ -86,6 +86,24 @@ class MinimumCartTotal implements ConditionInterface
 
             $total =  $this->purchasableHolder->getTotal();
 
+            $discountedPurchasables = array();
+
+            $purchasables = $this->purchasableHolder->getPurchasables();
+
+            foreach($purchasables as $purchasable){
+
+                if($purchasable->hasFreeItems()){
+                    $discountedPurchasables = $purchasable;
+                }
+
+            }
+
+            if(count($discountedPurchasables)) foreach($discountedPurchasables as $purchasable) {
+
+                $total -= $purchasable->getFreeQuantity() * $purchasable->getUnitPrice();
+
+            }
+
         }
 
         if (isset($this->amounts[$activeCurrencyCode]) && $total >= $this->amounts[$activeCurrencyCode]) {
