@@ -116,6 +116,14 @@ class FreeGift implements ResultInterface
 
             $this->purchasableHolder->addPurchasable($purchasable, $quantity - $processedQuantity);
 
+        }else if($processedQuantity > $quantity) {
+
+            $purchasable->setFreeQuantity($dealIdentifier, $quantity);
+
+            $subtract = $processedQuantity - $quantity;
+
+            $this->purchasableHolder->setPurchasable($purchasable, $purchasable->getQuantity() - $subtract);
+
         }
 
         return $purchasable->getUnitPrice() * $quantity;
