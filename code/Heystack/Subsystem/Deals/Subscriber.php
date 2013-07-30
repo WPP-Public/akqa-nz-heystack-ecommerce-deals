@@ -80,13 +80,13 @@ class Subscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            CurrencyEvents::CHANGED                                 => array('onUpdateTotal', 1),
-            LocaleEvents::CHANGED                                   => array('onUpdateTotal', 1),
-            ProductHolderEvents::PURCHASABLE_ADDED                            => array('onUpdateTotal', 1),
-            ProductHolderEvents::PURCHASABLE_CHANGED                            => array('onUpdateTotal', 1),
-            ProductHolderEvents::PURCHASABLE_REMOVED                            => array('onUpdateTotal', 1),
-            Events::TOTAL_UPDATED                                   => array('onTotalUpdated', 1),
-            Events::CONDITIONS_NOT_MET                              => array('onConditionsNotMet', 1),
+            CurrencyEvents::CHANGED                                 => array('onUpdateTotal', 0),
+            LocaleEvents::CHANGED                                   => array('onUpdateTotal', 0),
+            ProductHolderEvents::PURCHASABLE_ADDED                            => array('onUpdateTotal', 0),
+            ProductHolderEvents::PURCHASABLE_CHANGED                            => array('onUpdateTotal', 0),
+            ProductHolderEvents::PURCHASABLE_REMOVED                            => array('onUpdateTotal', 0),
+            Events::TOTAL_UPDATED                                   => array('onTotalUpdated', 0),
+            Events::CONDITIONS_NOT_MET                              => array('onConditionsNotMet', 0),
             Backend::IDENTIFIER . '.' . TransactionEvents::STORED   => array('onTransactionStored', 10)
         );
     }
@@ -118,9 +118,11 @@ class Subscriber implements EventSubscriberInterface
 
                 if($purchasable instanceof DealPurchasableInterface){
 
-                    if ($this->dealHandler->getIdentifier() == $event->getIdentifier()) {
+                    $dealIdentifier = $this->dealHandler->getIdentifier();
 
-                        $purchasable->setFreeQuantity($this->dealHandler->getIdentifier(), 0);
+                    if ($dealIdentifier == $event->getIdentifier()) {
+
+                        $purchasable->setFreeQuantity($dealIdentifier, 0);
 
                     }
 
