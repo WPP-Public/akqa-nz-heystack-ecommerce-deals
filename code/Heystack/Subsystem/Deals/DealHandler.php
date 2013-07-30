@@ -163,6 +163,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
      */
     public function conditionsMet(array $data = null)
     {
+
         $met = true;
 
         $metCounts = array();
@@ -190,7 +191,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
 
         } elseif (is_null($data)) {
 
-            $this->eventService->dispatch(Events::CONDITIONS_NOT_MET);
+            $this->eventService->dispatch(Events::CONDITIONS_NOT_MET, new Event($this->getIdentifier()));
 
         }
 
