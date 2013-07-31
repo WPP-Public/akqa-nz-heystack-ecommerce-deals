@@ -99,4 +99,9 @@ trait DealPurchasableTrait
 
         return $total;
     }
+
+    public function getFreeQuantities()
+    {
+        return $this->freeQuantities;
+    }
 }
