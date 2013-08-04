@@ -162,7 +162,11 @@ class QuantityOfPurchasablesInCart implements ConditionInterface, HasDealHandler
                 $ident = (string) $purchasable->getIdentifier();
 
                 if ($currentPurchasables[$ident] != $purchasable->getFreeQuantity()) {
-                    $clonedPurchasableHolder->setPurchasable($purchasable, $currentPurchasables[$ident] - $purchasable->getFreeQuantity() + 1);
+                    if ($this->dealHandler->getResult() instanceof FreeGift) {
+                        $clonedPurchasableHolder->setPurchasable($purchasable, $currentPurchasables[$ident] - $purchasable->getFreeQuantity() + 1);
+                    } else {
+                        $clonedPurchasableHolder->setPurchasable($purchasable, $currentPurchasables[$ident] + 1);
+                    }
                 }
 
             }
