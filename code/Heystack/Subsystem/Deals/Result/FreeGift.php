@@ -166,9 +166,6 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
 
         }
 
-
-        error_log("conditions not met");
-
         // TODO: Does this need to do this?
         $this->purchasableHolder->saveState();
     }
