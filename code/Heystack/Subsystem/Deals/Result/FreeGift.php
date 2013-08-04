@@ -166,7 +166,7 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
 
     public function onConditionsNotMet(ConditionEvent $event)
     {
-        $dealIdentifier = $this->dealHandler->getIdentifier();
+        $dealIdentifier = $this->getDealHandler()->getIdentifier();
 
         if ($dealIdentifier->isMatch($event->getDeal()->getIdentifier())) {
 
