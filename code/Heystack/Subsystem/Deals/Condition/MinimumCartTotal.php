@@ -86,29 +86,29 @@ class MinimumCartTotal implements ConditionInterface, HasDealHandlerInterface, H
         $discountedPurchasables = array();
 
         $purchasables = $this->purchasableHolder->getPurchasables();
-        $result = $this->dealHandler->getResult();
+
+        $totalPurchasables = 0;
 
         foreach ($purchasables as $purchasable){
 
+            $totalPurchasables += $purchasable->getQuantity();
+
             if ($purchasable->hasFreeItems()){
+
                 $discountedPurchasables[] = $purchasable;
-            }
-
-        }
-
-        if ($result instanceof FreeGift) {
-
-            if ($purchasable = $this->purchasableHolder->getPurchasable($result->getPurchasable()->getIdentifier())) {
-
-                $total -= $purchasable->getUnitPrice();
 
             }
 
         }
 
-        if (count($discountedPurchasables)) foreach($discountedPurchasables as $purchasable) {
+        // don't discount the purchasable price if its the only one in the cart
+        if (count($discountedPurchasables) && $totalPurchasables > 1) {
 
-            $total -= $purchasable->getFreeQuantity() * $purchasable->getUnitPrice();
+            foreach($discountedPurchasables as $purchasable) {
+
+                $total -= $purchasable->getFreeQuantity() * $purchasable->getUnitPrice();
+
+            }
 
         }
 
