@@ -3,15 +3,21 @@
 namespace Heystack\Subsystem\Deals\Condition;
 
 use Heystack\Subsystem\Core\Identifier\Identifier;
+use Heystack\Subsystem\Core\Interfaces\HasEventServiceInterface;
+use Heystack\Subsystem\Core\Interfaces\HasStateServiceInterface;
+use Heystack\Subsystem\Core\State\Backends\NullBackend;
+use Heystack\Subsystem\Core\State\State;
+use Heystack\Subsystem\Core\Traits\HasEventService;
 use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
 use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
 use Heystack\Subsystem\Deals\Interfaces\HasDealHandlerInterface;
 use Heystack\Subsystem\Deals\Interfaces\HasPurchasableHolderInterface;
 use Heystack\Subsystem\Deals\Traits\HasDealHandler;
-use Heystack\Subsystem\Deals\Interfaces\QuantityOfPurchasablesInCartInterface;
 use Heystack\Subsystem\Deals\Result\FreeGift;
 use Heystack\Subsystem\Deals\Traits\HasPurchasableHolder;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
+use Heystack\Subsystem\Products\ProductHolder\ProductHolder;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  *
@@ -30,6 +36,7 @@ class QuantityOfPurchasablesInCart implements ConditionInterface, HasDealHandler
 
     protected $purchasableIdentifiers = array();
     protected $minimumQuantity;
+    protected $configuration;
 
     /**
      * @param PurchasableHolderInterface $purchasableHolder
@@ -67,6 +74,8 @@ class QuantityOfPurchasablesInCart implements ConditionInterface, HasDealHandler
             throw new \Exception('Quantity Of Purchasables In Cart Condition requires a minimum quantity to be configured');
 
         }
+
+        $this->configuration = $configuration;
 
 
         $this->purchasableHolder = $purchasableHolder;
@@ -110,7 +119,6 @@ class QuantityOfPurchasablesInCart implements ConditionInterface, HasDealHandler
             }
         }
 
-
         foreach ($purchasables as $purchasable) {
 
             $quantity += $purchasable->getQuantity();
@@ -125,6 +133,56 @@ class QuantityOfPurchasablesInCart implements ConditionInterface, HasDealHandler
         }
 
         return (int) floor($quantity / $this->minimumQuantity);
+    }
+
+    public function almostMet()
+    {
+        $currentCount = $this->met();
+        $purchasableHolder = $this->getPurchasableHolder();
+        $currentPurchasables = array();
+        $met = false;
+
+        foreach ($purchasableHolder->getPurchasables() as $purchasable) {
+
+            $identifier = (string) $purchasable->getIdentifier();
+            $currentPurchasables[$identifier] = $purchasable->getQuantity();
+
+        }
+
+        if ($purchasableHolder instanceof HasEventServiceInterface && $purchasableHolder instanceof HasStateServiceInterface) {
+
+            $state = new State(new NullBackend());
+            $dispatcher = new EventDispatcher();
+
+            $clonedPurchasableHolder = new ProductHolder($state, $dispatcher);
+            $clonedPurchasableHolder->setPurchasables($purchasableHolder->getPurchasables());
+
+            foreach ($clonedPurchasableHolder->getPurchasables() as $purchasable) {
+
+                $ident = (string) $purchasable->getIdentifier();
+
+                if ($currentPurchasables[$ident] != $purchasable->getFreeQuantity()) {
+                    $clonedPurchasableHolder->setPurchasable($purchasable, $currentPurchasables[$ident] - $purchasable->getFreeQuantity() + 1);
+                }
+
+            }
+
+            if ($this->met() > $currentCount) {
+
+                $met = true;
+
+            }
+
+        }
+
+        foreach ($currentPurchasables as $identifier => $quantity) {
+            $ident = new Identifier($identifier);
+            $purchaseable = $purchasableHolder->getPurchasable($ident);
+            $purchasableHolder->setPurchasable($purchaseable, $quantity);
+        }
+
+        return $met;
+
     }
 
     /**
