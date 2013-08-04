@@ -198,7 +198,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
         }
 
         if ($met) {
-            $this->conditionsMetCount = min($met);
+            $this->conditionsMetCount = max($met);
         }
 
         if ($dispatchEvents) {
