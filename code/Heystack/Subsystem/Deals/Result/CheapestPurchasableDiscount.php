@@ -9,13 +9,16 @@ use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
 use Heystack\Subsystem\Deals\Interfaces\DealPurchasableInterface;
 use Heystack\Subsystem\Deals\Interfaces\HasPurchasableHolderInterface;
 use Heystack\Subsystem\Deals\Interfaces\ResultInterface;
+use Heystack\Subsystem\Deals\Interfaces\HasDealHandlerInterface;
+use Heystack\Subsystem\Deals\Traits\HasDealHandler;
 use Heystack\Subsystem\Deals\Traits\HasPurchasableHolder;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class CheapestPurchasableDiscount implements ResultInterface, HasPurchasableHolderInterface
+class CheapestPurchasableDiscount implements ResultInterface, HasPurchasableHolderInterface, HasDealHandlerInterface
 {
+    use HasDealHandler;
     use HasPurchasableHolder;
 
     const RESULT_TYPE = 'CheapestPurchasableDiscount';
@@ -69,7 +72,9 @@ class CheapestPurchasableDiscount implements ResultInterface, HasPurchasableHold
 
     public static function getSubscribedEvents()
     {
-        return array();
+        return array(
+            Events::CONDITIONS_NOT_MET => 'onConditionsNotMet'
+        );
     }
 
     /**
@@ -90,7 +95,7 @@ class CheapestPurchasableDiscount implements ResultInterface, HasPurchasableHold
         /**
          * Reset the free count for this deal of all the purchasables
          */
-        $purchasables = $this->purchasableHolder->getPurchasables();
+        $purchasables = $this->getPurchasableHolder()->getPurchasables();
 
         if(is_array($purchasables) && count($purchasables)){
 
@@ -143,7 +148,7 @@ class CheapestPurchasableDiscount implements ResultInterface, HasPurchasableHold
 
             $freeQuantity = $purchasable->getFreeQuantity($dealHandler->getIdentifier());
 
-            if($freeQuantity != $countData['count']){
+            if($freeQuantity != $countData['count'] && (count($actionablePurchasables) > 1 ||  $purchasable->getQuantity() != 1)){
 
                 $purchasable->setFreeQuantity($dealHandler->getIdentifier(), $countData['count']);
 
@@ -154,6 +159,28 @@ class CheapestPurchasableDiscount implements ResultInterface, HasPurchasableHold
         }
 
         return $this->totalDiscount;
+    }
+
+    public function onConditionsNotMet(ConditionEvent $event)
+    {
+        $dealIdentifier = $this->getDealHandler()->getIdentifier();
+
+        if ($dealIdentifier->isMatch($event->getDeal()->getIdentifier())) {
+
+            if (($result = $this->dealHandler->getResult()) instanceof CheapestPurchasableDiscount) {
+
+                foreach ($this->getPurchasables() as $purchasable) {
+
+                    $purchasable->setFreeQuantity($dealIdentifier, 0);
+
+                }
+
+            }
+
+        }
+
+        // TODO: Does this need to do this?
+        $this->purchasableHolder->saveState();
     }
 
     /**
