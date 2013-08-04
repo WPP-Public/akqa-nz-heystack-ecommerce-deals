@@ -7,13 +7,17 @@ use Heystack\Subsystem\Deals\Events;
 use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
 use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
 use Heystack\Subsystem\Deals\Interfaces\DealPurchasableInterface;
+use Heystack\Subsystem\Deals\Interfaces\HasPurchasableHolderInterface;
 use Heystack\Subsystem\Deals\Interfaces\ResultInterface;
+use Heystack\Subsystem\Deals\Traits\HasPurchasableHolder;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class CheapestPurchasableDiscount implements ResultInterface
+class CheapestPurchasableDiscount implements ResultInterface, HasPurchasableHolderInterface
 {
+    use HasPurchasableHolder;
+
     const RESULT_TYPE = 'CheapestPurchasableDiscount';
     const PURCHASABLE_IDENTIFIER_STRINGS = 'purchasable_identifier_strings';
 
@@ -31,10 +35,6 @@ class CheapestPurchasableDiscount implements ResultInterface
      * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
      */
     protected $eventService;
-    /**
-     * @var \Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface
-     */
-    protected $purchasableHolder;
 
     public function __construct(
         EventDispatcherInterface $eventService,
@@ -65,6 +65,11 @@ class CheapestPurchasableDiscount implements ResultInterface
 
         }
 
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return array();
     }
 
     /**
@@ -101,7 +106,7 @@ class CheapestPurchasableDiscount implements ResultInterface
         }
 
 
-        $count = $dealHandler->getConditionsRecursivelyMetCount();
+        $count = $dealHandler->getConditionsMetCount();
 
         $actionablePurchasables = $this->getActionablePurchasables();
 

@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: glenn
- * Date: 5/07/13
- * Time: 12:22 PM
- * To change this template use File | Settings | File Templates.
- */
 
 namespace Heystack\Subsystem\Deals\Traits;
 
@@ -26,7 +19,7 @@ trait DealPurchasableTrait
     protected $freeQuantities = array();
 
     /**
-     * @param Identfier $dealIdentifier
+     * @param \Heystack\Subsystem\Core\Identifier\Identifier $dealIdentifier
      * @param int $quantity
      */
     public function setFreeQuantity(Identifier $dealIdentifier, $quantity)
@@ -35,7 +28,7 @@ trait DealPurchasableTrait
     }
 
     /**
-     * @param Identifier $dealIdentifier
+     * @param \Heystack\Subsystem\Core\Identifier\Identifier $dealIdentifier
      * @param int $quantity
      */
     public function addFreeQuantity(Identifier $dealIdentifier, $quantity = 1)
@@ -44,7 +37,7 @@ trait DealPurchasableTrait
     }
 
     /**
-     * @param Identifier $dealIdentifier
+     * @param \Heystack\Subsystem\Core\Identifier\Identifier $dealIdentifier
      * @param int $quantity
      */
     public function subtractFreeQuantity(Identifier $dealIdentifier, $quantity = 1)
@@ -53,7 +46,7 @@ trait DealPurchasableTrait
     }
 
     /**
-     * @param Identifier $dealIdentifier
+     * @param \Heystack\Subsystem\Core\Identifier\Identifier $dealIdentifier
      * @return bool
      */
     public function hasFreeItems(Identifier $dealIdentifier = null)
@@ -78,7 +71,7 @@ trait DealPurchasableTrait
     }
 
     /**
-     * @param Identifier $dealIdentifier
+     * @param \Heystack\Subsystem\Core\Identifier\Identifier $dealIdentifier
      * @return int
      */
     public function getFreeQuantity(Identifier $dealIdentifier = null)

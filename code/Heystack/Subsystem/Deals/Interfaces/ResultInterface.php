@@ -1,6 +1,7 @@
 <?php
 
 namespace Heystack\Subsystem\Deals\Interfaces;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  *
@@ -8,7 +9,7 @@ namespace Heystack\Subsystem\Deals\Interfaces;
  * @author Glenn Bautista <glenn@heyday.co.nz>
  * @package Ecommerce-Deals
  */
-interface ResultInterface
+interface ResultInterface extends EventSubscriberInterface
 {
     /**
      * Returns a short string that describes what the result does

@@ -38,7 +38,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     const TOTAL_KEY = 'total';
     /**
      * The conditions that need to be met for the deal
-     * @var array
+     * @var \Heystack\Subsystem\Deals\Interfaces\ConditionInterface[]
      */
     protected $conditions = array();
     /**
@@ -61,7 +61,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     /**
      * @var int the number of times the conditions were met more than once
      */
-    protected $conditionsRecursivelyMetCount;
+    protected $conditionsMetCount = 0;
     /**
      * @var
      */
@@ -103,6 +103,12 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     public function setResult(ResultInterface $result)
     {
         $this->result = $result;
+
+        if (method_exists($result, 'setDealHandler')) {
+
+            $result->setDealHandler($this);
+
+        }
     }
 
     /**
@@ -113,7 +119,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     {
         $this->conditions[$condition->getType()] = $condition;
 
-        if(method_exists($condition, 'setDealHandler')){
+        if (method_exists($condition, 'setDealHandler')) {
 
             $condition->setDealHandler($this);
 
@@ -158,44 +164,48 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
      *
      * The data array is generally used to check if the condition will be met given a certain set of data. (useful on the front end)
      *
-     * @param  array $data Optional data array that will be passed onto the conditions for checking whether the conditions have been met.
+     * @param bool $dispatchEvents
      * @return bool
      */
-    public function conditionsMet(array $data = null)
+    public function conditionsMet($dispatchEvents = true)
     {
-
-        $met = true;
-
-        $metCounts = array();
+        $met = array();
 
         foreach ($this->conditions as $condition) {
-            $metCount = $condition->met($data);
 
-            if (!$metCount) {
+            $metCount = $condition->met();
+
+            if ($metCount) {
+
+                if (is_int($metCount)) {
+
+                    $met[] = $metCount;
+
+                }
+
+            } else {
 
                 $met = false;
+
                 break;
 
             }
 
-            if ($metCount > 1) {
-
-                $metCounts[] = $metCount;
-
-            }
         }
 
         if ($met) {
-
-            $this->conditionsRecursivelyMetCount = empty($metCounts) ? 1 : min($metCounts);
-
-        } elseif (is_null($data)) {
-
-            $this->eventService->dispatch(Events::CONDITIONS_NOT_MET, new Event($this->getIdentifier()));
-
+            $this->conditionsMetCount = min($met);
         }
 
-        return $met;
+        if ($dispatchEvents) {
+            if ($met !== false) {
+                $this->eventService->dispatch(Events::CONDITIONS_MET, new ConditionEvent($this));
+            } else {
+                $this->eventService->dispatch(Events::CONDITIONS_NOT_MET, new ConditionEvent($this));
+            }
+        }
+
+        return $met !== false;
     }
 
     /**
@@ -282,9 +292,9 @@ DESCRIPTION;
      * Returns the number of times that each condition was met more than once
      * @return int
      */
-    public function getConditionsRecursivelyMetCount()
+    public function getConditionsMetCount()
     {
-        return $this->conditionsRecursivelyMetCount;
+        return $this->conditionsMetCount;
     }
 
     public function getResult()

@@ -4,6 +4,7 @@ namespace Heystack\Subsystem\Deals\Condition;
 
 use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
 use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
+use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
 
 /**
  *
@@ -63,6 +64,8 @@ class Time implements ConditionInterface
 
         }
 
+        $this->currentTime = time();
+
     }
     /**
      * @return string that indicates the type of condition this class is implementing
@@ -72,30 +75,23 @@ class Time implements ConditionInterface
         return self::CONDITION_TYPE;
     }
     /**
-     * @param array $data
      * @return int
      */
-    public function met(array $data = null)
+    public function met()
     {
-        if (is_array($data) && isset($data[self::CONDITION_TYPE])) {
-            $this->currentTime = $data[self::CONDITION_TYPE];
-        } else {
-            $this->currentTime = time();
-        }
-
         if ($this->startTime && $this->endTime) {
-            return ($this->currentTime > $this->startTime) && ($this->currentTime < $this->endTime) ? 1 : 0;
+            return ($this->currentTime > $this->startTime) && ($this->currentTime < $this->endTime);
         }
 
         if ($this->startTime && !$this->endTime) {
-            return ($this->currentTime > $this->startTime) ? 1 : 0;
+            return $this->currentTime > $this->startTime;
         }
 
         if ($this->endTime && !$this->startTime) {
-            return ($this->currentTime < $this->endTime) ? 1 : 0;
+            return $this->currentTime < $this->endTime;
         }
 
-        return 0;
+        return false;
     }
     /**
      * @return string
@@ -112,5 +108,21 @@ class Time implements ConditionInterface
         }
 
         return implode('; ', $description);
+    }
+
+    /**
+     * @param mixed $currentTime
+     */
+    public function setCurrentTime($currentTime)
+    {
+        $this->currentTime = $currentTime;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCurrentTime()
+    {
+        return $this->currentTime;
     }
 }

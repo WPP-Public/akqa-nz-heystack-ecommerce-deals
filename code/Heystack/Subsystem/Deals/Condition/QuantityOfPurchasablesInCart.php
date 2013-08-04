@@ -5,9 +5,12 @@ namespace Heystack\Subsystem\Deals\Condition;
 use Heystack\Subsystem\Core\Identifier\Identifier;
 use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
 use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
-use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
+use Heystack\Subsystem\Deals\Interfaces\HasDealHandlerInterface;
+use Heystack\Subsystem\Deals\Interfaces\HasPurchasableHolderInterface;
+use Heystack\Subsystem\Deals\Traits\HasDealHandler;
 use Heystack\Subsystem\Deals\Interfaces\QuantityOfPurchasablesInCartInterface;
 use Heystack\Subsystem\Deals\Result\FreeGift;
+use Heystack\Subsystem\Deals\Traits\HasPurchasableHolder;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 
 /**
@@ -16,24 +19,17 @@ use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterfa
  * @author Glenn Bautista <glenn@heyday.co.nz>
  * @package Ecommerce-Deals
  */
-class QuantityOfPurchasablesInCart implements ConditionInterface
+class QuantityOfPurchasablesInCart implements ConditionInterface, HasDealHandlerInterface, HasPurchasableHolderInterface
 {
+    use HasDealHandler;
+    use HasPurchasableHolder;
+
     const CONDITION_TYPE = 'QuantityOfPurchasablesInCart';
     const PURCHASABLE_IDENTIFIERS = 'purchasables_identifiers';
     const MINIMUM_QUANTITY_KEY = 'minimum_quantity';
 
     protected $purchasableIdentifiers = array();
     protected $minimumQuantity;
-
-    /**
-     * @var \Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface
-     */
-    protected $purchasableHolder;
-
-    /**
-     * @var \Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface
-     */
-    protected $dealHandler;
 
     /**
      * @param PurchasableHolderInterface $purchasableHolder
@@ -85,81 +81,51 @@ class QuantityOfPurchasablesInCart implements ConditionInterface
         return self::CONDITION_TYPE;
     }
 
-    public function setDealHandler(DealHandlerInterface $dealHandler)
-    {
-        $this->dealHandler = $dealHandler;
-    }
-
     /**
      * Determines whether this condition has been met based on the configuration of the condition and the state of the purchasable holder.
      *
      * If the $data parameter is present then disregard the contents of the cart and determine the if the condition has been
      * met based on the contents of the data array.
      *
-     * @param array $data
      * @return bool
      */
-    public function met(array $data = null)
+    public function met()
     {
         $quantity = 0;
 
-        if (isset($data[self::PURCHASABLE_IDENTIFIERS]) && count($data[self::PURCHASABLE_IDENTIFIERS])) {
+        $purchasables = array();
 
-            foreach ($data[self::PURCHASABLE_IDENTIFIERS] as $identifier => $presetQuantity) {
+        foreach ($this->purchasableIdentifiers as $purchasableIdentifier) {
 
-                if (!$identifier instanceof Identifier) {
+            $retrievedPurchasables = $this->purchasableHolder->getPurchasablesByPrimaryIdentifier(
+                $purchasableIdentifier
+            );
 
-                    $identifier = new Identifier($identifier);
+            if (is_array($retrievedPurchasables) && count($retrievedPurchasables)) {
 
-                }
-
-                foreach ($this->purchasableIdentifiers as $configuredIdentifier) {
-
-                    if ($configuredIdentifier->isMatch($identifier)) {
-
-                        $quantity += $presetQuantity;
-
-                    }
-
-                }
-
-            }
-
-        } else {
-
-            $purchasables = array();
-
-            foreach ($this->purchasableIdentifiers as $purchasableIdentifier) {
-
-                $retrievedPurchasables = $this->purchasableHolder->getPurchasablesByPrimaryIdentifier(
-                    $purchasableIdentifier
+                $purchasables = array_merge(
+                    $purchasables,
+                    $retrievedPurchasables
                 );
-
-                if (is_array($retrievedPurchasables) && count($retrievedPurchasables)) {
-
-                    $purchasables = array_merge(
-                        $purchasables,
-                        $retrievedPurchasables
-                    );
-                }
             }
+        }
 
 
-            foreach ($purchasables as $purchasable) {
+        foreach ($purchasables as $purchasable) {
 
-                $quantity += $purchasable->getQuantity();
+            $quantity += $purchasable->getQuantity();
 
-                if ($this->dealHandler->getResult() instanceof FreeGift) {
+            // TODO: Refactor this coupling
+            if ($this->dealHandler->getResult() instanceof FreeGift) {
+                error_log($purchasable->getIdentifier() . ' ' . $purchasable->getFreeQuantity());
 
-                    $quantity -= $purchasable->getFreeQuantity();
-
-                }
+                $quantity -= $purchasable->getFreeQuantity();
 
             }
 
         }
 
-        return floor($quantity / $this->minimumQuantity);
+        return (int) floor($quantity / $this->minimumQuantity);
     }
 
     /**

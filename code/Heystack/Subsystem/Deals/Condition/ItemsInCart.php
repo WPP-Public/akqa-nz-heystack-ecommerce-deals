@@ -4,6 +4,8 @@ namespace Heystack\Subsystem\Deals\Condition;
 
 use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
 use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
+use Heystack\Subsystem\Deals\Interfaces\HasPurchasableHolderInterface;
+use Heystack\Subsystem\Deals\Traits\HasPurchasableHolder;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 
 /**
@@ -12,8 +14,10 @@ use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterfa
  * @author Glenn Bautista <glenn@heyday.co.nz>
  * @package Ecommerce-Deals
  */
-class ItemsInCart implements ConditionInterface
+class ItemsInCart implements ConditionInterface, HasPurchasableHolderInterface
 {
+    use HasPurchasableHolder;
+
     const CONDITION_TYPE = 'ItemsInCart';
     const ITEM_COUNT_KEY = 'item_count';
     const COUNT_BY_PURCHASABLE_QUANTITY_KEY = 'count_by_purchasable';
@@ -21,12 +25,6 @@ class ItemsInCart implements ConditionInterface
     protected $itemCount;
 
     protected $countByPurchasableQuantity;
-
-    /**
-     * @var \Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface
-     */
-    protected $purchasableHolder;
-
 
     /**
      * @param PurchasableHolderInterface $purchasableHolder
@@ -72,20 +70,15 @@ class ItemsInCart implements ConditionInterface
     /**
      * Return a boolean indicating whether the condition has been met
      *
-     * @param  array $data If present this is the data that will be used to determine whether the condition has been met
      * @return int
      */
-    public function met(array $data = null)
+    public function met()
     {
         $count = 0;
 
         $purchasables = $this->purchasableHolder->getPurchasables();
 
-        if (is_array($data) && isset($data[self::ITEM_COUNT_KEY])) {
-
-            $count = $data[self::ITEM_COUNT_KEY];
-
-        } elseif ($this->countByPurchasableQuantity) {
+        if ($this->countByPurchasableQuantity) {
 
             foreach ($purchasables as $purchasable) {
 
@@ -99,7 +92,7 @@ class ItemsInCart implements ConditionInterface
 
         }
 
-        return $count >= $this->itemCount ? 1 : 0;
+        return $count >= $this->itemCount;
     }
 
     /**
@@ -114,8 +107,6 @@ class ItemsInCart implements ConditionInterface
         }
 
         return 'Must have a total of ' . $this->itemCount . ' individual products in the cart';
-
-
     }
 
 }

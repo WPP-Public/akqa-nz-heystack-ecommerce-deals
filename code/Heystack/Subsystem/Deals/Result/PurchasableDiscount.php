@@ -6,7 +6,9 @@ use Heystack\Subsystem\Core\Identifier\Identifier;
 use Heystack\Subsystem\Deals\Events;
 use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
 use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
+use Heystack\Subsystem\Deals\Interfaces\HasPurchasableHolderInterface;
 use Heystack\Subsystem\Deals\Interfaces\ResultInterface;
+use Heystack\Subsystem\Deals\Traits\HasPurchasableHolder;
 use Heystack\Subsystem\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableInterface;
@@ -18,8 +20,10 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * @author Glenn Bautista <glenn@heyday.co.nz>
  * @package Ecommerce-Deals
  */
-class PurchasableDiscount implements ResultInterface
+class PurchasableDiscount implements ResultInterface, HasPurchasableHolderInterface
 {
+    use HasPurchasableHolder;
+
     const RESULT_TYPE = 'PurchasableDiscount';
     const PURCHASABLE_DISCOUNT_AMOUNTS = 'purchasable_discount_amounts';
     const PURCHASABLE_DISCOUNT_PERCENTAGE = 'purchasable_discount_percentage';
@@ -41,10 +45,6 @@ class PurchasableDiscount implements ResultInterface
      * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
      */
     protected $eventService;
-    /**
-     * @var \Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface
-     */
-    protected $purchasableHolder;
     /**
      * @var \Heystack\Subsystem\Ecommerce\Currency\Interfaces\CurrencyServiceInterface
      */
@@ -130,6 +130,11 @@ class PurchasableDiscount implements ResultInterface
             throw new \Exception('Purchasable Discount Result requires a purchasable identifier string configuration');
 
         }
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return array();
     }
 
     /**

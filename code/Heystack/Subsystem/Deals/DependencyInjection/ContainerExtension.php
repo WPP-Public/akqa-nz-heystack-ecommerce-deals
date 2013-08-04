@@ -155,6 +155,7 @@ class ContainerExtension extends Extension
 
         $resultDefinition = new DefinitionDecorator('deals.result.' . strtolower($deal['result']['type']));
         $resultDefinition->addArgument(new Reference($resultConfigurationID));
+        $resultDefinition->addTag(CoreServices::EVENT_DISPATCHER . '.subscriber');
 
         //Set the result definition on the container
         $resultID = "deals.deal.$dealId.result";
@@ -167,6 +168,8 @@ class ContainerExtension extends Extension
                 new Reference($resultID)
             )
         );
+
+
     }
     /**
      * @param  ContainerBuilder $container

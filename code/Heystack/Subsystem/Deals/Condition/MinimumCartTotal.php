@@ -3,11 +3,15 @@
 namespace Heystack\Subsystem\Deals\Condition;
 
 
+use Heystack\Subsystem\Deals\Interfaces\HasDealHandlerInterface;
+use Heystack\Subsystem\Deals\Interfaces\HasPurchasableHolderInterface;
+use Heystack\Subsystem\Deals\Traits\HasDealHandler;
 use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
 use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
+use Heystack\Subsystem\Deals\Result\FreeGift;
+use Heystack\Subsystem\Deals\Traits\HasPurchasableHolder;
 use Heystack\Subsystem\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
-use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\type;
 
 /**
  *
@@ -15,16 +19,16 @@ use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\type;
  * @author Glenn Bautista <glenn@heyday.co.nz>
  * @package Ecommerce-Deals
  */
-class MinimumCartTotal implements ConditionInterface
+class MinimumCartTotal implements ConditionInterface, HasDealHandlerInterface, HasPurchasableHolderInterface
 {
+    use HasDealHandler;
+    use HasPurchasableHolder;
+
     const CONDITION_TYPE = 'MinimumCartTotal';
     const AMOUNTS_KEY = 'amounts';
 
     protected $amounts;
-    /**
-     * @var \Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface
-     */
-    protected $purchasableHolder;
+
     /**
      * @var \Heystack\Subsystem\Ecommerce\Currency\Interfaces\CurrencyServiceInterface
      */
@@ -71,48 +75,50 @@ class MinimumCartTotal implements ConditionInterface
     /**
      * Return a boolean indicating whether the condition has been met
      *
-     * @param  array $data If present this is the data that will be used to determine whether the condition has been met
      * @return int
      */
-    public function met(array $data = null)
+    public function met()
     {
         $activeCurrencyCode = $this->currencyService->getActiveCurrencyCode();
 
-        if (is_array($data) && isset($data[self::AMOUNTS_KEY]) && is_array($data[self::AMOUNTS_KEY])) {
+        $total = $this->purchasableHolder->getTotal();
 
-            $total = $data[self::AMOUNTS_KEY][$activeCurrencyCode];
+        $discountedPurchasables = array();
 
-        } else {
+        $purchasables = $this->purchasableHolder->getPurchasables();
+        $result = $this->dealHandler->getResult();
 
-            $total =  $this->purchasableHolder->getTotal();
+        foreach ($purchasables as $purchasable){
 
-            $discountedPurchasables = array();
+            if ($purchasable->hasFreeItems()){
+                $discountedPurchasables[] = $purchasable;
+            }
 
-            $purchasables = $this->purchasableHolder->getPurchasables();
+        }
 
-            foreach($purchasables as $purchasable){
+        if ($result instanceof FreeGift) {
 
-                if($purchasable->hasFreeItems()){
-                    $discountedPurchasables = $purchasable;
-                }
+            if ($purchasable = $this->purchasableHolder->getPurchasable($result->getPurchasable()->getIdentifier())) {
+
+                $total -= $purchasable->getUnitPrice();
 
             }
 
-            if(count($discountedPurchasables)) foreach($discountedPurchasables as $purchasable) {
+        }
 
-                $total -= $purchasable->getFreeQuantity() * $purchasable->getUnitPrice();
+        if (count($discountedPurchasables)) foreach($discountedPurchasables as $purchasable) {
 
-            }
+            $total -= $purchasable->getFreeQuantity() * $purchasable->getUnitPrice();
 
         }
 
         if (isset($this->amounts[$activeCurrencyCode]) && $total >= $this->amounts[$activeCurrencyCode]) {
 
-            return 1;
+            return true;
 
         }
 
-        return 0;
+        return false;
     }
 
     /**

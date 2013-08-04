@@ -13,10 +13,9 @@ interface ConditionInterface
     /**
      * Return a boolean indicating whether the condition has been met
      *
-     * @param  array $data If present this is the data that will be used to determine whether the condition has been met
      * @return boolean
      */
-    public function met(array $data = null);
+    public function met();
     /**
      * Returns a short string that describes what the condition does
      * @return string

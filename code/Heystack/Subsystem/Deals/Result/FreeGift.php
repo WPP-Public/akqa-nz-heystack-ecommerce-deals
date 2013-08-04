@@ -4,14 +4,22 @@ namespace Heystack\Subsystem\Deals\Result;
 
 use Heystack\Subsystem\Core\DataObjectHandler\DataObjectHandlerInterface;
 use Heystack\Subsystem\Core\Identifier\Identifier;
+use Heystack\Subsystem\Core\Interfaces\HasEventServiceInterface;
 use Heystack\Subsystem\Core\State\State;
+use Heystack\Subsystem\Deals\ConditionEvent;
+use Heystack\Subsystem\Deals\Events;
 use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
 use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
 use Heystack\Subsystem\Deals\Interfaces\DealPurchasableInterface;
-use Heystack\Subsystem\Deals\Interfaces\PurchasableConditionInterface;
+use Heystack\Subsystem\Deals\Interfaces\HasDealHandlerInterface;
+use Heystack\Subsystem\Deals\Interfaces\HasPurchasableHolderInterface;
 use Heystack\Subsystem\Deals\Interfaces\ResultInterface;
+use Heystack\Subsystem\Deals\Traits\HasDealHandler;
+use Heystack\Subsystem\Deals\Traits\HasPurchasableHolder;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  *
@@ -19,8 +27,11 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * @author     Glenn Bautista <glenn@heyday.co.nz>
  * @package    Ecommerce-Deals
  */
-class FreeGift implements ResultInterface
+class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasableHolderInterface
 {
+    use HasDealHandler;
+    use HasPurchasableHolder;
+
     const RESULT_TYPE = 'FreeGift';
     const PURCHASABLE_CLASS = 'purchasable_class';
     const PURCHASABLE_ID = 'purchasable_id';
@@ -29,10 +40,6 @@ class FreeGift implements ResultInterface
      * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
      */
     protected $eventService;
-    /**
-     * @var \Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface
-     */
-    protected $purchasableHolder;
     /**
      * @var \Heystack\Subsystem\Core\State\State
      */
@@ -88,6 +95,14 @@ class FreeGift implements ResultInterface
         }
     }
 
+    public static function getSubscribedEvents()
+    {
+        return array(
+            Events::CONDITIONS_NOT_MET => 'onConditionsNotMet',
+            Events::CONDITIONS_MET     => 'onConditionsMet'
+        );
+    }
+
     /**
      * @return string
      */
@@ -103,30 +118,68 @@ class FreeGift implements ResultInterface
     public function process(DealHandlerInterface $dealHandler)
     {
         $dealIdentifier = $dealHandler->getIdentifier();
-
-        $quantity = $dealHandler->getConditionsRecursivelyMetCount();
-
+        $conditionsMetCount = $dealHandler->getConditionsMetCount();
         $purchasable = $this->getPurchasable();
 
-        $processedQuantity = $purchasable->getFreeQuantity($dealIdentifier);
+        // make sure there is an appropriate number of the product in the cart
+        $this->purchasableHolder->setPurchasable(
+            $purchasable,
+            max( // use max to ensure there are at least enough in the cart to meet the conditionsMet requirement
+                $purchasable->getQuantity(),
+                $conditionsMetCount
+            )
+        );
 
-        if ($processedQuantity < $quantity) {
+        $purchasable->setFreeQuantity($dealIdentifier, $conditionsMetCount);
 
-            $purchasable->setFreeQuantity($dealIdentifier, $quantity);
+        return $purchasable->getUnitPrice() * $conditionsMetCount;
+    }
 
-            $this->purchasableHolder->addPurchasable($purchasable, $quantity - $processedQuantity);
+    public function onConditionsMet(ConditionEvent $event)
+    {
 
-        }else if($processedQuantity > $quantity) {
+//        $purchasable = $this->getPurchasable();
+//        $purchasableHolder = clone $this->purchasableHolder;
+//        if ($purchasableHolder instanceof HasEventServiceInterface) {
+//            $purchasableHolder->setEventService(new EventDispatcher());
+//        }
+//        $purchasableHolder->setPurchasable(
+//            $purchasable,
+//            max( // ensure we don't set things to -1
+//                $purchasable->getQuantity() + 1,
+//                0
+//            )
+//        );
+//
+//        foreach ($event->getDeal()->getConditions() as $condition) {
+//            if ($condition instanceof HasPurchasableHolderInterface) {
+//                $condition = clone $condition;
+//                $condition->setPurchasableHolder($purchasableHolder);
+//                if (!$condition->met()) {
+//                    error_log('add');
+//                    //$this->purchasableHolder->addPurchasable($purchasable);
+//                    break;
+//                }
+//            }
+//        }
+    }
 
-            $purchasable->setFreeQuantity($dealIdentifier, $quantity);
+    public function onConditionsNotMet(ConditionEvent $event)
+    {
+        $dealIdentifier = $this->dealHandler->getIdentifier();
 
-            $subtract = $processedQuantity - $quantity;
+        if ($dealIdentifier->isMatch($event->getDeal()->getIdentifier())) {
 
-            $this->purchasableHolder->setPurchasable($purchasable, $purchasable->getQuantity() - $subtract);
+            if (($result = $this->dealHandler->getResult()) instanceof FreeGift) {
+
+                $result->getPurchasable()->setFreeQuantity($dealIdentifier, 0);
+
+            }
 
         }
 
-        return $purchasable->getUnitPrice() * $quantity;
+        // TODO: Does this need to do this?
+        $this->purchasableHolder->saveState();
     }
 
     /**
@@ -134,7 +187,7 @@ class FreeGift implements ResultInterface
      *
      * @return \Heystack\Subsystem\Core\DataObjectHandler\DataObject|DealPurchasableInterface
      */
-    protected function getPurchasable()
+    public function getPurchasable()
     {
         $purchasable = $this->purchasableHolder->getPurchasable(
             new Identifier($this->purchasableClass . $this->purchasableID)

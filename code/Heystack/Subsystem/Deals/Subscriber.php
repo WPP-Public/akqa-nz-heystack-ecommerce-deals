@@ -12,9 +12,8 @@ namespace Heystack\Subsystem\Deals;
 
 use Heystack\Subsystem\Core\Storage\Backends\SilverStripeOrm\Backend;
 use Heystack\Subsystem\Core\Storage\Storage;
-use Heystack\Subsystem\Deals\Interfaces\DealPurchasableInterface;
+use Heystack\Subsystem\Deals\Result\FreeGift;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
-use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -82,11 +81,10 @@ class Subscriber implements EventSubscriberInterface
         return array(
             CurrencyEvents::CHANGED                                 => array('onUpdateTotal', 0),
             LocaleEvents::CHANGED                                   => array('onUpdateTotal', 0),
-            ProductHolderEvents::PURCHASABLE_ADDED                            => array('onUpdateTotal', 0),
-            ProductHolderEvents::PURCHASABLE_CHANGED                            => array('onUpdateTotal', 0),
-            ProductHolderEvents::PURCHASABLE_REMOVED                            => array('onUpdateTotal', 0),
+            ProductHolderEvents::PURCHASABLE_ADDED                  => array('onUpdateTotal', 0),
+            ProductHolderEvents::PURCHASABLE_CHANGED                => array('onUpdateTotal', 0),
+            ProductHolderEvents::PURCHASABLE_REMOVED                => array('onUpdateTotal', 0),
             Events::TOTAL_UPDATED                                   => array('onTotalUpdated', 0),
-            Events::CONDITIONS_NOT_MET                              => array('onConditionsNotMet', 0),
             Backend::IDENTIFIER . '.' . TransactionEvents::STORED   => array('onTransactionStored', 10)
         );
     }
@@ -106,32 +104,6 @@ class Subscriber implements EventSubscriberInterface
     public function onTotalUpdated()
     {
         $this->eventService->dispatch(TransactionEvents::UPDATE);
-    }
-
-    public function onConditionsNotMet(Event $event)
-    {
-        $purchasables = $this->purchasableHolder->getPurchasables();
-
-        if(is_array($purchasables) && count($purchasables)){
-
-            foreach($purchasables as $purchasable){
-
-                if($purchasable instanceof DealPurchasableInterface){
-
-                    $dealIdentifier = $this->dealHandler->getIdentifier();
-
-                    if ($dealIdentifier == $event->getIdentifier()) {
-
-                        $purchasable->setFreeQuantity($dealIdentifier, 0);
-
-                    }
-
-                }
-            }
-
-        }
-
-        $this->purchasableHolder->saveState();
     }
 
     /**

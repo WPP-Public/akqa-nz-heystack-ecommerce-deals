@@ -6,7 +6,9 @@ use Heystack\Subsystem\Core\Identifier\Identifier;
 use Heystack\Subsystem\Deals\Events;
 use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
 use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
+use Heystack\Subsystem\Deals\Interfaces\HasPurchasableHolderInterface;
 use Heystack\Subsystem\Deals\Interfaces\ResultInterface;
+use Heystack\Subsystem\Deals\Traits\HasPurchasableHolder;
 use Heystack\Subsystem\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -17,8 +19,10 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * @author Glenn Bautista <glenn@heyday.co.nz>
  * @package Ecommerce-Deals
  */
-class CartDiscount implements ResultInterface
+class CartDiscount implements ResultInterface, HasPurchasableHolderInterface
 {
+    use HasPurchasableHolder;
+
     const RESULT_TYPE = 'CartDiscount';
     const CART_DISCOUNT_AMOUNTS = 'cart_discount_amounts';
     const CART_DISCOUNT_PERCENTAGE = 'cart_discount_percentage';
@@ -30,10 +34,7 @@ class CartDiscount implements ResultInterface
      * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
      */
     protected $eventService;
-    /**
-     * @var \Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface
-     */
-    protected $purchasableHolder;
+
     /**
      * @var \Heystack\Subsystem\Ecommerce\Currency\Interfaces\CurrencyServiceInterface
      */
@@ -95,6 +96,11 @@ class CartDiscount implements ResultInterface
             $discountConfigured = self::CART_DISCOUNT_PERCENTAGE;
 
         }
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return array();
     }
 
     /**

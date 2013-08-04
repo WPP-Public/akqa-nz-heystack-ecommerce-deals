@@ -44,7 +44,7 @@ interface DealHandlerInterface extends TransactionModifierInterface
      * Returns the number of times that each condition was met more than once
      * @return int
      */
-    public function getConditionsRecursivelyMetCount();
+    public function getConditionsMetCount();
 
     /**
      * @return \Heystack\Subsystem\Deals\Interfaces\ResultInterface
