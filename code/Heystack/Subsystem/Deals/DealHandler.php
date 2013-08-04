@@ -181,6 +181,10 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
 
                     $met[] = $metCount;
 
+                } else {
+
+                    $met[] = 1;
+
                 }
 
             } else {

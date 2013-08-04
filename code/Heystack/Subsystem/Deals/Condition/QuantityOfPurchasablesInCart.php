@@ -117,7 +117,6 @@ class QuantityOfPurchasablesInCart implements ConditionInterface, HasDealHandler
 
             // TODO: Refactor this coupling
             if ($this->dealHandler->getResult() instanceof FreeGift) {
-                error_log($purchasable->getIdentifier() . ' ' . $purchasable->getFreeQuantity());
 
                 $quantity -= $purchasable->getFreeQuantity();
 
