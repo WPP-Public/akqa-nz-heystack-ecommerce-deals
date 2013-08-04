@@ -121,14 +121,26 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
         $conditionsMetCount = $dealHandler->getConditionsMetCount();
         $purchasable = $this->getPurchasable();
 
-        // make sure there is an appropriate number of the product in the cart
-        $this->purchasableHolder->setPurchasable(
-            $purchasable,
-            max( // use max to ensure there are at least enough in the cart to meet the conditionsMet requirement
-                $purchasable->getQuantity(),
-                $conditionsMetCount
-            )
-        );
+        if ($purchasable->getQuantity() == 1 && count($this->getPurchasableHolder()->getPurchasables()) == 1) {
+
+            // make sure there is an appropriate number of the product in the cart
+            $this->purchasableHolder->setPurchasable(
+                $purchasable,
+                $purchasable->getQuantity() + 1
+            );
+
+        } else {
+
+            // make sure there is an appropriate number of the product in the cart
+            $this->purchasableHolder->setPurchasable(
+                $purchasable,
+                max( // use max to ensure there are at least enough in the cart to meet the conditionsMet requirement
+                    $purchasable->getQuantity(),
+                    $conditionsMetCount
+                )
+            );
+
+        }
 
         $purchasable->setFreeQuantity($dealIdentifier, $conditionsMetCount);
 
@@ -138,30 +150,6 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
     public function onConditionsMet(ConditionEvent $event)
     {
 
-//        $purchasable = $this->getPurchasable();
-//        $purchasableHolder = clone $this->purchasableHolder;
-//        if ($purchasableHolder instanceof HasEventServiceInterface) {
-//            $purchasableHolder->setEventService(new EventDispatcher());
-//        }
-//        $purchasableHolder->setPurchasable(
-//            $purchasable,
-//            max( // ensure we don't set things to -1
-//                $purchasable->getQuantity() + 1,
-//                0
-//            )
-//        );
-//
-//        foreach ($event->getDeal()->getConditions() as $condition) {
-//            if ($condition instanceof HasPurchasableHolderInterface) {
-//                $condition = clone $condition;
-//                $condition->setPurchasableHolder($purchasableHolder);
-//                if (!$condition->met()) {
-//                    error_log('add');
-//                    //$this->purchasableHolder->addPurchasable($purchasable);
-//                    break;
-//                }
-//            }
-//        }
     }
 
     public function onConditionsNotMet(ConditionEvent $event)
@@ -177,6 +165,9 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
             }
 
         }
+
+
+        error_log("conditions not met");
 
         // TODO: Does this need to do this?
         $this->purchasableHolder->saveState();
