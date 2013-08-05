@@ -116,7 +116,7 @@ class QuantityOfPurchasablesInCart implements ConditionInterface, ConditionAlmos
         }
 
         if ($purchasables) {
-            $purchasables = count($purchasables) > 1 ? call_user_func('array_merge', $purchasables) : reset($purchasables);
+            $purchasables = call_user_func_array('array_merge', $purchasables);
         }
 
         foreach ($purchasables as $purchasable) {
