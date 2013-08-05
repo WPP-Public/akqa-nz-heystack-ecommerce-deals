@@ -121,30 +121,35 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
         $conditionsMetCount = $dealHandler->getConditionsMetCount();
         $purchasable = $this->getPurchasable();
 
-        if ($purchasable->getQuantity() == 1 && count($this->getPurchasableHolder()->getPurchasables()) == 1) {
+        if ($purchasable) {
+            if ($purchasable->getQuantity() == 1 && count($this->getPurchasableHolder()->getPurchasables()) == 1) {
 
-            // make sure there is an appropriate number of the product in the cart
-            $this->purchasableHolder->setPurchasable(
-                $purchasable,
-                $purchasable->getQuantity() + 1
-            );
+                // make sure there is an appropriate number of the product in the cart
+                $this->purchasableHolder->setPurchasable(
+                    $purchasable,
+                    $purchasable->getQuantity() + 1
+                );
 
-        } else {
+            } else {
 
-            // make sure there is an appropriate number of the product in the cart
-            $this->purchasableHolder->setPurchasable(
-                $purchasable,
-                max( // use max to ensure there are at least enough in the cart to meet the conditionsMet requirement
-                    $purchasable->getQuantity(),
-                    $conditionsMetCount
-                )
-            );
+                // make sure there is an appropriate number of the product in the cart
+                $this->purchasableHolder->setPurchasable(
+                    $purchasable,
+                    max( // use max to ensure there are at least enough in the cart to meet the conditionsMet requirement
+                        $purchasable->getQuantity(),
+                        $conditionsMetCount
+                    )
+                );
 
+            }
+
+            $purchasable->setFreeQuantity($dealIdentifier, $conditionsMetCount);
+
+            return $purchasable->getUnitPrice() * $conditionsMetCount;
         }
 
-        $purchasable->setFreeQuantity($dealIdentifier, $conditionsMetCount);
+        return 0;
 
-        return $purchasable->getUnitPrice() * $conditionsMetCount;
     }
 
     public function onConditionsMet(ConditionEvent $event)
@@ -163,7 +168,7 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
                 if ($result->getPurchasable()) {
 
                     $result->getPurchasable()->setFreeQuantity($dealIdentifier, 0);
-                    
+
                 }
 
             }
