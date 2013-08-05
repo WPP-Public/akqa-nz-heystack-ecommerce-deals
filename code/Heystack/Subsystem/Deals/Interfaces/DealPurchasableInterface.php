@@ -26,7 +26,7 @@ interface DealPurchasableInterface extends PurchasableInterface
     public function addFreeQuantity(Identifier $dealIdentifier, $quantity = 1);
 
     /**
-     * @param \Heystack\Subsystem\Core\Identifier\Identifier $dealIdentfier
+     * @param Identifier $dealIdentifier
      * @param int $quantity
      */
     public function subtractFreeQuantity(Identifier $dealIdentifier, $quantity = 1);

@@ -8,8 +8,10 @@ use Heystack\Subsystem\Core\State\StateableInterface;
 use Heystack\Subsystem\Core\Storage\Backends\SilverStripeOrm\Backend;
 use Heystack\Subsystem\Core\Storage\StorableInterface;
 use Heystack\Subsystem\Core\Storage\Traits\ParentReferenceTrait;
+use Heystack\Subsystem\Deals\Events\ConditionEvent;
 use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
 use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
+use Heystack\Subsystem\Deals\Interfaces\HasDealHandlerInterface;
 use Heystack\Subsystem\Deals\Interfaces\ResultInterface;
 use Heystack\Subsystem\Ecommerce\Transaction\Traits\TransactionModifierSerializeTrait;
 use Heystack\Subsystem\Ecommerce\Transaction\Traits\TransactionModifierStateTrait;
@@ -104,7 +106,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     {
         $this->result = $result;
 
-        if (method_exists($result, 'setDealHandler')) {
+        if ($result instanceof HasDealHandlerInterface) {
 
             $result->setDealHandler($this);
 
@@ -119,7 +121,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     {
         $this->conditions[$condition->getType()] = $condition;
 
-        if (method_exists($condition, 'setDealHandler')) {
+        if ($condition instanceof HasDealHandlerInterface) {
 
             $condition->setDealHandler($this);
 

@@ -8,17 +8,17 @@
 /**
  * Storage namespace
  */
-namespace Heystack\Subsystem\Deals;
+namespace Heystack\Subsystem\Deals\Events;
 
 use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
-use Symfony\Component\EventDispatcher\Event as SymfonyEvent;
+use Symfony\Component\EventDispatcher\Event;
 
 /**
  *
  * @author  Stevie Mayhew <stevie@heyday.co.nz>
  * @package Heystack
  */
-class ConditionEvent extends SymfonyEvent
+class ConditionEvent extends Event
 {
     /**
      * @var DealHandlerInterface
@@ -39,5 +39,13 @@ class ConditionEvent extends SymfonyEvent
     public function getDeal()
     {
         return $this->deal;
+    }
+
+    /**
+     * @return \Heystack\Subsystem\Core\EventDispatcher
+     */
+    public function getDispatcher()
+    {
+        return parent::getDispatcher();
     }
 }

@@ -4,20 +4,17 @@ namespace Heystack\Subsystem\Deals\Condition;
 
 use Heystack\Subsystem\Core\Identifier\Identifier;
 use Heystack\Subsystem\Core\Interfaces\HasEventServiceInterface;
-use Heystack\Subsystem\Core\Interfaces\HasStateServiceInterface;
-use Heystack\Subsystem\Core\State\Backends\NullBackend;
-use Heystack\Subsystem\Core\State\State;
 use Heystack\Subsystem\Core\Traits\HasEventService;
 use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
 use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
 use Heystack\Subsystem\Deals\Interfaces\HasDealHandlerInterface;
 use Heystack\Subsystem\Deals\Interfaces\HasPurchasableHolderInterface;
-use Heystack\Subsystem\Deals\Traits\HasDealHandler;
+use Heystack\Subsystem\Deals\Interfaces\NonPurchasableInterface;
 use Heystack\Subsystem\Deals\Result\FreeGift;
+use Heystack\Subsystem\Deals\Traits\HasDealHandler;
 use Heystack\Subsystem\Deals\Traits\HasPurchasableHolder;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 use Heystack\Subsystem\Products\ProductHolder\ProductHolder;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  *
@@ -106,17 +103,18 @@ class QuantityOfPurchasablesInCart implements ConditionInterface, HasDealHandler
 
         foreach ($this->purchasableIdentifiers as $purchasableIdentifier) {
 
-            $retrievedPurchasables = $this->purchasableHolder->getPurchasablesByPrimaryIdentifier(
+            $items = $this->purchasableHolder->getPurchasablesByPrimaryIdentifier(
                 $purchasableIdentifier
             );
 
-            if (is_array($retrievedPurchasables) && count($retrievedPurchasables)) {
-
-                $purchasables = array_merge(
-                    $purchasables,
-                    $retrievedPurchasables
-                );
+            if (is_array($items)) {
+                $purchasables[] = $items;
             }
+
+        }
+
+        if ($purchasables) {
+            $purchasables = count($purchasables) > 1 ? call_user_func('array_merge', $purchasables) : reset($purchasables);
         }
 
         foreach ($purchasables as $purchasable) {
@@ -135,58 +133,48 @@ class QuantityOfPurchasablesInCart implements ConditionInterface, HasDealHandler
         return (int) floor($quantity / $this->minimumQuantity);
     }
 
+    /**
+     * This method will iterate of the current product holder, increasing each item by one (then decrementing)
+     * After incrementing each item it checks if the the condition is now satisfied.
+     *
+     * The setEnabled calls are to make sure that when adding and removing from the purchasable holder
+     * we don't fire the events that would cause other parts of the system to change
+     * also, this means infinite recursion doesn't occur
+     *
+     * @return bool
+     */
     public function almostMet()
     {
         $currentCount = $this->met();
         $purchasableHolder = $this->getPurchasableHolder();
-        $currentPurchasables = array();
         $met = false;
 
-        foreach ($purchasableHolder->getPurchasables() as $purchasable) {
-
-            $identifier = (string) $purchasable->getIdentifier();
-            $currentPurchasables[$identifier] = $purchasable->getQuantity();
-
+        if ($purchasableHolder instanceof HasEventServiceInterface) {
+            $this->purchasableHolder->getEventService()->setEnabled(false);
         }
 
-        if ($purchasableHolder instanceof HasEventServiceInterface && $purchasableHolder instanceof HasStateServiceInterface) {
+        foreach ($this->purchasableHolder->getPurchasables() as $purchasable) {
 
-            $state = new State(new NullBackend());
-            $dispatcher = new EventDispatcher();
-
-            $clonedPurchasableHolder = new ProductHolder($state, $dispatcher);
-            $clonedPurchasableHolder->setPurchasables($purchasableHolder->getPurchasables());
-
-            foreach ($clonedPurchasableHolder->getPurchasables() as $purchasable) {
-
-                $ident = (string) $purchasable->getIdentifier();
-
-                if ($currentPurchasables[$ident] != $purchasable->getFreeQuantity()) {
-                    if ($this->dealHandler->getResult() instanceof FreeGift) {
-                        $clonedPurchasableHolder->setPurchasable($purchasable, $currentPurchasables[$ident] - $purchasable->getFreeQuantity() + 1);
-                    } else {
-                        $clonedPurchasableHolder->setPurchasable($purchasable, $currentPurchasables[$ident] + 1);
-                    }
+            // It is not relevant to test adding a non purchasable item to the cart,
+            // because the user can never actually add it
+            if (!$purchasable instanceof NonPurchasableInterface) {
+                $quantity = $purchasable->getQuantity();
+                $this->purchasableHolder->setPurchasable($purchasable, $quantity + 1);
+                $metCount = $this->met();
+                $this->purchasableHolder->setPurchasable($purchasable, $quantity);
+                if ($metCount > $currentCount) {
+                    $met = true;
+                    break;
                 }
-
-            }
-
-            if ($this->met() > $currentCount) {
-
-                $met = true;
-
             }
 
         }
 
-        foreach ($currentPurchasables as $identifier => $quantity) {
-            $ident = new Identifier($identifier);
-            $purchaseable = $purchasableHolder->getPurchasable($ident);
-            $purchasableHolder->setPurchasable($purchaseable, $quantity);
+        if ($purchasableHolder instanceof HasEventServiceInterface) {
+            $this->purchasableHolder->getEventService()->setEnabled(true);
         }
 
         return $met;
-
     }
 
     /**

@@ -11,19 +11,17 @@
 namespace Heystack\Subsystem\Deals;
 
 use Heystack\Subsystem\Core\Storage\Backends\SilverStripeOrm\Backend;
+use Heystack\Subsystem\Core\Storage\Event as StorageEvent;
 use Heystack\Subsystem\Core\Storage\Storage;
+use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
 use Heystack\Subsystem\Deals\Result\FreeGift;
-use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-
 use Heystack\Subsystem\Ecommerce\Currency\Events as CurrencyEvents;
 use Heystack\Subsystem\Ecommerce\Locale\Events as LocaleEvents;
+use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 use Heystack\Subsystem\Ecommerce\Transaction\Events as TransactionEvents;
 use Heystack\Subsystem\Products\ProductHolder\Events as ProductHolderEvents;
-use Heystack\Subsystem\Core\Storage\Event as StorageEvent;
-
-use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Handles both subscribing to events and acting on those events needed for TaxHandler to work properly
@@ -62,6 +60,7 @@ class Subscriber implements EventSubscriberInterface
      * Creates the ShippingHandler Subscriber object
      * @param EventDispatcherInterface $eventService
      * @param Storage $storageService
+     * @param PurchasableHolderInterface $purchasableHolder
      * @param DealHandlerInterface $dealHandler
      */
     public function __construct(EventDispatcherInterface $eventService, Storage $storageService, PurchasableHolderInterface $purchasableHolder, DealHandlerInterface $dealHandler)

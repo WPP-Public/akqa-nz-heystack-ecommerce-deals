@@ -3,13 +3,15 @@ namespace Heystack\Subsystem\Deals\Result;
 
 use Heystack\Subsystem\Core\Identifier\Identifier;
 use Heystack\Subsystem\Deals\Condition\QuantityOfPurchasablesInCart;
+use Heystack\Subsystem\Deals\Events\ConditionEvent;
 use Heystack\Subsystem\Deals\Events;
+use Heystack\Subsystem\Deals\Events\ResultEvent;
 use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
 use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
 use Heystack\Subsystem\Deals\Interfaces\DealPurchasableInterface;
+use Heystack\Subsystem\Deals\Interfaces\HasDealHandlerInterface;
 use Heystack\Subsystem\Deals\Interfaces\HasPurchasableHolderInterface;
 use Heystack\Subsystem\Deals\Interfaces\ResultInterface;
-use Heystack\Subsystem\Deals\Interfaces\HasDealHandlerInterface;
 use Heystack\Subsystem\Deals\Traits\HasDealHandler;
 use Heystack\Subsystem\Deals\Traits\HasPurchasableHolder;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
@@ -90,8 +92,6 @@ class CheapestPurchasableDiscount implements ResultInterface, HasPurchasableHold
      */
     public function process(DealHandlerInterface $dealHandler)
     {
-        $this->eventService->dispatch(Events::RESULT_PROCESSED);
-
         /**
          * Reset the free count for this deal of all the purchasables
          */
@@ -157,6 +157,8 @@ class CheapestPurchasableDiscount implements ResultInterface, HasPurchasableHold
             $this->totalDiscount += $purchasable->getUnitPrice() * $countData['count'];
 
         }
+
+        $this->eventService->dispatch(Events::RESULT_PROCESSED, new ResultEvent($this));
 
         return $this->totalDiscount;
     }

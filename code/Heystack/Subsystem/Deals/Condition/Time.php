@@ -2,9 +2,8 @@
 
 namespace Heystack\Subsystem\Deals\Condition;
 
-use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
 use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
-use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
+use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
 
 /**
  *
@@ -64,6 +63,7 @@ class Time implements ConditionInterface
 
         }
 
+        // Set up a default currentTime, but allow the value to be overridden through a setter.
         $this->currentTime = time();
 
     }

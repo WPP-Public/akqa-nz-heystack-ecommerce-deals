@@ -4,10 +4,10 @@ namespace Heystack\Subsystem\Deals\Result;
 
 use Heystack\Subsystem\Core\DataObjectHandler\DataObjectHandlerInterface;
 use Heystack\Subsystem\Core\Identifier\Identifier;
-use Heystack\Subsystem\Core\Interfaces\HasEventServiceInterface;
 use Heystack\Subsystem\Core\State\State;
-use Heystack\Subsystem\Deals\ConditionEvent;
+use Heystack\Subsystem\Deals\Events\ConditionEvent;
 use Heystack\Subsystem\Deals\Events;
+use Heystack\Subsystem\Deals\Events\ResultEvent;
 use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
 use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
 use Heystack\Subsystem\Deals\Interfaces\DealPurchasableInterface;
@@ -17,9 +17,8 @@ use Heystack\Subsystem\Deals\Interfaces\ResultInterface;
 use Heystack\Subsystem\Deals\Traits\HasDealHandler;
 use Heystack\Subsystem\Deals\Traits\HasPurchasableHolder;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use Heystack\Subsystem\Products\ProductHolder\Events as ProductEvents;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  *
@@ -99,7 +98,8 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
     {
         return array(
             Events::CONDITIONS_NOT_MET => 'onConditionsNotMet',
-            Events::CONDITIONS_MET     => 'onConditionsMet'
+            Events::CONDITIONS_MET     => 'onConditionsMet',
+            ProductEvents::PURCHASABLE_REMOVED => array('onProductRemove', 100)
         );
     }
 
@@ -117,44 +117,57 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
      */
     public function process(DealHandlerInterface $dealHandler)
     {
-        $dealIdentifier = $dealHandler->getIdentifier();
-        $conditionsMetCount = $dealHandler->getConditionsMetCount();
-        $purchasable = $this->getPurchasable();
+        $total = $this->getPurchasable()->getUnitPrice() * $dealHandler->getConditionsMetCount();
+        $this->eventService->dispatch(Events::RESULT_PROCESSED, new ResultEvent($this));
+        return $total;
+    }
 
-        if ($purchasable) {
-            if ($purchasable->getQuantity() == 1 && count($this->getPurchasableHolder()->getPurchasables()) == 1) {
+    /**
+     * Here we do things that require disbling the event dispatch TODO: More docs
+     * @param ConditionEvent $event
+     */
+    public function onConditionsMet(ConditionEvent $event)
+    {
+        // Should we get the event dispatcher off the event?
+        $deal = $this->getDealHandler();
+        $dealIdentifier = $deal->getIdentifier();
+        $conditionsMetCount = $deal->getConditionsMetCount();
 
-                // make sure there is an appropriate number of the product in the cart
-                $this->purchasableHolder->setPurchasable(
-                    $purchasable,
-                    $purchasable->getQuantity() + 1
-                );
+        // Only do stuff if it is relevant to this deal
+        if ($dealIdentifier->isMatch($event->getDeal()->getIdentifier())) {
 
+            $event->getDispatcher()->setEnabled(false);
+
+            $purchasable = $this->getPurchasable();
+            $purchasableAlreadyInCart = $this->purchasableHolder->getPurchasable($purchasable->getIdentifier());
+
+            if ($purchasableAlreadyInCart instanceof DealPurchasableInterface && $purchasableAlreadyInCart->getFreeQuantity() === 0) {
+                $this->purchasableHolder->addPurchasable($purchasableAlreadyInCart);
             } else {
-
                 // make sure there is an appropriate number of the product in the cart
                 $this->purchasableHolder->setPurchasable(
                     $purchasable,
-                    max( // use max to ensure there are at least enough in the cart to meet the conditionsMet requirement
-                        $purchasable->getQuantity(),
-                        $conditionsMetCount
-                    )
+                    $conditionsMetCount
                 );
-
             }
 
             $purchasable->setFreeQuantity($dealIdentifier, $conditionsMetCount);
 
-            return $purchasable->getUnitPrice() * $conditionsMetCount;
+            $event->getDispatcher()->setEnabled(true);
         }
-
-        return 0;
-
     }
 
-    public function onConditionsMet(ConditionEvent $event)
+    /**
+     * When products are removed we need to set free quantities to 0
+     * This will handle the
+     */
+    public function onProductRemove()
     {
-
+        foreach ($this->purchasableHolder->getPurchasables() as $purchasable) {
+            if ($purchasable instanceof DealPurchasableInterface) {
+                $purchasable->setFreeQuantity($this->getDealHandler()->getIdentifier(), 0);
+            }
+        }
     }
 
     public function onConditionsNotMet(ConditionEvent $event)
@@ -162,27 +175,16 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
         $dealIdentifier = $this->getDealHandler()->getIdentifier();
 
         if ($dealIdentifier->isMatch($event->getDeal()->getIdentifier())) {
-
-            if (($result = $this->dealHandler->getResult()) instanceof FreeGift) {
-
-                if ($result->getPurchasable()) {
-
-                    $result->getPurchasable()->setFreeQuantity($dealIdentifier, 0);
-
-                }
-
-            }
-
+            $this->getPurchasable()->setFreeQuantity($dealIdentifier, 0);
         }
 
-        // TODO: Does this need to do this?
         $this->purchasableHolder->saveState();
     }
 
     /**
      * Retrieve the purchasable either from the purchasable holder or the data store
      *
-     * @return \Heystack\Subsystem\Core\DataObjectHandler\DataObject|DealPurchasableInterface
+     * @return \Heystack\Subsystem\Deals\Interfaces\DealPurchasableInterface
      */
     public function getPurchasable()
     {

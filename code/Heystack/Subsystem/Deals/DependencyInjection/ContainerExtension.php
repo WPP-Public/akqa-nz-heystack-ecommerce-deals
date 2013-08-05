@@ -10,6 +10,7 @@
  */
 namespace Heystack\Subsystem\Deals\DependencyInjection;
 
+use Heystack\Subsystem\Core\Loader\DBClosureLoader;
 use Heystack\Subsystem\Core\Services as CoreServices;
 use Heystack\Subsystem\Deals\Config\ContainerConfig;
 use Heystack\Subsystem\Deals\Interfaces\DealDataInterface;
@@ -21,7 +22,6 @@ use Symfony\Component\DependencyInjection\DefinitionDecorator;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
-use Heystack\Subsystem\Core\Loader\DBClosureLoader;
 
 /**
  * Container extension for Heystack.
@@ -142,12 +142,12 @@ class ContainerExtension extends Extension
         $subscriberDefinition->addTag(CoreServices::EVENT_DISPATCHER . '.subscriber');
         $container->setDefinition($dealDefintionID . '.subscriber', $subscriberDefinition);
     }
+
     /**
      * @param ContainerBuilder $container
-     * @param                  $dealId
-     * @param                  $deal
-     * @param                  $dealDefintionID
-     * @param                  $dealDefinition
+     * @param $dealId
+     * @param $deal
+     * @param $dealDefinition
      */
     protected function addResult(ContainerBuilder $container, $dealId, $deal, $dealDefinition)
     {
@@ -233,7 +233,7 @@ class ContainerExtension extends Extension
 
     /**
      * Returns the namespace of the container extension
-     * @return type
+     * @return string
      */
     public function getNamespace()
     {
@@ -251,7 +251,7 @@ class ContainerExtension extends Extension
 
     /**
      * Returns the container extensions alias
-     * @return type
+     * @return string
      */
     public function getAlias()
     {

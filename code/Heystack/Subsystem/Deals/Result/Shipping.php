@@ -4,6 +4,7 @@ namespace Heystack\Subsystem\Deals\Result;
 
 use Heystack\Subsystem\Core\Identifier\Identifier;
 use Heystack\Subsystem\Deals\Events;
+use Heystack\Subsystem\Deals\Events\ResultEvent;
 use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
 use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
 use Heystack\Subsystem\Deals\Interfaces\ResultInterface;
@@ -123,7 +124,7 @@ class Shipping implements ResultInterface
      */
     public function process(DealHandlerInterface $dealHandler)
     {
-        $this->eventService->dispatch(Events::RESULT_PROCESSED);
+        $this->eventService->dispatch(Events::RESULT_PROCESSED, new ResultEvent($this));
         return $this->getTotal();
     }
 

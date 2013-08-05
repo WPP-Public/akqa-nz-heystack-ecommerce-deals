@@ -3,12 +3,13 @@
 namespace Heystack\Subsystem\Deals\Condition;
 
 
-use Heystack\Subsystem\Deals\Interfaces\HasDealHandlerInterface;
-use Heystack\Subsystem\Deals\Interfaces\HasPurchasableHolderInterface;
-use Heystack\Subsystem\Deals\Traits\HasDealHandler;
 use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
 use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
+use Heystack\Subsystem\Deals\Interfaces\DealPurchasableInterface;
+use Heystack\Subsystem\Deals\Interfaces\HasDealHandlerInterface;
+use Heystack\Subsystem\Deals\Interfaces\HasPurchasableHolderInterface;
 use Heystack\Subsystem\Deals\Result\FreeGift;
+use Heystack\Subsystem\Deals\Traits\HasDealHandler;
 use Heystack\Subsystem\Deals\Traits\HasPurchasableHolder;
 use Heystack\Subsystem\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
@@ -80,33 +81,18 @@ class MinimumCartTotal implements ConditionInterface, HasDealHandlerInterface, H
     public function met()
     {
         $activeCurrencyCode = $this->currencyService->getActiveCurrencyCode();
-
         $total = $this->purchasableHolder->getTotal();
 
-        $discountedPurchasables = array();
+        // iterate over products and discount the total by the free quantity * unit price
+        foreach ($this->purchasableHolder->getPurchasables() as $purchasable) {
 
-        $purchasables = $this->purchasableHolder->getPurchasables();
+            if ($purchasable instanceof DealPurchasableInterface) {
 
-        $totalPurchasables = 0;
+                if ($purchasable->hasFreeItems()){
 
-        foreach ($purchasables as $purchasable){
+                    $total -= $purchasable->getFreeQuantity() * $purchasable->getUnitPrice();
 
-            $totalPurchasables += $purchasable->getQuantity();
-
-            if ($purchasable->hasFreeItems()){
-
-                $discountedPurchasables[] = $purchasable;
-
-            }
-
-        }
-
-        // don't discount the purchasable price if its the only one in the cart
-        if (count($discountedPurchasables) && $totalPurchasables > 1) {
-
-            foreach($discountedPurchasables as $purchasable) {
-
-                $total -= $purchasable->getFreeQuantity() * $purchasable->getUnitPrice();
+                }
 
             }
 
@@ -118,6 +104,11 @@ class MinimumCartTotal implements ConditionInterface, HasDealHandlerInterface, H
 
         }
 
+        return false;
+    }
+
+    public function almostMet()
+    {
         return false;
     }
 

@@ -16,8 +16,10 @@ class AdaptableConfiguration implements AdaptableConfigurationInterface
      * @var array
      */
     protected $config;
+
     /**
      * @param array $configuration
+     * @throws \Exception
      */
     public function __construct(array $configuration)
     {
