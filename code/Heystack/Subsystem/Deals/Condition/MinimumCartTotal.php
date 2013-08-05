@@ -2,8 +2,6 @@
 
 namespace Heystack\Subsystem\Deals\Condition;
 
-
-use Heystack\Subsystem\Core\Interfaces\HasEventServiceInterface;
 use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
 use Heystack\Subsystem\Deals\Interfaces\ConditionAlmostMetInterface;
 use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
@@ -80,7 +78,7 @@ class MinimumCartTotal implements ConditionInterface, ConditionAlmostMetInterfac
      *
      * @return int
      */
-    public function met($test = false)
+    public function met()
     {
         $activeCurrencyCode = $this->currencyService->getActiveCurrencyCode();
         $total = $this->purchasableHolder->getTotal();
