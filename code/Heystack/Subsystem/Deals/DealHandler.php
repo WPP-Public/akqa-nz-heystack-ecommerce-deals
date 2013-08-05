@@ -57,6 +57,11 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
      * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
      */
     protected $eventService;
+
+    /**
+     * @var array
+     */
+    protected $data;
     /**
      * @var
      */
@@ -85,7 +90,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
         $this->stateService = $stateService;
         $this->eventService = $eventService;
         $this->dealID = $dealID;
-        $this->promotionalMessage = @unserialize($promotionalMessage);
+        $this->promotionalMessage = @unserialize($promotionalMessage); //TODO: This has to be changed.
 
         $this->restoreState();
     }
@@ -151,7 +156,11 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
      */
     public function updateTotal()
     {
-        $total = $this->conditionsMet() ? $this->result->process($this) : 0;
+        if ($this->conditionsMet() && $this->result instanceof ResultInterface) {
+            $total = $this->result->process($this);
+        } else {
+            $total = 0;
+        }
 
         $this->data[self::TOTAL_KEY] = $total;
 
@@ -164,8 +173,6 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
      * Checks if all the conditions are met.
      *
      * If not all conditions are met and the $data array was null, this will dispatch the Conditions not met event.
-     *
-     * The data array is generally used to check if the condition will be met given a certain set of data. (useful on the front end)
      *
      * @param bool $dispatchEvents
      * @return bool
@@ -251,7 +258,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
             $conditionDescriptions[] = $condition->getDescription();
         }
         $conditionDescription = implode(PHP_EOL, $conditionDescriptions);
-        $resultDescription = $this->result->getDescription();
+        $resultDescription = $this->result instanceof ResultInterface ? $this->result->getDescription() : 'No Result';
         return <<<DESCRIPTION
 Conditions:
 $conditionDescription

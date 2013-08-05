@@ -99,7 +99,9 @@ class TimeTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($this->timeCondition->met());
 
-        $this->assertFalse($this->timeCondition->met(array('Time' => date(Time::$time_format, strtotime(date(Time::$time_format) . ' - 1 day')))));
+        $this->timeCondition->setCurrentTime(strtotime('-1 day'));
+
+        $this->assertFalse($this->timeCondition->met());
 
         $this->assertEquals(
             $this->timeCondition->getDescription(),
