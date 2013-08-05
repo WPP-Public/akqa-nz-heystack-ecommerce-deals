@@ -6,7 +6,9 @@ use Heystack\Subsystem\Core\Identifier\Identifier;
 use Heystack\Subsystem\Core\Interfaces\HasEventServiceInterface;
 use Heystack\Subsystem\Core\Traits\HasEventService;
 use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
+use Heystack\Subsystem\Deals\Interfaces\ConditionAlmostMetInterface;
 use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
+use Heystack\Subsystem\Deals\Interfaces\DealPurchasableInterface;
 use Heystack\Subsystem\Deals\Interfaces\HasDealHandlerInterface;
 use Heystack\Subsystem\Deals\Interfaces\HasPurchasableHolderInterface;
 use Heystack\Subsystem\Deals\Interfaces\NonPurchasableInterface;
@@ -22,7 +24,7 @@ use Heystack\Subsystem\Products\ProductHolder\ProductHolder;
  * @author Glenn Bautista <glenn@heyday.co.nz>
  * @package Ecommerce-Deals
  */
-class QuantityOfPurchasablesInCart implements ConditionInterface, HasDealHandlerInterface, HasPurchasableHolderInterface
+class QuantityOfPurchasablesInCart implements ConditionInterface, ConditionAlmostMetInterface, HasDealHandlerInterface, HasPurchasableHolderInterface
 {
     use HasDealHandler;
     use HasPurchasableHolder;
@@ -119,14 +121,19 @@ class QuantityOfPurchasablesInCart implements ConditionInterface, HasDealHandler
 
         foreach ($purchasables as $purchasable) {
 
-            $quantity += $purchasable->getQuantity();
+            if ($purchasable instanceof DealPurchasableInterface) {
 
-            // TODO: Refactor this coupling
-            if ($this->dealHandler->getResult() instanceof FreeGift) {
+                $quantity += $purchasable->getQuantity();
 
-                $quantity -= $purchasable->getFreeQuantity();
+                // TODO: Refactor this coupling
+                if ($this->dealHandler->getResult() instanceof FreeGift) {
+
+                    $quantity -= $purchasable->getFreeQuantity();
+
+                }
 
             }
+
 
         }
 
