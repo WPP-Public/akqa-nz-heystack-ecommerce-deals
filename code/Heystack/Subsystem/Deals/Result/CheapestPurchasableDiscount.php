@@ -2,6 +2,8 @@
 namespace Heystack\Subsystem\Deals\Result;
 
 use Heystack\Subsystem\Core\Identifier\Identifier;
+use Heystack\Subsystem\Deals\AdaptableConfiguration;
+use Heystack\Subsystem\Deals\Condition\PurchasableQuantityInCart;
 use Heystack\Subsystem\Deals\Condition\QuantityOfPurchasablesInCart;
 use Heystack\Subsystem\Deals\Events\ConditionEvent;
 use Heystack\Subsystem\Deals\Events;
@@ -12,13 +14,14 @@ use Heystack\Subsystem\Deals\Interfaces\DealPurchasableInterface;
 use Heystack\Subsystem\Deals\Interfaces\HasDealHandlerInterface;
 use Heystack\Subsystem\Deals\Interfaces\HasPurchasableHolderInterface;
 use Heystack\Subsystem\Deals\Interfaces\ResultInterface;
+use Heystack\Subsystem\Deals\Interfaces\ResultWithConditionsInterface;
 use Heystack\Subsystem\Deals\Traits\HasDealHandler;
 use Heystack\Subsystem\Deals\Traits\HasPurchasableHolder;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class CheapestPurchasableDiscount implements ResultInterface, HasPurchasableHolderInterface, HasDealHandlerInterface
+class CheapestPurchasableDiscount implements ResultInterface, ResultWithConditionsInterface, HasPurchasableHolderInterface, HasDealHandlerInterface
 {
     use HasDealHandler;
     use HasPurchasableHolder;
@@ -148,7 +151,7 @@ class CheapestPurchasableDiscount implements ResultInterface, HasPurchasableHold
 
             $freeQuantity = $purchasable->getFreeQuantity($dealHandler->getIdentifier());
 
-            if($freeQuantity != $countData['count'] && (count($actionablePurchasables) > 1 ||  $purchasable->getQuantity() != 1)){
+            if($freeQuantity != $countData['count'] && (count($this->purchasableHolder->getPurchasables()) > 1 ||  $purchasable->getQuantity() != 1)){
 
                 $purchasable->setFreeQuantity($dealHandler->getIdentifier(), $countData['count']);
 
@@ -270,5 +273,24 @@ class CheapestPurchasableDiscount implements ResultInterface, HasPurchasableHold
         return $purchasables;
 
     }
+
+    public function getConditions()
+    {
+
+        $productConfig = array(
+            PurchasableQuantityInCart::PURCHASABLE_IDENTIFIERS => $this->purchasableIdentifiers,
+            PurchasableQuantityInCart::MINIMUM_QUANTITY_KEY => 1
+
+        );
+
+        $purchasableInCartCondition = new PurchasableQuantityInCart($this->getPurchasableHolder(), new AdaptableConfiguration($productConfig));
+
+        return array(
+            $purchasableInCartCondition
+        );
+
+    }
+
+
 }
 

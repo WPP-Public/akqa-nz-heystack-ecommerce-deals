@@ -14,6 +14,7 @@ use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
 use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
 use Heystack\Subsystem\Deals\Interfaces\HasDealHandlerInterface;
 use Heystack\Subsystem\Deals\Interfaces\ResultInterface;
+use Heystack\Subsystem\Deals\Interfaces\ResultWithConditionsInterface;
 use Heystack\Subsystem\Ecommerce\Transaction\Traits\TransactionModifierSerializeTrait;
 use Heystack\Subsystem\Ecommerce\Transaction\Traits\TransactionModifierStateTrait;
 use Heystack\Subsystem\Ecommerce\Transaction\TransactionModifierTypes;
@@ -111,6 +112,17 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     public function setResult(ResultInterface $result)
     {
         $this->result = $result;
+
+        if ($this->result instanceof ResultWithConditionsInterface) {
+
+
+            foreach ($this->result->getConditions() as $condition) {
+
+                $this->addCondition($condition);
+
+            }
+
+        }
 
         if ($result instanceof HasDealHandlerInterface) {
 

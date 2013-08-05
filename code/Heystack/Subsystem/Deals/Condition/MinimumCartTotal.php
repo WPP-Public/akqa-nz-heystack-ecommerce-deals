@@ -109,7 +109,38 @@ class MinimumCartTotal implements ConditionInterface, ConditionAlmostMetInterfac
 
     public function almostMet()
     {
-        return !$this->met();
+        $purchasableHolder = $this->getPurchasableHolder();
+        $met = false;
+
+        if ($purchasableHolder instanceof HasEventServiceInterface) {
+            $this->purchasableHolder->getEventService()->setEnabled(false);
+        }
+
+        foreach ($this->purchasableHolder->getPurchasables() as $purchasable) {
+
+            // It is not relevant to test adding a non purchasable item to the cart,
+            // because the user can never actually add it
+            if (!$purchasable instanceof NonPurchasableInterface) {
+
+                $quantity = $purchasable->getQuantity();
+                $this->purchasableHolder->setPurchasable($purchasable, $quantity + 1);
+                $met = $this->met();
+                $this->purchasableHolder->setPurchasable($purchasable, $quantity);
+
+                if ($met) {
+                    break;
+                }
+
+            }
+
+        }
+
+        if ($purchasableHolder instanceof HasEventServiceInterface) {
+            $this->purchasableHolder->getEventService()->setEnabled(true);
+        }
+
+        return $met;
+
     }
 
     /**

@@ -6,14 +6,12 @@ use Heystack\Subsystem\Core\Identifier\Identifier;
 use Heystack\Subsystem\Core\Interfaces\HasEventServiceInterface;
 use Heystack\Subsystem\Core\Traits\HasEventService;
 use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
-use Heystack\Subsystem\Deals\Interfaces\ConditionAlmostMetInterface;
 use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
-use Heystack\Subsystem\Deals\Interfaces\DealPurchasableInterface;
+use Heystack\Subsystem\Deals\Interfaces\ConditionAlmostMetInterface;
 use Heystack\Subsystem\Deals\Interfaces\HasDealHandlerInterface;
 use Heystack\Subsystem\Deals\Interfaces\HasPurchasableHolderInterface;
-use Heystack\Subsystem\Deals\Interfaces\NonPurchasableInterface;
-use Heystack\Subsystem\Deals\Result\FreeGift;
 use Heystack\Subsystem\Deals\Traits\HasDealHandler;
+use Heystack\Subsystem\Deals\Result\FreeGift;
 use Heystack\Subsystem\Deals\Traits\HasPurchasableHolder;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 use Heystack\Subsystem\Products\ProductHolder\ProductHolder;
@@ -21,15 +19,15 @@ use Heystack\Subsystem\Products\ProductHolder\ProductHolder;
 /**
  *
  * @copyright  Heyday
- * @author Glenn Bautista <glenn@heyday.co.nz>
- * @package Ecommerce-Deals
+ * @author Stevie Mayhew <stevie@heyday.co.nz>
+ * @package \Heystack\Subsystem\Deals\Condition
  */
-class QuantityOfPurchasablesInCart implements ConditionInterface, ConditionAlmostMetInterface, HasDealHandlerInterface, HasPurchasableHolderInterface
+class PurchasableQuantityInCart implements ConditionInterface, ConditionAlmostMetInterface, HasDealHandlerInterface, HasPurchasableHolderInterface
 {
     use HasDealHandler;
     use HasPurchasableHolder;
 
-    const CONDITION_TYPE = 'QuantityOfPurchasablesInCart';
+    const CONDITION_TYPE = 'PurchasableQuantityInCart';
     const PURCHASABLE_IDENTIFIERS = 'purchasables_identifiers';
     const MINIMUM_QUANTITY_KEY = 'minimum_quantity';
 
@@ -46,6 +44,7 @@ class QuantityOfPurchasablesInCart implements ConditionInterface, ConditionAlmos
         PurchasableHolderInterface $purchasableHolder,
         AdaptableConfigurationInterface $configuration
     ) {
+
         if ($configuration->hasConfig(self::PURCHASABLE_IDENTIFIERS) && is_array(
                 $purchasableIdentifiers = $configuration->getConfig(self::PURCHASABLE_IDENTIFIERS)
             )
@@ -53,7 +52,7 @@ class QuantityOfPurchasablesInCart implements ConditionInterface, ConditionAlmos
 
             foreach ($purchasableIdentifiers as $purchasableIdentifier) {
 
-                $this->purchasableIdentifiers[] = new Identifier($purchasableIdentifier);
+                $this->purchasableIdentifiers[] = $purchasableIdentifier;
 
             }
 
@@ -70,7 +69,9 @@ class QuantityOfPurchasablesInCart implements ConditionInterface, ConditionAlmos
 
         } else {
 
-            throw new \Exception('Quantity Of Purchasables In Cart Condition requires a minimum quantity to be configured');
+            throw new \Exception(
+                'Quantity Of Purchasables In Cart Condition requires a minimum quantity per item to be configured'
+            );
 
         }
 
@@ -99,8 +100,7 @@ class QuantityOfPurchasablesInCart implements ConditionInterface, ConditionAlmos
      */
     public function met()
     {
-        $quantity = 0;
-
+        $met = false;
         $purchasables = array();
 
         foreach ($this->purchasableIdentifiers as $purchasableIdentifier) {
@@ -120,64 +120,64 @@ class QuantityOfPurchasablesInCart implements ConditionInterface, ConditionAlmos
 
         foreach ($purchasables as $purchasable) {
 
-            if ($purchasable instanceof DealPurchasableInterface) {
-
-                $quantity += $purchasable->getQuantity();
-
-                // TODO: Refactor this coupling
-                if ($this->dealHandler->getResult() instanceof FreeGift) {
-
-                    $quantity -= $purchasable->getFreeQuantity();
-
-                }
-
+            if ($purchasable->getQuantity() >= $this->minimumQuantity) {
+                $met = true;
             }
 
 
         }
 
-        return (int) floor($quantity / $this->minimumQuantity);
+        return $met;
     }
 
-    /**
-     * This method will iterate of the current product holder, increasing each item by one (then decrementing)
-     * After incrementing each item it checks if the the condition is now satisfied.
-     *
-     * The setEnabled calls are to make sure that when adding and removing from the purchasable holder
-     * we don't fire the events that would cause other parts of the system to change
-     * also, this means infinite recursion doesn't occur
-     *
-     * @return bool
-     */
     public function almostMet()
     {
-        $currentCount = $this->met();
         $purchasableHolder = $this->getPurchasableHolder();
-        $met = false;
+        $met = true;
+        $purchasables = array();
 
-        if ($purchasableHolder instanceof HasEventServiceInterface) {
-            $this->purchasableHolder->getEventService()->setEnabled(false);
-        }
+        if ($this->minimumQuantity > 1) {
 
-        foreach ($this->purchasableHolder->getPurchasables() as $purchasable) {
-
-            // It is not relevant to test adding a non purchasable item to the cart,
-            // because the user can never actually add it
-            if (!$purchasable instanceof NonPurchasableInterface) {
-                $quantity = $purchasable->getQuantity();
-                $this->purchasableHolder->setPurchasable($purchasable, $quantity + 1);
-                $metCount = $this->met();
-                $this->purchasableHolder->setPurchasable($purchasable, $quantity);
-                if ($metCount > $currentCount) {
-                    $met = true;
-                    break;
-                }
+            if ($purchasableHolder instanceof HasEventServiceInterface) {
+                $this->purchasableHolder->getEventService()->setEnabled(false);
             }
 
-        }
+            foreach ($this->purchasableIdentifiers as $purchasableIdentifier) {
 
-        if ($purchasableHolder instanceof HasEventServiceInterface) {
-            $this->purchasableHolder->getEventService()->setEnabled(true);
+                $items = $this->purchasableHolder->getPurchasablesByPrimaryIdentifier(
+                    $purchasableIdentifier
+                );
+
+                if (is_array($items)) {
+                    $purchasables[] = $items;
+                }
+
+            }
+
+            if ($purchasables) {
+                $purchasables = count($purchasables) > 1 ? call_user_func_array('array_merge', $purchasables) : reset($purchasables);
+            }
+
+            foreach ($purchasables as $purchasable) {
+
+                // It is not relevant to test adding a non purchasable item to the cart,
+                // because the user can never actually add it
+                if (!$purchasable instanceof NonPurchasableInterface) {
+
+                    $quantity = $purchasable->getQuantity();
+                    $this->purchasableHolder->setPurchasable($purchasable, $quantity + 1);
+                    $met = $this->met();
+                    $this->purchasableHolder->setPurchasable($purchasable, $quantity);
+
+
+                }
+
+            }
+
+            if ($purchasableHolder instanceof HasEventServiceInterface) {
+                $this->purchasableHolder->getEventService()->setEnabled(true);
+            }
+
         }
 
         return $met;
@@ -189,7 +189,7 @@ class QuantityOfPurchasablesInCart implements ConditionInterface, ConditionAlmos
     public function getDescription()
     {
 
-        return 'Must have at least ' . $this->minimumQuantity . ' of any of the ff: ' . implode(
+        return 'One of them items must have at least ' . $this->minimumQuantity . ' quantity in the cart. Items include ' . implode(
             ',',
             $this->purchasableIdentifiers
         );
