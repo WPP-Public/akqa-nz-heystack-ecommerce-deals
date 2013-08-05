@@ -122,6 +122,7 @@ class PurchasableQuantityInCart implements ConditionInterface, ConditionAlmostMe
 
             if ($purchasable->getQuantity() >= $this->minimumQuantity) {
                 $met = true;
+                break;
             }
 
 
