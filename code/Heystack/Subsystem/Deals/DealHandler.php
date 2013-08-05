@@ -9,6 +9,7 @@ use Heystack\Subsystem\Core\Storage\Backends\SilverStripeOrm\Backend;
 use Heystack\Subsystem\Core\Storage\StorableInterface;
 use Heystack\Subsystem\Core\Storage\Traits\ParentReferenceTrait;
 use Heystack\Subsystem\Deals\Events\ConditionEvent;
+use Heystack\Subsystem\Deals\Interfaces\ConditionAlmostMetInterface;
 use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
 use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
 use Heystack\Subsystem\Deals\Interfaces\HasDealHandlerInterface;
@@ -307,5 +308,30 @@ DESCRIPTION;
     {
         return $this->result;
     }
+
+    /**
+     * Returns whether the deal is almost completed based on the conditions it has
+     * @return boolean
+     */
+    public function almostMet()
+    {
+        $almostMet = true;
+
+        foreach ($this->getConditions() as $condition) {
+
+            if ($condition instanceof ConditionAlmostMetInterface) {
+
+                if (!$condition->almostMet()) {
+                    $almostMet = false;
+                    break;
+                }
+
+            }
+
+        }
+
+        return $almostMet;
+    }
+
 
 }

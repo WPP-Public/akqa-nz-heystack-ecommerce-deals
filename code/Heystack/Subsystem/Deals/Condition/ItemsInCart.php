@@ -3,6 +3,7 @@ namespace Heystack\Subsystem\Deals\Condition;
 
 
 use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
+use Heystack\Subsystem\Deals\Interfaces\ConditionAlmostMetInterface;
 use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
 use Heystack\Subsystem\Deals\Interfaces\HasPurchasableHolderInterface;
 use Heystack\Subsystem\Deals\Traits\HasPurchasableHolder;
@@ -14,7 +15,7 @@ use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterfa
  * @author Glenn Bautista <glenn@heyday.co.nz>
  * @package Ecommerce-Deals
  */
-class ItemsInCart implements ConditionInterface, HasPurchasableHolderInterface
+class ItemsInCart implements ConditionInterface, ConditionAlmostMetInterface, HasPurchasableHolderInterface
 {
     use HasPurchasableHolder;
 
@@ -93,6 +94,38 @@ class ItemsInCart implements ConditionInterface, HasPurchasableHolderInterface
         }
 
         return $count >= $this->itemCount;
+    }
+
+    /**
+     * Check if the condition is almost met
+     *
+     * Almost met is when one more action completed by the user to the cart will promote this deal to being completed.
+     * When a condition will complete regardless of user action, return $this->met()
+     *
+     * @see Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface
+     * @return boolean
+     */
+    public function almostMet()
+    {
+        $count = 0;
+
+        $purchasables = $this->purchasableHolder->getPurchasables();
+
+        if ($this->countByPurchasableQuantity) {
+
+            foreach ($purchasables as $purchasable) {
+
+                $count += $purchasable->getQuantity();
+
+            }
+
+        } elseif (is_array($purchasables)) {
+
+            $count = count($purchasables);
+
+        }
+
+        return $count + 1 >= $this->itemCount;
     }
 
     /**

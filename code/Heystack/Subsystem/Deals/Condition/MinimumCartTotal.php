@@ -3,7 +3,9 @@
 namespace Heystack\Subsystem\Deals\Condition;
 
 
+use Heystack\Subsystem\Core\Interfaces\HasEventServiceInterface;
 use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
+use Heystack\Subsystem\Deals\Interfaces\ConditionAlmostMetInterface;
 use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
 use Heystack\Subsystem\Deals\Interfaces\DealPurchasableInterface;
 use Heystack\Subsystem\Deals\Interfaces\HasDealHandlerInterface;
@@ -20,7 +22,7 @@ use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterfa
  * @author Glenn Bautista <glenn@heyday.co.nz>
  * @package Ecommerce-Deals
  */
-class MinimumCartTotal implements ConditionInterface, HasDealHandlerInterface, HasPurchasableHolderInterface
+class MinimumCartTotal implements ConditionInterface, ConditionAlmostMetInterface, HasDealHandlerInterface, HasPurchasableHolderInterface
 {
     use HasDealHandler;
     use HasPurchasableHolder;
@@ -78,7 +80,7 @@ class MinimumCartTotal implements ConditionInterface, HasDealHandlerInterface, H
      *
      * @return int
      */
-    public function met()
+    public function met($test = false)
     {
         $activeCurrencyCode = $this->currencyService->getActiveCurrencyCode();
         $total = $this->purchasableHolder->getTotal();
@@ -109,7 +111,7 @@ class MinimumCartTotal implements ConditionInterface, HasDealHandlerInterface, H
 
     public function almostMet()
     {
-        return false;
+        return !$this->met();
     }
 
     /**

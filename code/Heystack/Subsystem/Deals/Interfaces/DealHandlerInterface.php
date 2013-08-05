@@ -50,4 +50,10 @@ interface DealHandlerInterface extends TransactionModifierInterface
      * @return \Heystack\Subsystem\Deals\Interfaces\ResultInterface
      */
     public function getResult();
+
+    /**
+     * Returns whether the deal is almost completed based on the conditions it has
+     * @return boolean
+     */
+    public function almostMet();
 }
