@@ -183,6 +183,7 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
             $purchasable->setFreeQuantity($dealIdentifier, $conditionsMetCount);
 
             $event->getDispatcher()->setEnabled(true);
+            $purchasableHolder->updateTotal();
 
         }
     }
