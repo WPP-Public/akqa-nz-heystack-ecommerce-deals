@@ -133,13 +133,23 @@ class ItemsInCart implements ConditionInterface, ConditionAlmostMetInterface, Ha
      */
     public function getDescription()
     {
-        if ($this->countByPurchasableQuantity) {
+        return 'Must have a total of ' . $this->itemCount . ' products (by quantity) in the cart';
+    }
 
-            return 'Must have a total of ' . $this->itemCount . ' products ( by quantity) in the cart';
+    /**
+     * @param mixed $itemCount
+     */
+    public function setItemCount($itemCount)
+    {
+        $this->itemCount = $itemCount;
+    }
 
-        }
-
-        return 'Must have a total of ' . $this->itemCount . ' individual products in the cart';
+    /**
+     * @return mixed
+     */
+    public function getItemCount()
+    {
+        return $this->itemCount;
     }
 
 }

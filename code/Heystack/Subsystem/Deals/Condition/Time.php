@@ -79,19 +79,21 @@ class Time implements ConditionInterface
      */
     public function met()
     {
+        $met = false;
+
         if ($this->startTime && $this->endTime) {
-            return ($this->currentTime > $this->startTime) && ($this->currentTime < $this->endTime);
+            $met = ($this->currentTime > $this->startTime) && ($this->currentTime < $this->endTime);
         }
 
         if ($this->startTime && !$this->endTime) {
-            return $this->currentTime > $this->startTime;
+            $met = $this->currentTime > $this->startTime;
         }
 
         if ($this->endTime && !$this->startTime) {
-            return $this->currentTime < $this->endTime;
+            $met = $this->currentTime < $this->endTime;
         }
 
-        return false;
+        return $met;
     }
     /**
      * @return string

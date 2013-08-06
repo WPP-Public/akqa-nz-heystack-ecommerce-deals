@@ -171,4 +171,21 @@ class MinimumCartTotal implements ConditionInterface, ConditionAlmostMetInterfac
         return 'The Transaction sub total must be greater than or equal to -  ' . $description;
     }
 
+    /**
+     * @param mixed $amounts
+     */
+    public function setAmounts($amounts)
+    {
+        $this->amounts = $amounts;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAmounts()
+    {
+        return $this->amounts;
+    }
+
+
 }

@@ -32,6 +32,7 @@
         "heystack/heystack": "self.version",
         "heystack/ecommerce-core": "self.version",
         "heystack/ecommerce-shipping": "self.version",
+        "heystack/ecommerce-products": "self.version",
         "symfony/class-loader": "~2.2",
         "phpmd/phpmd": "1.4.*",
         "pdepend/pdepend": "1.1.*",

@@ -14,10 +14,6 @@ class TimeTest extends \PHPUnit_Framework_TestCase
     protected $timeCondition;
     protected $adaptableConfigurationStub;
 
-    /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     */
     protected function setUp()
     {
         $this->adaptableConfigurationStub = $this->getMockBuilder('Heystack\Subsystem\Deals\AdaptableConfiguration')
@@ -42,10 +38,29 @@ class TimeTest extends \PHPUnit_Framework_TestCase
         $this->timeCondition = new Time($this->adaptableConfigurationStub);
     }
 
-    /**
-     * @covers Heystack\Subsystem\Deals\Condition\Time::met
-     * @covers Heystack\Subsystem\Deals\Condition\Time::getDescription
-     */
+    public function testIncorrectConfiguration()
+    {
+        $this->setExpectedException('Exception');
+
+        $this->configureStub(
+            [
+                [
+                    'start', date(Time::$time_format)
+                ]
+            ],
+            [
+                [
+                    'start', false
+                ],
+                [
+                    'end', false
+                ]
+            ]
+        );
+
+
+    }
+
     public function testStartNowWithoutEnd()
     {
         $this->configureStub(
@@ -72,10 +87,32 @@ class TimeTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * @covers Heystack\Subsystem\Deals\Condition\Time::met
-     * @covers Heystack\Subsystem\Deals\Condition\Time::getDescription
-     */
+    public function testEndWithoutStart()
+    {
+        $this->configureStub(
+            [
+                [
+                    'end', date(Time::$time_format, strtotime(date(Time::$time_format) . ' + 1 day'))
+                ]
+            ],
+            [
+                [
+                    'start', false
+                ],
+                [
+                    'end', true
+                ]
+            ]
+        );
+
+        $this->assertTrue($this->timeCondition->met());
+
+        $this->assertEquals(
+            $this->timeCondition->getDescription(),
+            'To: ' . date(Time::$time_format, strtotime(date(Time::$time_format) . ' + 1 day'))
+        );
+    }
+
     public function testStartAndEnd()
     {
         $this->configureStub(
@@ -108,6 +145,58 @@ class TimeTest extends \PHPUnit_Framework_TestCase
             'From: ' . date(Time::$time_format) . '; To: ' . date(Time::$time_format, strtotime(date(Time::$time_format) . ' + 1 day'))
         );
 
+    }
+
+    public function testCurrentTime()
+    {
+        $this->configureStub(
+            [
+                [
+                    'start', date(Time::$time_format)
+                ],
+                [
+                    'end', date(Time::$time_format, strtotime(date(Time::$time_format) . ' + 1 day'))
+                ]
+            ],
+            [
+                [
+                    'start', true
+                ],
+                [
+                    'end', true
+                ]
+            ]
+        );
+
+
+        $this->timeCondition->setCurrentTime(strtotime('now'));
+
+        $this->assertEquals(date(Time::$time_format), date(Time::$time_format, $this->timeCondition->getCurrentTime()));
+
+    }
+
+    public function testGetType()
+    {
+        $this->configureStub(
+            [
+                [
+                    'start', date(Time::$time_format)
+                ],
+                [
+                    'end', date(Time::$time_format, strtotime(date(Time::$time_format) . ' + 1 day'))
+                ]
+            ],
+            [
+                [
+                    'start', true
+                ],
+                [
+                    'end', true
+                ]
+            ]
+        );
+
+        $this->assertEquals($this->timeCondition->getType(), Time::CONDITION_TYPE);
     }
 
 }

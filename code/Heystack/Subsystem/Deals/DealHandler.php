@@ -54,6 +54,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
      * @var \Heystack\Subsystem\Core\State\State
      */
     protected $stateService;
+
     /**
      * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
      */
@@ -63,6 +64,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
      * @var array
      */
     protected $data;
+
     /**
      * @var
      */
@@ -75,6 +77,38 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
      * @var
      */
     protected $promotionalMessage;
+
+    /**
+     * @param \Heystack\Subsystem\Core\State\State $stateService
+     */
+    public function setStateService($stateService)
+    {
+        $this->stateService = $stateService;
+    }
+
+    /**
+     * @return \Heystack\Subsystem\Core\State\State
+     */
+    public function getStateService()
+    {
+        return $this->stateService;
+    }
+
+    /**
+     * @param array $data
+     */
+    public function setData($data)
+    {
+        $this->data = $data;
+    }
+
+    /**
+     * @return array
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
 
     /**
      * @param State $stateService

@@ -198,4 +198,35 @@ class PurchasableQuantityInCart implements ConditionInterface, ConditionAlmostMe
 
     }
 
+    /**
+     * @param mixed $minimumQuantity
+     */
+    public function setMinimumQuantity($minimumQuantity)
+    {
+        $this->minimumQuantity = $minimumQuantity;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMinimumQuantity()
+    {
+        return $this->minimumQuantity;
+    }
+
+    /**
+     * @param array $purchasableIdentifiers
+     */
+    public function setPurchasableIdentifiers($purchasableIdentifiers)
+    {
+        $this->purchasableIdentifiers = $purchasableIdentifiers;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPurchasableIdentifiers()
+    {
+        return $this->purchasableIdentifiers;
+    }
 }
