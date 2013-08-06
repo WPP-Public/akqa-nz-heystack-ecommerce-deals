@@ -83,9 +83,12 @@ class MinimumCartTotal implements ConditionInterface, ConditionAlmostMetInterfac
     {
         $activeCurrencyCode = $this->currencyService->getActiveCurrencyCode();
         $total = $this->purchasableHolder->getTotal();
+        $quantity = 0;
 
         // iterate over products and discount the total by the free quantity * unit price
         foreach ($this->purchasableHolder->getPurchasables() as $purchasable) {
+
+            $quantity += $purchasable->getQuantity();
 
             if ($purchasable instanceof DealPurchasableInterface) {
 
@@ -113,6 +116,10 @@ class MinimumCartTotal implements ConditionInterface, ConditionAlmostMetInterfac
         $purchasableHolder = $this->getPurchasableHolder();
         $met = false;
 
+        if ($this->met()) {
+            return $met;
+        }
+
         if ($purchasableHolder instanceof HasEventServiceInterface) {
             $this->purchasableHolder->getEventService()->setEnabled(false);
         }
@@ -124,9 +131,12 @@ class MinimumCartTotal implements ConditionInterface, ConditionAlmostMetInterfac
             if (!$purchasable instanceof NonPurchasableInterface) {
 
                 $quantity = $purchasable->getQuantity();
+
                 $this->purchasableHolder->setPurchasable($purchasable, $quantity + 1);
+                $this->purchasableHolder->updateTotal();
                 $met = $this->met();
                 $this->purchasableHolder->setPurchasable($purchasable, $quantity);
+                $this->purchasableHolder->updateTotal();
 
                 if ($met) {
                     break;
