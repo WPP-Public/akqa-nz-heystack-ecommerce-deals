@@ -201,8 +201,8 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
         $dealIdentifier = $this->getDealHandler()->getIdentifier();
 
         if ($dealIdentifier->isMatch($event->getDeal()->getIdentifier())) {
-            if ($this->getPurchasable()) {
-                $this->getPurchasable()->setFreeQuantity($dealIdentifier, 0);
+            if (($purchasable = $this->getPurchasable()) instanceof DealPurchasableInterface) {
+                $purchasable->setFreeQuantity($dealIdentifier, 0);
             }
         }
 
