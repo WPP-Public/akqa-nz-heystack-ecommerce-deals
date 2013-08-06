@@ -4,6 +4,7 @@ namespace Heystack\Subsystem\Deals\Result;
 
 use Heystack\Subsystem\Core\DataObjectHandler\DataObjectHandlerInterface;
 use Heystack\Subsystem\Core\Identifier\Identifier;
+use Heystack\Subsystem\Core\Interfaces\HasEventServiceInterface;
 use Heystack\Subsystem\Core\State\State;
 use Heystack\Subsystem\Deals\Events\ConditionEvent;
 use Heystack\Subsystem\Deals\Events;
@@ -144,11 +145,13 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
         $deal = $this->getDealHandler();
         $dealIdentifier = $deal->getIdentifier();
         $conditionsMetCount = $deal->getConditionsMetCount();
+        $purchasableHolder = $this->getPurchasableHolder();
 
         // Only do stuff if it is relevant to this deal
         if ($dealIdentifier->isMatch($event->getDeal()->getIdentifier())) {
 
             $event->getDispatcher()->setEnabled(false);
+
 
             $purchasable = $this->getPurchasable();
             $purchasableAlreadyInCart = $this->purchasableHolder->getPurchasable($purchasable->getIdentifier());
@@ -180,6 +183,7 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
             $purchasable->setFreeQuantity($dealIdentifier, $conditionsMetCount);
 
             $event->getDispatcher()->setEnabled(true);
+
         }
     }
 

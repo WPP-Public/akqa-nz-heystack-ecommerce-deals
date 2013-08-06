@@ -10,6 +10,7 @@ use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
 use Heystack\Subsystem\Deals\Interfaces\ConditionAlmostMetInterface;
 use Heystack\Subsystem\Deals\Interfaces\HasDealHandlerInterface;
 use Heystack\Subsystem\Deals\Interfaces\HasPurchasableHolderInterface;
+use Heystack\Subsystem\Deals\Interfaces\NonPurchasableInterface;
 use Heystack\Subsystem\Deals\Traits\HasDealHandler;
 use Heystack\Subsystem\Deals\Result\FreeGift;
 use Heystack\Subsystem\Deals\Traits\HasPurchasableHolder;
