@@ -135,52 +135,51 @@ class PurchasableQuantityInCart implements ConditionInterface, ConditionAlmostMe
     public function almostMet()
     {
         $purchasableHolder = $this->getPurchasableHolder();
-        $met = true;
+        $met = false;
         $purchasables = array();
 
-        if ($this->minimumQuantity > 1) {
 
-            if ($purchasableHolder instanceof HasEventServiceInterface) {
-                $this->purchasableHolder->getEventService()->setEnabled(false);
-            }
+        if ($purchasableHolder instanceof HasEventServiceInterface) {
+            $this->purchasableHolder->getEventService()->setEnabled(false);
+        }
 
-            foreach ($this->purchasableIdentifiers as $purchasableIdentifier) {
+        foreach ($this->purchasableIdentifiers as $purchasableIdentifier) {
 
-                $items = $this->purchasableHolder->getPurchasablesByPrimaryIdentifier(
-                    $purchasableIdentifier
-                );
+            $items = $this->purchasableHolder->getPurchasablesByPrimaryIdentifier(
+                $purchasableIdentifier
+            );
 
-                if (is_array($items)) {
-                    $purchasables[] = $items;
-                }
-
-            }
-
-            if ($purchasables) {
-                $purchasables = count($purchasables) > 1 ? call_user_func_array('array_merge', $purchasables) : reset($purchasables);
-            }
-
-            foreach ($purchasables as $purchasable) {
-
-                // It is not relevant to test adding a non purchasable item to the cart,
-                // because the user can never actually add it
-                if (!$purchasable instanceof NonPurchasableInterface) {
-
-                    $quantity = $purchasable->getQuantity();
-                    $this->purchasableHolder->setPurchasable($purchasable, $quantity + 1);
-                    $met = $this->met();
-                    $this->purchasableHolder->setPurchasable($purchasable, $quantity);
-
-
-                }
-
-            }
-
-            if ($purchasableHolder instanceof HasEventServiceInterface) {
-                $this->purchasableHolder->getEventService()->setEnabled(true);
+            if (is_array($items)) {
+                $purchasables[] = $items;
             }
 
         }
+
+        if ($purchasables) {
+            $purchasables = count($purchasables) > 1 ? call_user_func_array('array_merge', $purchasables) : reset($purchasables);
+        }
+
+        foreach ($purchasables as $purchasable) {
+
+            // It is not relevant to test adding a non purchasable item to the cart,
+            // because the user can never actually add it
+            if (!$purchasable instanceof NonPurchasableInterface) {
+
+                $quantity = $purchasable->getQuantity();
+                $this->purchasableHolder->setPurchasable($purchasable, $quantity + 1);
+                $met = $this->met();
+                $this->purchasableHolder->setPurchasable($purchasable, $quantity);
+
+
+            }
+
+        }
+
+        if ($purchasableHolder instanceof HasEventServiceInterface) {
+            $this->purchasableHolder->getEventService()->setEnabled(true);
+        }
+
+
 
         return $met;
     }
