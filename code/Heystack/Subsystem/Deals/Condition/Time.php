@@ -3,6 +3,7 @@
 namespace Heystack\Subsystem\Deals\Condition;
 
 use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
+use Heystack\Subsystem\Deals\Interfaces\ConditionAlmostMetInterface;
 use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
 
 /**
@@ -11,7 +12,7 @@ use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
  * @author Glenn Bautista <glenn@heyday.co.nz>
  * @package Ecommerce-Deals
  */
-class Time implements ConditionInterface
+class Time implements ConditionInterface, ConditionAlmostMetInterface
 {
     const CONDITION_TYPE = 'Time';
     const START_KEY = 'start';
@@ -95,6 +96,12 @@ class Time implements ConditionInterface
 
         return $met;
     }
+
+    public function almostMet()
+    {
+        return $this->met();
+    }
+
     /**
      * @return string
      */
