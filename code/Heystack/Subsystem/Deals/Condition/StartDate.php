@@ -43,7 +43,7 @@ class StartDate implements ConditionInterface, ConditionAlmostMetInterface
 
         } else {
 
-            throw new \Exception('StartTimeCondition requires a start time');
+            throw new \Exception('StartDateCondition requires a start date');
 
         }
 
@@ -76,7 +76,7 @@ class StartDate implements ConditionInterface, ConditionAlmostMetInterface
      */
     public function getDescription()
     {
-        return 'Valid if current date greater than: ' . date(self::$time_format, $this->startDate);;
+        return 'Valid if current date greater than: ' . date(self::$time_format, $this->startDate);
     }
 
     /**

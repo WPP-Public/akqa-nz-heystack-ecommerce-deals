@@ -28,7 +28,7 @@ class PurchasableHasQuantityInCart implements ConditionInterface, ConditionAlmos
     use HasDealHandler;
     use HasPurchasableHolder;
 
-    const CONDITION_TYPE = 'PurchasableQuantityInCart';
+    const CONDITION_TYPE = 'PurchasableHasQuantityInCart';
     const PURCHASABLE_IDENTIFIERS = 'purchasables_identifiers';
     const MINIMUM_QUANTITY_KEY = 'minimum_quantity';
 

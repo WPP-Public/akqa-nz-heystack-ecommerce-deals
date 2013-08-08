@@ -48,7 +48,7 @@ class EndDate implements ConditionInterface, ConditionAlmostMetInterface
         }
 
         // Set up a default currentTime, but allow the value to be overridden through a setter.
-        $this->currentDate = time();
+        $this->currentTime = time();
 
     }
     /**

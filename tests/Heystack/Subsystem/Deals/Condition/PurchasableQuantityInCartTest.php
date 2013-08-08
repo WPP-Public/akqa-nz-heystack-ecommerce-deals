@@ -1,7 +1,7 @@
 <?php
 namespace Heystack\Subsystem\Deals\Test;
 
-use Heystack\Subsystem\Deals\Condition\PurchasableQuantityInCart;
+use Heystack\Subsystem\Deals\Condition\PurchasableHasQuantityInCart;
 use Heystack\Subsystem\Products\ProductHolder\ProductHolder;
 
 /**
@@ -46,7 +46,7 @@ class PurchasableQuantityInCartTest extends \PHPUnit_Framework_TestCase
                 $this->returnValueMap($hasConfigMap)
             );
 
-        $this->purchasableQuantityInCartCondition = new PurchasableQuantityInCart($this->purchaseableHolder, $this->adaptableConfigurationStub);
+        $this->purchasableQuantityInCartCondition = new PurchasableHasQuantityInCart($this->purchaseableHolder, $this->adaptableConfigurationStub);
     }
 
     public function testNoConfiguration()
@@ -72,18 +72,18 @@ class PurchasableQuantityInCartTest extends \PHPUnit_Framework_TestCase
         $this->configureStub(
             [
                 [
-                    PurchasableQuantityInCart::MINIMUM_QUANTITY_KEY, 1
+                    PurchasableHasQuantityInCart::MINIMUM_QUANTITY_KEY, 1
                 ],
                 [
-                    PurchasableQuantityInCart::PURCHASABLE_IDENTIFIERS, array(1)
+                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, array(1)
                 ]
             ],
             [
                 [
-                    PurchasableQuantityInCart::MINIMUM_QUANTITY_KEY, 1
+                    PurchasableHasQuantityInCart::MINIMUM_QUANTITY_KEY, 1
                 ],
                 [
-                    PurchasableQuantityInCart::PURCHASABLE_IDENTIFIERS, array(1)
+                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, array(1)
                 ]
             ]
         );
@@ -96,12 +96,12 @@ class PurchasableQuantityInCartTest extends \PHPUnit_Framework_TestCase
         $this->configureStub(
             [
                 [
-                    PurchasableQuantityInCart::MINIMUM_QUANTITY_KEY, 1
+                    PurchasableHasQuantityInCart::MINIMUM_QUANTITY_KEY, 1
                 ]
             ],
             [
                 [
-                    PurchasableQuantityInCart::MINIMUM_QUANTITY_KEY, 1
+                    PurchasableHasQuantityInCart::MINIMUM_QUANTITY_KEY, 1
                 ]
             ]
         );
@@ -114,12 +114,12 @@ class PurchasableQuantityInCartTest extends \PHPUnit_Framework_TestCase
         $this->configureStub(
             [
                 [
-                    PurchasableQuantityInCart::PURCHASABLE_IDENTIFIERS, array(1)
+                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, array(1)
                 ]
             ],
             [
                 [
-                    PurchasableQuantityInCart::PURCHASABLE_IDENTIFIERS, array(1)
+                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, array(1)
                 ]
             ]
         );
@@ -130,23 +130,23 @@ class PurchasableQuantityInCartTest extends \PHPUnit_Framework_TestCase
         $this->configureStub(
             [
                 [
-                    PurchasableQuantityInCart::MINIMUM_QUANTITY_KEY, 1
+                    PurchasableHasQuantityInCart::MINIMUM_QUANTITY_KEY, 1
                 ],
                 [
-                    PurchasableQuantityInCart::PURCHASABLE_IDENTIFIERS, array(1)
+                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, array(1)
                 ]
             ],
             [
                 [
-                    PurchasableQuantityInCart::MINIMUM_QUANTITY_KEY, 1
+                    PurchasableHasQuantityInCart::MINIMUM_QUANTITY_KEY, 1
                 ],
                 [
-                    PurchasableQuantityInCart::PURCHASABLE_IDENTIFIERS, array(1)
+                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, array(1)
                 ]
             ]
         );
 
-        $this->assertEquals($this->purchasableQuantityInCartCondition->getType(), PurchasableQuantityInCart::CONDITION_TYPE);
+        $this->assertEquals($this->purchasableQuantityInCartCondition->getType(), PurchasableHasQuantityInCart::CONDITION_TYPE);
     }
 
     public function testGetDescription()
@@ -154,18 +154,18 @@ class PurchasableQuantityInCartTest extends \PHPUnit_Framework_TestCase
         $this->configureStub(
             [
                 [
-                    PurchasableQuantityInCart::MINIMUM_QUANTITY_KEY, 1
+                    PurchasableHasQuantityInCart::MINIMUM_QUANTITY_KEY, 1
                 ],
                 [
-                    PurchasableQuantityInCart::PURCHASABLE_IDENTIFIERS, array(1)
+                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, array(1)
                 ]
             ],
             [
                 [
-                    PurchasableQuantityInCart::MINIMUM_QUANTITY_KEY, 1
+                    PurchasableHasQuantityInCart::MINIMUM_QUANTITY_KEY, 1
                 ],
                 [
-                    PurchasableQuantityInCart::PURCHASABLE_IDENTIFIERS, array(1)
+                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, array(1)
                 ]
             ]
         );
