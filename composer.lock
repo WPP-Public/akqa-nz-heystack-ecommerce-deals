@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "28d7718346fcddc1af660f785b48a179",
+    "hash": "9c9c65b60cbdeb68a252be8c2526ff09",
     "packages": [
         {
             "name": "composer/installers",
@@ -173,7 +173,7 @@
         },
         {
             "name": "heystack/ecommerce-core",
-            "version": "dev-feature/onConditionsMet",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "ssh://sls@slsapp.com:1234/heyday/ecommerce-core.git",
@@ -215,11 +215,11 @@
         },
         {
             "name": "heystack/ecommerce-products",
-            "version": "dev-feature/onConditionsMet",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "ssh://sls@slsapp.com:1234/heyday/ecommerce-products.git",
-                "reference": "6206a5656d8e1420848b7bc83f8a0df5963eccac"
+                "reference": "2fe92b5317de4362eb2693ce5fac1d1dfe830843"
             },
             "require": {
                 "composer/installers": "~1.0.0",
@@ -237,11 +237,11 @@
                     "Heystack": "code/"
                 }
             },
-            "time": "2013-08-06 23:30:25"
+            "time": "2013-08-08 02:29:49"
         },
         {
             "name": "heystack/ecommerce-shipping",
-            "version": "dev-feature/onConditionsMet",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "ssh://sls@slsapp.com:110/heyday/ecommerce-shipping.git",
@@ -267,7 +267,7 @@
         },
         {
             "name": "heystack/heystack",
-            "version": "dev-feature/onConditionsMet",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "ssh://sls@slsapp.com:1234/heyday/heystack.git",
