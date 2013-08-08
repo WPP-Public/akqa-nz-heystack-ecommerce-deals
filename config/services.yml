@@ -7,10 +7,11 @@ parameters:
   deal.subscriber.class: Heystack\Subsystem\Deals\Subscriber
 
   deal.condition.configuration.class: Heystack\Subsystem\Deals\AdaptableConfiguration
-  deal.condition.time.class: Heystack\Subsystem\Deals\Condition\Time
+  deal.condition.startdate.class: Heystack\Subsystem\Deals\Condition\StartDate
+  deal.condition.enddate.class: Heystack\Subsystem\Deals\Condition\EndDate
   deal.condition.minimumcarttotal.class: Heystack\Subsystem\Deals\Condition\MinimumCartTotal
-  deal.condition.itemsincart.class: Heystack\Subsystem\Deals\Condition\ItemsInCart
   deal.condition.quantityofpurchasablesincart.class: Heystack\Subsystem\Deals\Condition\QuantityOfPurchasablesInCart
+  deal.condition.purchasablehasquantityincart.class: Heystack\Subsystem\Deals\Condition\PurchasableHasQuantityInCart
 
   deal.result.configuration.class: Heystack\Subsystem\Deals\AdaptableConfiguration
   deal.result.freegift.class: Heystack\Subsystem\Deals\Result\FreeGift
@@ -34,8 +35,12 @@ services:
     class: %deal.condition.configuration.class%
     abstract: true
 
-  deals.condition.time:
-    class: %deal.condition.time.class%
+  deals.condition.startdate:
+    class: %deal.condition.startdate.class%
+    abstract: true
+
+  deals.condition.enddate:
+    class: %deal.condition.enddate.class%
     abstract: true
 
   deals.condition.minimumcarttotal:
@@ -43,13 +48,13 @@ services:
       arguments: [@productholder, @currency_service]
       abstract: true
 
-  deals.condition.itemsincart:
-      class: %deal.condition.itemsincart.class%
+  deals.condition.quantityofpurchasablesincart:
+      class: %deal.condition.quantityofpurchasablesincart.class%
       arguments: [@productholder]
       abstract: true
 
-  deals.condition.quantityofpurchasablesincart:
-      class: %deal.condition.quantityofpurchasablesincart.class%
+  deals.condition.purchasablehasquantityincart:
+      class: %deal.condition.purchasablehasquantityincart.class%
       arguments: [@productholder]
       abstract: true
 

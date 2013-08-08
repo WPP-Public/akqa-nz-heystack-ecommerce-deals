@@ -29,16 +29,17 @@ class HasPurchasableHolderTest extends \PHPUnit_Framework_TestCase
 
         $this->assertAttributeNotEmpty('purchasableHolder', $this->trait);
 
+        return $this->trait;
+
     }
 
-    public function testGetPurchasableHolder()
+    /**
+     * @depends testSetPurchasableHolder
+     */
+    public function testGetPurchasableHolder($trait)
     {
 
-        $this->trait->setPurchasableHolder($this->purchasableHolder);
-
-        $handler = $this->trait->getPurchasableHolder();
-
-        $this->assertEquals($handler, $this->purchasableHolder);
+        $this->assertEquals($trait->getPurchasableHolder(), $this->purchasableHolder);
 
     }
 }

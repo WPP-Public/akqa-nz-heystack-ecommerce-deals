@@ -7,15 +7,15 @@ use Heystack\Subsystem\Deals\Interfaces\ConditionAlmostMetInterface;
 use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
 
 /**
+ * Determine whether the current date is less than the end date
  *
  * @copyright  Heyday
- * @author Glenn Bautista <glenn@heyday.co.nz>
+ * @author Stevie Mayhew <stevie@heyday.co.nz>
  * @package Ecommerce-Deals
  */
-class Time implements ConditionInterface, ConditionAlmostMetInterface
+class EndDate implements ConditionInterface, ConditionAlmostMetInterface
 {
-    const CONDITION_TYPE = 'Time';
-    const START_KEY = 'start';
+    const CONDITION_TYPE = 'EndDate';
     const END_KEY = 'end';
 
     /**
@@ -25,11 +25,7 @@ class Time implements ConditionInterface, ConditionAlmostMetInterface
     /**
      * @var int
      */
-    protected $startTime;
-    /**
-     * @var int
-     */
-    protected $endTime;
+    protected $endDate;
     /**
      * @var
      */
@@ -40,32 +36,19 @@ class Time implements ConditionInterface, ConditionAlmostMetInterface
      */
     public function __construct(AdaptableConfigurationInterface $configuration)
     {
-        $startAndEndTimesAbsent = true;
-
-        if ($configuration->hasConfig(self::START_KEY)) {
-
-            $this->startTime = strtotime($configuration->getConfig(self::START_KEY));
-
-            $startAndEndTimesAbsent = false;
-
-        }
 
         if ($configuration->hasConfig(self::END_KEY)) {
 
-            $this->endTime = strtotime($configuration->getConfig(self::END_KEY));
+            $this->endDate = strtotime($configuration->getConfig(self::END_KEY));
 
-            $startAndEndTimesAbsent = false;
+        } else {
 
-        }
-
-        if ($startAndEndTimesAbsent) {
-
-            throw new \Exception('Time Condition requires either a Start time or an End time');
+            throw new \Exception('EndTimeCondition requires a end date');
 
         }
 
         // Set up a default currentTime, but allow the value to be overridden through a setter.
-        $this->currentTime = time();
+        $this->currentDate = time();
 
     }
     /**
@@ -80,21 +63,7 @@ class Time implements ConditionInterface, ConditionAlmostMetInterface
      */
     public function met()
     {
-        $met = false;
-
-        if ($this->startTime && $this->endTime) {
-            $met = ($this->currentTime > $this->startTime) && ($this->currentTime < $this->endTime);
-        }
-
-        if ($this->startTime && !$this->endTime) {
-            $met = $this->currentTime > $this->startTime;
-        }
-
-        if ($this->endTime && !$this->startTime) {
-            $met = $this->currentTime < $this->endTime;
-        }
-
-        return $met;
+        return $this->currentDate < $this->endDate;
     }
 
     public function almostMet()
@@ -107,16 +76,7 @@ class Time implements ConditionInterface, ConditionAlmostMetInterface
      */
     public function getDescription()
     {
-        $description = array();
-
-        if ($this->startTime) {
-            $description[] = 'From: ' . date(self::$time_format, $this->startTime);
-        }
-        if ($this->endTime) {
-            $description[] = 'To: ' . date(self::$time_format, $this->endTime);
-        }
-
-        return implode('; ', $description);
+        return 'Valid if current date less than: ' . date(self::$time_format, $this->endDate);
     }
 
     /**

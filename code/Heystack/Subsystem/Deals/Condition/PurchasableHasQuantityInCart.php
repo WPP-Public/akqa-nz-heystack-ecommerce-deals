@@ -23,7 +23,7 @@ use Heystack\Subsystem\Products\ProductHolder\ProductHolder;
  * @author Stevie Mayhew <stevie@heyday.co.nz>
  * @package \Heystack\Subsystem\Deals\Condition
  */
-class PurchasableQuantityInCart implements ConditionInterface, ConditionAlmostMetInterface, HasDealHandlerInterface, HasPurchasableHolderInterface
+class PurchasableHasQuantityInCart implements ConditionInterface, ConditionAlmostMetInterface, HasDealHandlerInterface, HasPurchasableHolderInterface
 {
     use HasDealHandler;
     use HasPurchasableHolder;

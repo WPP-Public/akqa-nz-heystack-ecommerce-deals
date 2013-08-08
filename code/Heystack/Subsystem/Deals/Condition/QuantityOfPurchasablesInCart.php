@@ -22,7 +22,7 @@ use Heystack\Subsystem\Products\ProductHolder\ProductHolder;
  *
  * @copyright  Heyday
  * @author Glenn Bautista <glenn@heyday.co.nz>
- * @package Ecommerce-Deals
+ * @package \Heystack\Subsystem\Deals\Condition
  */
 class QuantityOfPurchasablesInCart implements ConditionInterface, ConditionAlmostMetInterface, HasDealHandlerInterface, HasPurchasableHolderInterface
 {

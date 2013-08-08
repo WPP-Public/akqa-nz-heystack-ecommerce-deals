@@ -3,8 +3,7 @@ namespace Heystack\Subsystem\Deals\Result;
 
 use Heystack\Subsystem\Core\Identifier\Identifier;
 use Heystack\Subsystem\Deals\AdaptableConfiguration;
-use Heystack\Subsystem\Deals\Condition\PurchasableQuantityInCart;
-use Heystack\Subsystem\Deals\Condition\QuantityOfPurchasablesInCart;
+use Heystack\Subsystem\Deals\Condition;
 use Heystack\Subsystem\Deals\Events\ConditionEvent;
 use Heystack\Subsystem\Deals\Events;
 use Heystack\Subsystem\Deals\Events\ResultEvent;
@@ -278,12 +277,12 @@ class CheapestPurchasableDiscount implements ResultInterface, ResultWithConditio
     {
 
         $productConfig = array(
-            PurchasableQuantityInCart::PURCHASABLE_IDENTIFIERS => $this->purchasableIdentifiers,
-            PurchasableQuantityInCart::MINIMUM_QUANTITY_KEY => 1
+            Condition\PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS => $this->purchasableIdentifiers,
+            Condition\PurchasableHasQuantityInCart::MINIMUM_QUANTITY_KEY => 1
 
         );
 
-        $purchasableInCartCondition = new PurchasableQuantityInCart($this->getPurchasableHolder(), new AdaptableConfiguration($productConfig));
+        $purchasableInCartCondition = new Condition\PurchasableHasQuantityInCart($this->getPurchasableHolder(), new AdaptableConfiguration($productConfig));
 
         return array(
             $purchasableInCartCondition
