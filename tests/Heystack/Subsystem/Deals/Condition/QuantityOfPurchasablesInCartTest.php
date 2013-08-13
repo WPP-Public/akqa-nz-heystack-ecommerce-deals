@@ -9,9 +9,7 @@ use Heystack\Subsystem\Products\ProductHolder\ProductHolder;
  */
 class QuantityOfPurchasablesInCartTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var Time
-     */
+
     protected $quantityOfPurchasablesInCartCondition;
     protected $adaptableConfigurationStub;
     protected $purchaseableHolder;
@@ -178,18 +176,279 @@ class QuantityOfPurchasablesInCartTest extends \PHPUnit_Framework_TestCase
 
     }
 
-    public function testMet()
+    public function testSetDealHandler()
     {
+        $this->configureStub(
+            [
+                [
+                    QuantityOfPurchasablesInCart::MINIMUM_QUANTITY_KEY, 1
+                ],
+                [
+                    QuantityOfPurchasablesInCart::PURCHASABLE_IDENTIFIERS, array(1)
+                ]
+            ],
+            [
+                [
+                    QuantityOfPurchasablesInCart::MINIMUM_QUANTITY_KEY, 1
+                ],
+                [
+                    QuantityOfPurchasablesInCart::PURCHASABLE_IDENTIFIERS, array(1)
+                ]
+            ]
+        );
 
+        $handler = $this->getMockBuilder('Heystack\Subsystem\Deals\DealHandler')
+            ->disableOriginalConstructor()
+            ->getMock();
 
-        $this->markTestIncomplete();
+        $this->quantityOfPurchasablesInCartCondition->setDealHandler($handler);
+
+        $this->assertAttributeNotEmpty('dealHandler', $this->quantityOfPurchasablesInCartCondition);
+
     }
 
+    /**
+     * @depends testSetDealHandler
+     */
+    public function testMet()
+    {
+        $this->testProduct = $this->getMockBuilder('Heystack\Subsystem\Deals\Interfaces\DealPurchasableInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->testProductTwo = $this->getMockBuilder('Heystack\Subsystem\Deals\Interfaces\DealPurchasableInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->testProduct->expects($this->any())
+            ->method('getQuantity')
+            ->will($this->returnValue(1));
+
+        $this->testProduct->expects($this->any())
+            ->method('hasFreeItems')
+            ->will($this->returnValue(false));
+
+        $this->testProductTwo->expects($this->any())
+            ->method('getQuantity')
+            ->will($this->returnValue(6));
+
+        $this->testProductTwo->expects($this->any())
+            ->method('hasFreeItems')
+            ->will($this->returnValue(true));
+
+        $this->testProductTwo->expects($this->any())
+            ->method('getFreeQuantity')
+            ->will($this->returnValue(1));
+
+        $this->testProductTwo->expects($this->any())
+            ->method('getUnitPrice')
+            ->will($this->returnValue(10));
+
+        $this->purchaseableHolder->expects($this->any())
+            ->method('getPurchasablesByPrimaryIdentifier')
+            ->will($this->returnValue(array($this->testProduct, $this->testProductTwo)));
+
+        $eventService = $this->getMockBuilder('Heystack\Subsystem\Core\EventDispatcher')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->purchaseableHolder->expects($this->any())
+            ->method('getEventService')
+            ->will($this->returnValue($eventService));
+
+        $this->configureStub(
+            [
+                [
+                    QuantityOfPurchasablesInCart::MINIMUM_QUANTITY_KEY, 5
+                ],
+                [
+                    QuantityOfPurchasablesInCart::PURCHASABLE_IDENTIFIERS, array(1)
+                ]
+            ],
+            [
+                [
+                    QuantityOfPurchasablesInCart::MINIMUM_QUANTITY_KEY, 5
+                ],
+                [
+                    QuantityOfPurchasablesInCart::PURCHASABLE_IDENTIFIERS, array(1)
+                ]
+            ]
+        );
+
+        $handler = $this->getMockBuilder('Heystack\Subsystem\Deals\DealHandler')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->quantityOfPurchasablesInCartCondition->setDealHandler($handler);
+
+        $this->assertEquals(1, $this->quantityOfPurchasablesInCartCondition->met());
+    }
+
+    /**
+     * @depends testSetDealHandler
+     */
+    public function testMetWithFreeGift()
+    {
+        $this->testProduct = $this->getMockBuilder('Heystack\Subsystem\Deals\Interfaces\DealPurchasableInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->testProductTwo = $this->getMockBuilder('Heystack\Subsystem\Deals\Interfaces\DealPurchasableInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->testProduct->expects($this->any())
+            ->method('getQuantity')
+            ->will($this->returnValue(1));
+
+        $this->testProduct->expects($this->any())
+            ->method('hasFreeItems')
+            ->will($this->returnValue(false));
+
+        $this->testProductTwo->expects($this->any())
+            ->method('getQuantity')
+            ->will($this->returnValue(5));
+
+        $this->testProductTwo->expects($this->any())
+            ->method('hasFreeItems')
+            ->will($this->returnValue(true));
+
+        $this->testProductTwo->expects($this->any())
+            ->method('getFreeQuantity')
+            ->will($this->returnValue(1));
+
+        $this->testProductTwo->expects($this->any())
+            ->method('getUnitPrice')
+            ->will($this->returnValue(10));
+
+        $this->purchaseableHolder->expects($this->any())
+            ->method('getPurchasablesByPrimaryIdentifier')
+            ->will($this->returnValue(array($this->testProduct, $this->testProductTwo)));
+
+        $eventService = $this->getMockBuilder('Heystack\Subsystem\Core\EventDispatcher')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->purchaseableHolder->expects($this->any())
+            ->method('getEventService')
+            ->will($this->returnValue($eventService));
+
+        $this->configureStub(
+            [
+                [
+                    QuantityOfPurchasablesInCart::MINIMUM_QUANTITY_KEY, 5
+                ],
+                [
+                    QuantityOfPurchasablesInCart::PURCHASABLE_IDENTIFIERS, array(1)
+                ]
+            ],
+            [
+                [
+                    QuantityOfPurchasablesInCart::MINIMUM_QUANTITY_KEY, 5
+                ],
+                [
+                    QuantityOfPurchasablesInCart::PURCHASABLE_IDENTIFIERS, array(1)
+                ]
+            ]
+        );
+
+        $handler = $this->getMockBuilder('Heystack\Subsystem\Deals\DealHandler')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $freeGift = $this->getMockBuilder('Heystack\Subsystem\Deals\Result\FreeGift')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $handler->expects($this->any())
+            ->method('getResult')
+            ->will($this->returnValue($freeGift));
+
+        $this->quantityOfPurchasablesInCartCondition->setDealHandler($handler);
+
+        $this->assertEquals(1, $this->quantityOfPurchasablesInCartCondition->met());
+    }
+
+
+    /**
+     * @depends testSetDealHandler
+     */
     public function testAlmostMet()
     {
+        $this->testProduct = $this->getMockBuilder('Heystack\Subsystem\Deals\Interfaces\DealPurchasableInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
 
+        $this->testProductTwo = $this->getMockBuilder('Heystack\Subsystem\Deals\Interfaces\DealPurchasableInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
 
-        $this->markTestIncomplete();
+        $this->testProduct->expects($this->any())
+            ->method('getQuantity')
+            ->will($this->onConsecutiveCalls(1, 1, 1, 1, 1 ,1));
+
+        $this->testProduct->expects($this->any())
+            ->method('hasFreeItems')
+            ->will($this->returnValue(false));
+
+        $this->testProductTwo->expects($this->any())
+            ->method('getQuantity')
+            ->will($this->onConsecutiveCalls(1, 1, 5, 5, 5, 5));
+
+        $this->testProductTwo->expects($this->any())
+            ->method('hasFreeItems')
+            ->will($this->returnValue(true));
+
+        $this->testProductTwo->expects($this->any())
+            ->method('getFreeQuantity')
+            ->will($this->returnValue(1));
+
+        $this->testProductTwo->expects($this->any())
+            ->method('getUnitPrice')
+            ->will($this->returnValue(10));
+
+        $this->purchaseableHolder->expects($this->any())
+            ->method('getPurchasablesByPrimaryIdentifier')
+            ->will($this->returnValue(array($this->testProduct, $this->testProductTwo)));
+
+        $this->purchaseableHolder->expects($this->any())
+            ->method('getPurchasables')
+            ->will($this->returnValue(array($this->testProduct, $this->testProductTwo)));
+
+        $eventService = $this->getMockBuilder('Heystack\Subsystem\Core\EventDispatcher')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->purchaseableHolder->expects($this->any())
+            ->method('getEventService')
+            ->will($this->returnValue($eventService));
+
+        $this->configureStub(
+            [
+                [
+                    QuantityOfPurchasablesInCart::MINIMUM_QUANTITY_KEY, 5
+                ],
+                [
+                    QuantityOfPurchasablesInCart::PURCHASABLE_IDENTIFIERS, array(1)
+                ]
+            ],
+            [
+                [
+                    QuantityOfPurchasablesInCart::MINIMUM_QUANTITY_KEY, 5
+                ],
+                [
+                    QuantityOfPurchasablesInCart::PURCHASABLE_IDENTIFIERS, array(1)
+                ]
+            ]
+        );
+
+        $handler = $this->getMockBuilder('Heystack\Subsystem\Deals\DealHandler')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->quantityOfPurchasablesInCartCondition->setDealHandler($handler);
+
+        $this->assertTrue($this->quantityOfPurchasablesInCartCondition->almostMet());
     }
 
 }

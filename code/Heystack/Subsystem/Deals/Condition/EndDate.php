@@ -63,7 +63,7 @@ class EndDate implements ConditionInterface, ConditionAlmostMetInterface
      */
     public function met()
     {
-        return $this->currentDate < $this->endDate;
+        return $this->currentTime < $this->endDate;
     }
 
     public function almostMet()

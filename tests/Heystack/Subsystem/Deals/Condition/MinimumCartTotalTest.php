@@ -29,7 +29,6 @@ class MinimumCartTotalTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-
     }
 
     protected function configureStub($getConfigMap, $hasConfigMap)
@@ -104,6 +103,27 @@ class MinimumCartTotalTest extends \PHPUnit_Framework_TestCase
 
     public function testGetDescription()
     {
+
+        $this->configureStub(
+            [
+                [
+                    MinimumCartTotal::AMOUNTS_KEY, array("NZ" => 10)
+                ]
+            ],
+            [
+                [
+                    MinimumCartTotal::AMOUNTS_KEY, array("NZ" => 10)
+                ]
+            ]
+        );
+
+        $this->assertEquals($this->minimumCartCondition->getDescription(), "The Transaction sub total must be greater than or equal to -  NZ : 10");
+
+
+    }
+
+    public function testGetAmounts() {
+
         $this->configureStub(
             [
                 [
@@ -120,24 +140,185 @@ class MinimumCartTotalTest extends \PHPUnit_Framework_TestCase
         $this->minimumCartCondition->setAmounts(array("NZ" => 10));
 
         $this->assertEquals($this->minimumCartCondition->getAmounts(), array("NZ" => 10));
+    }
 
-        $this->assertEquals($this->minimumCartCondition->getDescription(), "The Transaction sub total must be greater than or equal to -  NZ : 10");
+    private function setBasicStubs()
+    {
+        $this->currencyService->expects($this->any())
+            ->method('getActiveCurrencyCode')
+            ->will($this->returnValue('NZ'));
 
+        $this->testProduct = $this->getMockBuilder('Heystack\Subsystem\Deals\Interfaces\DealPurchasableInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
 
+        $this->testProductTwo = $this->getMockBuilder('Heystack\Subsystem\Deals\Interfaces\DealPurchasableInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->testProduct->expects($this->any())
+            ->method('getQuantity')
+            ->will($this->returnValue(1));
+
+        $this->testProduct->expects($this->any())
+            ->method('hasFreeItems')
+            ->will($this->returnValue(false));
+
+        $this->testProductTwo->expects($this->any())
+            ->method('getQuantity')
+            ->will($this->returnValue(5));
+
+        $this->testProductTwo->expects($this->any())
+            ->method('hasFreeItems')
+            ->will($this->returnValue(true));
+
+        $this->testProductTwo->expects($this->any())
+            ->method('getFreeQuantity')
+            ->will($this->returnValue(1));
+
+        $this->testProductTwo->expects($this->any())
+            ->method('getUnitPrice')
+            ->will($this->returnValue(10));
+
+        $this->purchaseableHolder->expects($this->any())
+            ->method('getPurchasables')
+            ->will($this->returnValue(array($this->testProduct, $this->testProductTwo)));
+
+        $eventService = $this->getMockBuilder('Heystack\Subsystem\Core\EventDispatcher')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->purchaseableHolder->expects($this->any())
+            ->method('getEventService')
+            ->will($this->returnValue($eventService));
     }
 
     public function testMet()
     {
+        $this->setBasicStubs();
 
+        $this->purchaseableHolder->expects($this->any())
+            ->method('getTotal')
+            ->will($this->returnValue(25));
 
-        $this->markTestIncomplete();
+        $this->configureStub(
+            [
+                [
+                    MinimumCartTotal::AMOUNTS_KEY, array("NZ" => 10)
+                ]
+            ],
+            [
+                [
+                    MinimumCartTotal::AMOUNTS_KEY, array("NZ" => 10)
+                ]
+            ]
+        );
+
+        $this->assertTrue($this->minimumCartCondition->met());
+
+    }
+
+    public function testNotMet()
+    {
+        $this->setBasicStubs();
+
+        $this->configureStub(
+            [
+                [
+                    MinimumCartTotal::AMOUNTS_KEY, array("NZ" => 10)
+                ]
+            ],
+            [
+                [
+                    MinimumCartTotal::AMOUNTS_KEY, array("NZ" => 10)
+                ]
+            ]
+        );
+        $this->purchaseableHolder->expects($this->any())
+            ->method('getTotal')
+            ->will($this->returnValue(15));
+
+        $this->assertFalse($this->minimumCartCondition->met());
+    }
+
+    public function testAlreadyMetAlmostMet()
+    {
+        $this->configureStub(
+            [
+                [
+                    MinimumCartTotal::AMOUNTS_KEY, array("NZ" => 10)
+                ]
+            ],
+            [
+                [
+                    MinimumCartTotal::AMOUNTS_KEY, array("NZ" => 10)
+                ]
+            ]
+        );
+
+        $this->setBasicStubs();
+
+        $this->purchaseableHolder->expects($this->any())
+            ->method('getTotal')
+            ->will($this->returnValue(10000));
+
+        $this->assertFalse($this->minimumCartCondition->almostMet());
+
     }
 
     public function testAlmostMet()
     {
+        $this->configureStub(
+            [
+                [
+                    MinimumCartTotal::AMOUNTS_KEY, array("NZ" => 10)
+                ]
+            ],
+            [
+                [
+                    MinimumCartTotal::AMOUNTS_KEY, array("NZ" => 10)
+                ]
+            ]
+        );
 
+        $this->setBasicStubs();
+        $this->purchaseableHolder->expects($this->any())
+            ->method('getEventService')
+            ->will($this->returnValue(false));
 
-        $this->markTestIncomplete();
+        $this->purchaseableHolder->expects($this->any())
+            ->method('getTotal')
+            ->will($this->onConsecutiveCalls(5, 20, 5));
+
+        $this->assertTrue($this->minimumCartCondition->almostMet());
+
+    }
+
+    public function testNotAlmostMet()
+    {
+        $this->configureStub(
+            [
+                [
+                    MinimumCartTotal::AMOUNTS_KEY, array("NZ" => 10)
+                ]
+            ],
+            [
+                [
+                    MinimumCartTotal::AMOUNTS_KEY, array("NZ" => 10)
+                ]
+            ]
+        );
+
+        $this->setBasicStubs();
+        $this->purchaseableHolder->expects($this->any())
+            ->method('getEventService')
+            ->will($this->returnValue(false));
+
+        $this->purchaseableHolder->expects($this->any())
+            ->method('getTotal')
+            ->will($this->returnValue(0));
+
+        $this->assertFalse($this->minimumCartCondition->almostMet());
     }
 
 }

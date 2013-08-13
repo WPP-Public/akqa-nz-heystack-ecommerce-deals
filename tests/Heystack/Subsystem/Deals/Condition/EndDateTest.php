@@ -142,4 +142,46 @@ class EndDateTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->timeCondition->getType(), EndDate::CONDITION_TYPE);
     }
 
+    /**
+     * @depends testSetCurrentTime
+     */
+    public function testMet()
+    {
+        $this->configureStub(
+            [
+                [
+                    'end', date(EndDate::$time_format, strtotime('tomorrow'))
+                ]
+            ],
+            [
+                [
+                    'end', date(EndDate::$time_format, strtotime('tomorrow'))
+                ]
+            ]
+        );
+
+        $this->assertTrue($this->timeCondition->met());
+    }
+
+    /**
+     * @depends testSetCurrentTime
+     */
+    public function testAlmostMet()
+    {
+        $this->configureStub(
+            [
+                [
+                    'end', date(EndDate::$time_format, strtotime('tomorrow'))
+                ]
+            ],
+            [
+                [
+                    'end', date(EndDate::$time_format, strtotime('tomorrow'))
+                ]
+            ]
+        );
+
+        $this->assertTrue($this->timeCondition->almostMet());
+    }
+
 }

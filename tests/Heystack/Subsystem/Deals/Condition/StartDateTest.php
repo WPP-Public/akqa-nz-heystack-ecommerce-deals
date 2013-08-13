@@ -141,4 +141,46 @@ class StartDateTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->timeCondition->getType(), StartDate::CONDITION_TYPE);
     }
 
+    /**
+     * @depends testSetCurrentTime
+     */
+    public function testMet()
+    {
+        $this->configureStub(
+            [
+                [
+                    'start', date(StartDate::$time_format, strtotime('yesterday'))
+                ]
+            ],
+            [
+                [
+                    'start', date(StartDate::$time_format, strtotime('yesterday'))
+                ]
+            ]
+        );
+
+        $this->assertTrue($this->timeCondition->met());
+    }
+
+    /**
+     * @depends testSetCurrentTime
+     */
+    public function testAlmostMet()
+    {
+        $this->configureStub(
+            [
+                [
+                    'start', date(StartDate::$time_format, strtotime('yesterday'))
+                ]
+            ],
+            [
+                [
+                    'start', date(StartDate::$time_format, strtotime('yesterday'))
+                ]
+            ]
+        );
+
+        $this->assertTrue($this->timeCondition->almostMet());
+    }
+
 }

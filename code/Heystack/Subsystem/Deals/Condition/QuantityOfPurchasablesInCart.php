@@ -117,15 +117,16 @@ class QuantityOfPurchasablesInCart implements ConditionInterface, ConditionAlmos
 
         $purchasables = call_user_func_array('array_merge', $purchasables);
 
-
         foreach ($purchasables as $purchasable) {
 
             if ($purchasable instanceof DealPurchasableInterface) {
 
-                $quantity += $purchasable->getQuantity();
+                $lol = $purchasable->getQuantity();
+                $quantity += $lol;
 
+                error_log($lol);
                 // TODO: Refactor this coupling
-                if ($this->dealHandler->getResult() instanceof FreeGift) {
+                if ($this->getDealHandler()->getResult() instanceof FreeGift) {
 
                     $quantity -= $purchasable->getFreeQuantity();
 
@@ -168,10 +169,14 @@ class QuantityOfPurchasablesInCart implements ConditionInterface, ConditionAlmos
                 $this->purchasableHolder->setPurchasable($purchasable, $quantity + 1);
                 $metCount = $this->met();
                 $this->purchasableHolder->setPurchasable($purchasable, $quantity);
+
+                error_log("$metCount");
+
                 if ($metCount > $currentCount) {
                     $met = true;
                     break;
                 }
+
             }
 
         }

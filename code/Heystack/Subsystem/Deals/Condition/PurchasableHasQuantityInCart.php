@@ -138,7 +138,6 @@ class PurchasableHasQuantityInCart implements ConditionInterface, ConditionAlmos
         $met = false;
         $purchasables = array();
 
-
         if ($purchasableHolder instanceof HasEventServiceInterface) {
             $this->purchasableHolder->getEventService()->setEnabled(false);
         }
@@ -178,8 +177,6 @@ class PurchasableHasQuantityInCart implements ConditionInterface, ConditionAlmos
         if ($purchasableHolder instanceof HasEventServiceInterface) {
             $this->purchasableHolder->getEventService()->setEnabled(true);
         }
-
-
 
         return $met;
     }

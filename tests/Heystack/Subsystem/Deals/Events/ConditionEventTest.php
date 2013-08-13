@@ -27,9 +27,11 @@ class ConditionEventTest extends \PHPUnit_Framework_TestCase
 
         $this->event = new ConditionEvent($this->dealHandler);
 
-//        $this->event->expects($this->any())
-//            ->method('getDeal')
-//            ->will($this->returnValue($this->dealHandler));
+    }
+
+    public function testIsNotInitiallyEmpty()
+    {
+        $this->assertAttributeNotEmpty('deal', $this->event);
 
     }
 
@@ -38,13 +40,9 @@ class ConditionEventTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->event->getDeal(), $this->dealHandler);
     }
 
-    public function testIsNotInitiallyEmpty()
+    public function testGetDispatcher()
     {
-
-        $this->assertAttributeNotEmpty('deal', $this->event);
-
+        $this->assertEquals($this->event->getDispatcher(), NULL);
     }
-
-
 
 }
