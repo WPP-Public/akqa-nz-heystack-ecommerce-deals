@@ -126,10 +126,19 @@ class DealHandlerTest extends \PHPUnit_Framework_TestCase
     public function testAddCondition()
     {
         $this->dealHandler->addCondition($condition = $this->getConditionStub());
+        $conditions = $this->dealHandler->getConditions();
+        $this->assertSame($condition, reset($conditions));
 
+        // test conditions which have a dealhandler attached
+        $condition = $this->getMockBuilder('Heystack\Subsystem\Deals\Condition\QuantityOfPurchasablesInCart')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->dealHandler->addCondition($condition);
         $conditions = $this->dealHandler->getConditions();
 
         $this->assertSame($condition, reset($conditions));
+
     }
 
     /**
@@ -145,13 +154,10 @@ class DealHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetTotal()
     {
-        $this->dealHandler->setResult($this->getResultStub());        
-        
+        $this->dealHandler->setResult($this->getResultStub());
+
         $this->assertEquals(self::INITIAL_TOTAL, $this->dealHandler->getTotal());
 
-        $this->dealHandler->updateTotal();
-
-        $this->assertEquals(self::FINAL_TOTAL, $this->dealHandler->getTotal());
     }
 
     /**
@@ -250,5 +256,177 @@ DESCRIPTION;
 
         $this->assertEquals(self::PARENT_REFERENCE, $this->dealHandler->getParentReference());
     }
+
+    /**
+     * @covers Heystack\Subsystem\Deals\DealHandler::updateTotal
+     */
+    public function testUpdateTotal()
+    {
+        $this->dealHandler->setResult($this->getResultStub());
+
+        $this->dealHandler->updateTotal();
+
+        $this->assertEquals(self::FINAL_TOTAL, $this->dealHandler->getTotal());
+
+        $condition = $this->getMockBuilder('Heystack\Subsystem\Deals\Interfaces\ConditionInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $condition->expects($this->any())
+            ->method('met')
+            ->will(
+                $this->returnValue(false)
+            );
+
+        $condition->expects($this->any())
+            ->method('getDescription')
+            ->will(
+                $this->returnValue(self::CONDITION_DESCRIPTION)
+            );
+
+        $this->dealHandler->addCondition($condition);
+        $this->dealHandler->updateTotal();
+
+        $this->assertEquals(0, $this->dealHandler->getTotal());
+
+    }
+
+    /**
+     * @covers Heystack\Subsystem\Deals\DealHandler::getConditions
+     */
+    public function testGetConditions()
+    {
+        $this->dealHandler->addCondition($condition = $this->getConditionStub());
+        $gotConditions = $this->dealHandler->getConditions();
+        $this->assertTrue(is_array($gotConditions));
+        $this->assertSame(array_pop($gotConditions), $condition);
+    }
+
+    /**
+     * @covers Heystack\Subsystem\Deals\DealHandler::getConditionsMetCount
+     */
+    public function testGetConditionsMetCount()
+    {
+        $this->dealHandler->addCondition($this->getConditionStub());
+        $this->assertEquals(0, $this->dealHandler->getConditionsMetCount());
+        $this->dealHandler->conditionsMet();
+        $this->assertEquals(1, $this->dealHandler->getConditionsMetCount());
+    }
+
+    /**
+     * @covers Heystack\Subsystem\Deals\DealHandler::getResult
+     */
+    public function testGetResult()
+    {
+        $this->dealHandler->setResult($result = $this->getResultStub());
+        $this->assertSame($this->dealHandler->getResult(), $result);
+    }
+
+    /**
+     * @covers Heystack\Subsystem\Deals\DealHandler::almostMet
+     * @depends testAddCondition
+     */
+    public function testAlmostMet()
+    {
+        $condition = $this->getMockBuilder('Heystack\Subsystem\Deals\Condition\QuantityOfPurchasablesInCart')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $condition->expects($this->any())
+            ->method('almostMet')
+            ->will(
+                $this->returnValue(false)
+            );
+
+        $condition->expects($this->any())
+            ->method('getType')
+            ->will(
+                $this->returnValue('test')
+            );
+
+        $this->dealHandler->addCondition($this->getConditionStub());
+        $this->dealHandler->addCondition($condition);
+        $this->assertFalse($this->dealHandler->almostMet());
+    }
+
+    /**
+     * @covers Heystack\Subsystem\Deals\DealHandler::setStateService
+     */
+    public function testSetStateService()
+    {
+        $this->dealHandler->setStateService($this->getStateStub());
+        $this->assertAttributeNotEmpty('stateService', $this->dealHandler);
+    }
+
+    /**
+     * @covers Heystack\Subsystem\Deals\DealHandler::getStateService
+     * @depends testSetStateService
+     */
+    public function testGetStateService()
+    {
+        $this->dealHandler->setStateService($state = $this->getStateStub());
+        $this->assertSame($this->dealHandler->getStateService(), $state);
+    }
+
+    /**
+     * @covers Heystack\Subsystem\Deals\DealHandler::setData
+     */
+    public function testSetData()
+    {
+        $this->dealHandler->setData('data');
+        $this->assertAttributeNotEmpty('data', $this->dealHandler);
+    }
+
+    /**
+     * @covers Heystack\Subsystem\Deals\DealHandler::getData
+     * @depends testSetData
+     */
+    public function testGetData()
+    {
+        $this->dealHandler->setData('data');
+        $this->assertSame($this->dealHandler->getData(), 'data');
+    }
+
+    /**
+     * @covers Heystack\Subsystem\Deals\DealHandler::setResult
+     * @depends testGetConditions
+     */
+    public function testSetResult()
+    {
+
+        $condition = $this->getConditionStub();
+
+        $result = $this->getMockBuilder('Heystack\Subsystem\Deals\Result\CheapestPurchasableDiscount')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $result->expects($this->any())
+            ->method('process')
+            ->will(
+                $this->returnValue(self::FINAL_TOTAL)
+            );
+
+        $result->expects($this->any())
+            ->method('getDescription')
+            ->will(
+                $this->returnValue(self::RESULT_DESCRIPTION)
+            );
+
+        $result->expects($this->any())
+            ->method('getConditions')
+            ->will(
+                $this->returnValue(
+                    array(
+                        $condition
+                    )
+                )
+            );
+
+        $this->dealHandler->setResult($result);
+
+        $this->assertSame($this->dealHandler->getResult(), $result);
+
+    }
+
 
 }

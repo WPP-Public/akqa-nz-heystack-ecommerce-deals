@@ -192,7 +192,7 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
      * When products are removed we need to set free quantities to 0
      * This will handle the
      */
-    public function onProductRemove()
+    protected function onProductRemove()
     {
         foreach ($this->purchasableHolder->getPurchasables() as $purchasable) {
             if ($purchasable instanceof DealPurchasableInterface) {

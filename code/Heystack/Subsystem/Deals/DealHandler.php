@@ -149,7 +149,6 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
 
         if ($this->result instanceof ResultWithConditionsInterface) {
 
-
             foreach ($this->result->getConditions() as $condition) {
 
                 $this->addCondition($condition);

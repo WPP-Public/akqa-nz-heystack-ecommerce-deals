@@ -2,7 +2,7 @@
 
 namespace Heystack\Subsystem\Deals\Interfaces;
 
-use Heystack\Subsystem\Core\Identifier\Identifier;
+use Heystack\Subsystem\Core\Identifier\IdentifierInterface;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableInterface;
 
 /**
@@ -14,32 +14,32 @@ use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableInterface;
 interface DealPurchasableInterface extends PurchasableInterface
 {
     /**
-     * @param \Heystack\Subsystem\Core\Identifier\Identifier $dealIdentifier
+     * @param \Heystack\Subsystem\Core\Identifier\IdentifierInterface $dealIdentifier
      * @param int $quantity
      */
-    public function setFreeQuantity(Identifier $dealIdentifier, $quantity);
+    public function setFreeQuantity(IdentifierInterface $dealIdentifier, $quantity);
 
     /**
-     * @param \Heystack\Subsystem\Core\Identifier\Identifier $dealIdentifier
+     * @param \Heystack\Subsystem\Core\Identifier\IdentifierInterface $dealIdentifier
      * @param int $quantity
      */
-    public function addFreeQuantity(Identifier $dealIdentifier, $quantity = 1);
+    public function addFreeQuantity(IdentifierInterface $dealIdentifier, $quantity = 1);
 
     /**
-     * @param Identifier $dealIdentifier
+     * @param \Heystack\Subsystem\Core\Identifier\IdentifierInterface $dealIdentifier
      * @param int $quantity
      */
-    public function subtractFreeQuantity(Identifier $dealIdentifier, $quantity = 1);
+    public function subtractFreeQuantity(IdentifierInterface $dealIdentifier, $quantity = 1);
 
     /**
-     * @param \Heystack\Subsystem\Core\Identifier\Identifier $dealIdentifier
+     * @param \Heystack\Subsystem\Core\Identifier\IdentifierInterface $dealIdentifier
      * @return bool
      */
-    public function hasFreeItems(Identifier $dealIdentifier = null);
+    public function hasFreeItems(IdentifierInterface $dealIdentifier = null);
 
     /**
-     * @param \Heystack\Subsystem\Core\Identifier\Identifier $dealIdentifier
+     * @param \Heystack\Subsystem\Core\Identifier\IdentifierInterface $dealIdentifier
      * @return int
      */
-    public function getFreeQuantity(Identifier $dealIdentifier = null);
+    public function getFreeQuantity(IdentifierInterface $dealIdentifier = null);
 }

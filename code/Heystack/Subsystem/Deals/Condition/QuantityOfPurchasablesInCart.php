@@ -121,10 +121,8 @@ class QuantityOfPurchasablesInCart implements ConditionInterface, ConditionAlmos
 
             if ($purchasable instanceof DealPurchasableInterface) {
 
-                $lol = $purchasable->getQuantity();
-                $quantity += $lol;
+                $quantity += $purchasable->getQuantity();;
 
-                error_log($lol);
                 // TODO: Refactor this coupling
                 if ($this->getDealHandler()->getResult() instanceof FreeGift) {
 
@@ -169,8 +167,6 @@ class QuantityOfPurchasablesInCart implements ConditionInterface, ConditionAlmos
                 $this->purchasableHolder->setPurchasable($purchasable, $quantity + 1);
                 $metCount = $this->met();
                 $this->purchasableHolder->setPurchasable($purchasable, $quantity);
-
-                error_log("$metCount");
 
                 if ($metCount > $currentCount) {
                     $met = true;
