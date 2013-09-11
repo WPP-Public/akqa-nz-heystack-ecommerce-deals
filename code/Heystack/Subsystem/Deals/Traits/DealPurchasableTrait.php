@@ -2,7 +2,7 @@
 
 namespace Heystack\Subsystem\Deals\Traits;
 
-use Heystack\Subsystem\Core\Identifier\Identifier;
+use Heystack\Subsystem\Core\Identifier\IdentifierInterface;
 
 /**
  * This trait implements the functionality defined in the DealPurchasableInterface.
@@ -19,37 +19,37 @@ trait DealPurchasableTrait
     protected $freeQuantities = array();
 
     /**
-     * @param \Heystack\Subsystem\Core\Identifier\Identifier $dealIdentifier
+     * @param \Heystack\Subsystem\Core\Identifier\IdentifierInterface $dealIdentifier
      * @param int $quantity
      */
-    public function setFreeQuantity(Identifier $dealIdentifier, $quantity)
+    public function setFreeQuantity(IdentifierInterface $dealIdentifier, $quantity)
     {
         $this->freeQuantities[$dealIdentifier->getFull()] = $quantity;
     }
 
     /**
-     * @param \Heystack\Subsystem\Core\Identifier\Identifier $dealIdentifier
+     * @param \Heystack\Subsystem\Core\Identifier\IdentifierInterface $dealIdentifier
      * @param int $quantity
      */
-    public function addFreeQuantity(Identifier $dealIdentifier, $quantity = 1)
+    public function addFreeQuantity(IdentifierInterface $dealIdentifier, $quantity = 1)
     {
         $this->freeQuantities[$dealIdentifier->getFull()] += $quantity;
     }
 
     /**
-     * @param \Heystack\Subsystem\Core\Identifier\Identifier $dealIdentifier
+     * @param \Heystack\Subsystem\Core\Identifier\IdentifierInterface $dealIdentifier
      * @param int $quantity
      */
-    public function subtractFreeQuantity(Identifier $dealIdentifier, $quantity = 1)
+    public function subtractFreeQuantity(IdentifierInterface $dealIdentifier, $quantity = 1)
     {
         $this->freeQuantities[$dealIdentifier->getFull()] -= $quantity;
     }
 
     /**
-     * @param \Heystack\Subsystem\Core\Identifier\Identifier $dealIdentifier
+     * @param \Heystack\Subsystem\Core\Identifier\IdentifierInterface $dealIdentifier
      * @return bool
      */
-    public function hasFreeItems(Identifier $dealIdentifier = null)
+    public function hasFreeItems(IdentifierInterface $dealIdentifier = null)
     {
         if (is_null($dealIdentifier)) {
 
@@ -71,10 +71,10 @@ trait DealPurchasableTrait
     }
 
     /**
-     * @param \Heystack\Subsystem\Core\Identifier\Identifier $dealIdentifier
+     * @param \Heystack\Subsystem\Core\Identifier\IdentifierInterface $dealIdentifier
      * @return int
      */
-    public function getFreeQuantity(Identifier $dealIdentifier = null)
+    public function getFreeQuantity(IdentifierInterface $dealIdentifier = null)
     {
         if (!is_null($dealIdentifier) && isset($this->freeQuantities[$dealIdentifier->getFull()])) {
 
