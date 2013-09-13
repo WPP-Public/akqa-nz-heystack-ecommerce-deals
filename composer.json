@@ -1,22 +1,6 @@
 {
     "repositories": [
         {
-            "type": "git",
-            "url": "ssh://sls@slsapp.com:1234/heyday/heystack.git"
-        },
-        {
-            "type": "git",
-            "url": "ssh://sls@slsapp.com:1234/heyday/ecommerce-core.git"
-        },
-        {
-            "type": "git",
-            "url": "ssh://sls@slsapp.com:1234/heyday/ecommerce-payment.git"
-        },
-        {
-            "type": "git",
-            "url": "ssh://sls@slsapp.com:1234/heyday/ecommerce-products.git"
-        },
-        {
             "type": "composer",
             "url": "http://packages:satis@packages.heyday.net.nz/"
         }
@@ -29,10 +13,10 @@
     },
     "require-dev": {
         "silverstripe/framework": "2.4.10",
-        "heystack/heystack": "self.version",
-        "heystack/ecommerce-core": "self.version",
-        "heystack/ecommerce-shipping": "self.version",
-        "heystack/ecommerce-products": "self.version",
+        "heystack/heystack": "~2.1.0",
+        "heystack/ecommerce-core": "~2.1.0",
+        "heystack/ecommerce-shipping": "~2.1.0",
+        "heystack/ecommerce-products": "~2.1.0",
         "symfony/class-loader": "~2.2",
         "phpmd/phpmd": "1.4.*",
         "pdepend/pdepend": "1.1.*",
@@ -44,11 +28,6 @@
         }
     },
     "extra": {
-        "installer-paths": {
-            "sapphire": [
-                "silverstripe/framework"
-            ]
-        },
         "branch-alias": {
             "dev-master": "2.0.x-dev"
         }

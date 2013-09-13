@@ -3,20 +3,20 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "9c9c65b60cbdeb68a252be8c2526ff09",
+    "hash": "9f467160fddc9181f4ac4d771d8e1dc4",
     "packages": [
         {
             "name": "composer/installers",
-            "version": "v1.0.5",
+            "version": "v1.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/installers.git",
-                "reference": "v1.0.5"
+                "reference": "b3bd071ea114a57212c75aa6a2eef5cfe0cc798f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/installers/zipball/v1.0.5",
-                "reference": "v1.0.5",
+                "url": "https://api.github.com/repos/composer/installers/zipball/b3bd071ea114a57212c75aa6a2eef5cfe0cc798f",
+                "reference": "b3bd071ea114a57212c75aa6a2eef5cfe0cc798f",
                 "shasum": ""
             },
             "replace": {
@@ -53,6 +53,7 @@
             "description": "A multi-framework Composer library installer",
             "homepage": "http://composer.github.com/installers/",
             "keywords": [
+                "TYPO3 CMS",
                 "TYPO3 Flow",
                 "TYPO3 Neos",
                 "agl",
@@ -75,7 +76,7 @@
                 "wordpress",
                 "zend"
             ],
-            "time": "2013-08-07 17:25:08"
+            "time": "2013-08-20 04:37:09"
         }
     ],
     "packages-dev": [
@@ -85,21 +86,21 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/camspiers/shared-dependency-injection.git",
-                "reference": "0.4.1"
+                "reference": "7482484e0864aec8650e3e9656ffb4d177d4b47e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/camspiers/shared-dependency-injection/zipball/0.4.1",
-                "reference": "0.4.1",
+                "url": "https://api.github.com/repos/camspiers/shared-dependency-injection/zipball/7482484e0864aec8650e3e9656ffb4d177d4b47e",
+                "reference": "7482484e0864aec8650e3e9656ffb4d177d4b47e",
                 "shasum": ""
             },
             "require": {
-                "symfony/config": ">=2.2,<3.0",
-                "symfony/dependency-injection": ">=2.2,<3.0",
-                "symfony/yaml": ">=2.2,<3.0"
+                "symfony/config": "~2.2",
+                "symfony/dependency-injection": "~2.2",
+                "symfony/yaml": "~2.2"
             },
             "require-dev": {
-                "phpunit/phpunit": ">=3.7,<4.0"
+                "phpunit/phpunit": "~3.7"
             },
             "type": "library",
             "autoload": {
@@ -123,12 +124,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/dflydev/dflydev-markdown.git",
-                "reference": "v1.0.2"
+                "reference": "2a1b3516bd5af6e722b40ae9e1fccd03e1772060"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/dflydev/dflydev-markdown/zipball/v1.0.2",
-                "reference": "v1.0.2",
+                "url": "https://api.github.com/repos/dflydev/dflydev-markdown/zipball/2a1b3516bd5af6e722b40ae9e1fccd03e1772060",
+                "reference": "2a1b3516bd5af6e722b40ae9e1fccd03e1772060",
                 "shasum": ""
             },
             "require": {
@@ -169,19 +170,25 @@
             "keywords": [
                 "markdown"
             ],
-            "time": "2012-01-15 19:36:37"
+            "time": "2012-01-16 03:36:37"
         },
         {
             "name": "heystack/ecommerce-core",
-            "version": "dev-master",
+            "version": "2.1.5",
             "source": {
                 "type": "git",
-                "url": "ssh://sls@slsapp.com:1234/heyday/ecommerce-core.git",
-                "reference": "2e71c994a939ade5ab7a2c4a8580785d91671b6d"
+                "url": "ssh://git@git.heyday.net.nz:1234/heystack/ecommerce-core.git",
+                "reference": "2.1.5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "http://packages:satis@packages.heyday.net.nz/zips/ssh---git-git.heyday.net.nz-1234-heystack-ecommerce-core.git/2.1.5.zip",
+                "reference": "2.1.5",
+                "shasum": null
             },
             "require": {
                 "composer/installers": "~1.0",
-                "heystack/heystack": "self.version",
+                "heystack/heystack": "~2.1",
                 "php": ">=5.4.0"
             },
             "require-dev": {
@@ -211,15 +218,21 @@
                     "code/SilverStripe"
                 ]
             },
-            "time": "2013-08-06 05:37:24"
+            "time": "2013-08-13 02:14:07"
         },
         {
             "name": "heystack/ecommerce-products",
-            "version": "dev-master",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
-                "url": "ssh://sls@slsapp.com:1234/heyday/ecommerce-products.git",
-                "reference": "2fe92b5317de4362eb2693ce5fac1d1dfe830843"
+                "url": "ssh://git@git.heyday.net.nz:1234/heystack/ecommerce-products.git",
+                "reference": "2.1.0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "http://packages:satis@packages.heyday.net.nz/zips/ssh---git-git.heyday.net.nz-1234-heystack-ecommerce-products.git/2.1.0.zip",
+                "reference": "2.1.0",
+                "shasum": null
             },
             "require": {
                 "composer/installers": "~1.0.0",
@@ -241,11 +254,17 @@
         },
         {
             "name": "heystack/ecommerce-shipping",
-            "version": "dev-master",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
-                "url": "ssh://sls@slsapp.com:110/heyday/ecommerce-shipping.git",
-                "reference": "a3a03d73305c363eebe3c0522de626c9920de966"
+                "url": "ssh://git@git.heyday.net.nz:1234/heystack/ecommerce-shipping.git",
+                "reference": "2.1.0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "http://packages:satis@packages.heyday.net.nz/zips/ssh---git-git.heyday.net.nz-1234-heystack-ecommerce-shipping.git/2.1.0.zip",
+                "reference": "2.1.0",
+                "shasum": null
             },
             "require": {
                 "composer/installers": "~1.0.0",
@@ -267,11 +286,17 @@
         },
         {
             "name": "heystack/heystack",
-            "version": "dev-master",
+            "version": "2.1.1",
             "source": {
                 "type": "git",
-                "url": "ssh://sls@slsapp.com:1234/heyday/heystack.git",
-                "reference": "632842a442fa62681e4c65e5b6b9e54a71f32c0b"
+                "url": "ssh://git@git.heyday.net.nz:1234/heystack/heystack.git",
+                "reference": "2.1.1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "http://packages:satis@packages.heyday.net.nz/zips/ssh---git-git.heyday.net.nz-1234-heystack-heystack.git/2.1.1.zip",
+                "reference": "2.1.1",
+                "shasum": null
             },
             "require": {
                 "camspiers/shared-dependency-injection": "~0.4",
@@ -309,7 +334,7 @@
                     "code/SilverStripe"
                 ]
             },
-            "time": "2013-08-06 23:36:58"
+            "time": "2013-08-12 04:54:05"
         },
         {
             "name": "monolog/monolog",
@@ -362,22 +387,27 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v0.9.3",
+            "version": "v0.9.4",
             "source": {
                 "type": "git",
-                "url": "https://github.com/nikic/PHP-Parser",
-                "reference": "v0.9.3"
+                "url": "https://github.com/nikic/PHP-Parser.git",
+                "reference": "1e5e280ae88a27effa2ae4aa2bd088494ed8594f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/nikic/PHP-Parser/archive/v0.9.3.zip",
-                "reference": "v0.9.3",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/1e5e280ae88a27effa2ae4aa2bd088494ed8594f",
+                "reference": "1e5e280ae88a27effa2ae4aa2bd088494ed8594f",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.2"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.9-dev"
+                }
+            },
             "autoload": {
                 "psr-0": {
                     "PHPParser": "lib/"
@@ -397,7 +427,7 @@
                 "parser",
                 "php"
             ],
-            "time": "2012-11-22 18:54:05"
+            "time": "2013-08-25 17:11:40"
         },
         {
             "name": "pdepend/pdepend",
@@ -405,12 +435,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pdepend/pdepend.git",
-                "reference": "1.1.1"
+                "reference": "6fcfb7666c95f341b42f02c94a47b3a51ed484e0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pdepend/pdepend/zipball/1.1.1",
-                "reference": "1.1.1",
+                "url": "https://api.github.com/repos/pdepend/pdepend/zipball/6fcfb7666c95f341b42f02c94a47b3a51ed484e0",
+                "reference": "6fcfb7666c95f341b42f02c94a47b3a51ed484e0",
                 "shasum": ""
             },
             "require": {
@@ -429,13 +459,13 @@
             "version": "1.4.1",
             "source": {
                 "type": "git",
-                "url": "git://github.com/phpmd/phpmd.git",
-                "reference": "1.4.1"
+                "url": "https://github.com/phpmd/phpmd.git",
+                "reference": "7d03a50e937811970751697ad1aea33a1089d66f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/phpmd/phpmd/archive/1.4.1.zip",
-                "reference": "1.4.1",
+                "url": "https://api.github.com/repos/phpmd/phpmd/zipball/7d03a50e937811970751697ad1aea33a1089d66f",
+                "reference": "7d03a50e937811970751697ad1aea33a1089d66f",
                 "shasum": ""
             },
             "require": {
@@ -460,12 +490,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/fabpot/Pimple.git",
-                "reference": "v1.0.2"
+                "reference": "ae11e57e8c2bb414b2ff93396dbbfc0eb92feb94"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/Pimple/zipball/v1.0.2",
-                "reference": "v1.0.2",
+                "url": "https://api.github.com/repos/fabpot/Pimple/zipball/ae11e57e8c2bb414b2ff93396dbbfc0eb92feb94",
+                "reference": "ae11e57e8c2bb414b2ff93396dbbfc0eb92feb94",
                 "shasum": ""
             },
             "require": {
@@ -563,12 +593,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/silverstripe/silverstripe-framework.git",
-                "reference": "2.4.10"
+                "reference": "56ad1d027ed991d6a2cd12f31169477c7a484c05"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/silverstripe/silverstripe-framework/zipball/2.4.10",
-                "reference": "2.4.10",
+                "url": "https://api.github.com/repos/silverstripe/silverstripe-framework/zipball/56ad1d027ed991d6a2cd12f31169477c7a484c05",
+                "reference": "56ad1d027ed991d6a2cd12f31169477c7a484c05",
                 "shasum": ""
             },
             "require": {
@@ -600,17 +630,17 @@
         },
         {
             "name": "symfony/class-loader",
-            "version": "v2.3.3",
+            "version": "v2.3.4",
             "target-dir": "Symfony/Component/ClassLoader",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/ClassLoader.git",
-                "reference": "v2.3.3"
+                "reference": "622d370a07321329f5259c6f96d5c636104ad46b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/ClassLoader/zipball/v2.3.3",
-                "reference": "v2.3.3",
+                "url": "https://api.github.com/repos/symfony/ClassLoader/zipball/622d370a07321329f5259c6f96d5c636104ad46b",
+                "reference": "622d370a07321329f5259c6f96d5c636104ad46b",
                 "shasum": ""
             },
             "require": {
@@ -646,21 +676,21 @@
             ],
             "description": "Symfony ClassLoader Component",
             "homepage": "http://symfony.com",
-            "time": "2013-07-21 12:12:18"
+            "time": "2013-08-13 20:18:00"
         },
         {
             "name": "symfony/config",
-            "version": "v2.3.3",
+            "version": "v2.3.4",
             "target-dir": "Symfony/Component/Config",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Config.git",
-                "reference": "v2.3.3"
+                "reference": "65a927c15ca5a911ba2fa277a5457fa8129505b0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Config/zipball/v2.3.3",
-                "reference": "v2.3.3",
+                "url": "https://api.github.com/repos/symfony/Config/zipball/65a927c15ca5a911ba2fa277a5457fa8129505b0",
+                "reference": "65a927c15ca5a911ba2fa277a5457fa8129505b0",
                 "shasum": ""
             },
             "require": {
@@ -698,17 +728,17 @@
         },
         {
             "name": "symfony/console",
-            "version": "v2.3.3",
+            "version": "v2.3.4",
             "target-dir": "Symfony/Component/Console",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Console.git",
-                "reference": "v2.3.3"
+                "reference": "db78f8ff7fc9e28d25ff9a0bf6ddf9f0e35fbbe3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Console/zipball/v2.3.3",
-                "reference": "v2.3.3",
+                "url": "https://api.github.com/repos/symfony/Console/zipball/db78f8ff7fc9e28d25ff9a0bf6ddf9f0e35fbbe3",
+                "reference": "db78f8ff7fc9e28d25ff9a0bf6ddf9f0e35fbbe3",
                 "shasum": ""
             },
             "require": {
@@ -747,21 +777,21 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "http://symfony.com",
-            "time": "2013-07-21 12:12:18"
+            "time": "2013-08-17 16:34:49"
         },
         {
             "name": "symfony/dependency-injection",
-            "version": "v2.3.3",
+            "version": "v2.3.4",
             "target-dir": "Symfony/Component/DependencyInjection",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/DependencyInjection.git",
-                "reference": "v2.3.3"
+                "reference": "3678aa969e5bfeb8515a1f3047c63e8104723f5c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/DependencyInjection/zipball/v2.3.3",
-                "reference": "v2.3.3",
+                "url": "https://api.github.com/repos/symfony/DependencyInjection/zipball/3678aa969e5bfeb8515a1f3047c63e8104723f5c",
+                "reference": "3678aa969e5bfeb8515a1f3047c63e8104723f5c",
                 "shasum": ""
             },
             "require": {
@@ -807,17 +837,17 @@
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v2.3.3",
+            "version": "v2.3.4",
             "target-dir": "Symfony/Component/EventDispatcher",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/EventDispatcher.git",
-                "reference": "v2.3.3"
+                "reference": "41c9826457c65fa3cf746f214985b7ca9cba42f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/EventDispatcher/zipball/v2.3.3",
-                "reference": "v2.3.3",
+                "url": "https://api.github.com/repos/symfony/EventDispatcher/zipball/41c9826457c65fa3cf746f214985b7ca9cba42f8",
+                "reference": "41c9826457c65fa3cf746f214985b7ca9cba42f8",
                 "shasum": ""
             },
             "require": {
@@ -861,17 +891,17 @@
         },
         {
             "name": "symfony/filesystem",
-            "version": "v2.3.3",
+            "version": "v2.3.4",
             "target-dir": "Symfony/Component/Filesystem",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Filesystem.git",
-                "reference": "v2.3.3"
+                "reference": "87acbbef6d35ba649f96f09cc572c45119b360c3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Filesystem/zipball/v2.3.3",
-                "reference": "v2.3.3",
+                "url": "https://api.github.com/repos/symfony/Filesystem/zipball/87acbbef6d35ba649f96f09cc572c45119b360c3",
+                "reference": "87acbbef6d35ba649f96f09cc572c45119b360c3",
                 "shasum": ""
             },
             "require": {
@@ -908,17 +938,17 @@
         },
         {
             "name": "symfony/finder",
-            "version": "v2.3.3",
+            "version": "v2.3.4",
             "target-dir": "Symfony/Component/Finder",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Finder.git",
-                "reference": "v2.3.3"
+                "reference": "4a0fee5b86f5bbd9dfdc11ec124eba2915737ce1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Finder/zipball/v2.3.3",
-                "reference": "v2.3.3",
+                "url": "https://api.github.com/repos/symfony/Finder/zipball/4a0fee5b86f5bbd9dfdc11ec124eba2915737ce1",
+                "reference": "4a0fee5b86f5bbd9dfdc11ec124eba2915737ce1",
                 "shasum": ""
             },
             "require": {
@@ -951,21 +981,21 @@
             ],
             "description": "Symfony Finder Component",
             "homepage": "http://symfony.com",
-            "time": "2013-07-21 12:12:18"
+            "time": "2013-08-13 20:18:00"
         },
         {
             "name": "symfony/process",
-            "version": "v2.3.3",
+            "version": "v2.3.4",
             "target-dir": "Symfony/Component/Process",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Process.git",
-                "reference": "v2.3.3"
+                "reference": "1e91553e1cedd0b8fb1da6ea4f89b02e21713d5b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Process/zipball/v2.3.3",
-                "reference": "v2.3.3",
+                "url": "https://api.github.com/repos/symfony/Process/zipball/1e91553e1cedd0b8fb1da6ea4f89b02e21713d5b",
+                "reference": "1e91553e1cedd0b8fb1da6ea4f89b02e21713d5b",
                 "shasum": ""
             },
             "require": {
@@ -998,21 +1028,21 @@
             ],
             "description": "Symfony Process Component",
             "homepage": "http://symfony.com",
-            "time": "2013-08-02 21:51:01"
+            "time": "2013-08-22 06:42:25"
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.3.3",
+            "version": "v2.3.4",
             "target-dir": "Symfony/Component/Yaml",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Yaml.git",
-                "reference": "v2.3.3"
+                "reference": "5a279f1b5f5e1045a6c432354d9ea727ff3a9847"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Yaml/zipball/v2.3.3",
-                "reference": "v2.3.3",
+                "url": "https://api.github.com/repos/symfony/Yaml/zipball/5a279f1b5f5e1045a6c432354d9ea727ff3a9847",
+                "reference": "5a279f1b5f5e1045a6c432354d9ea727ff3a9847",
                 "shasum": ""
             },
             "require": {
@@ -1045,7 +1075,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "http://symfony.com",
-            "time": "2013-07-21 12:12:18"
+            "time": "2013-08-24 15:26:22"
         },
         {
             "name": "twig/twig",
@@ -1053,12 +1083,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/fabpot/Twig.git",
-                "reference": "v1.13.2"
+                "reference": "6d6a1009427d1f398c9d40904147bf9f723d5755"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/Twig/zipball/v1.13.2",
-                "reference": "v1.13.2",
+                "url": "https://api.github.com/repos/fabpot/Twig/zipball/6d6a1009427d1f398c9d40904147bf9f723d5755",
+                "reference": "6d6a1009427d1f398c9d40904147bf9f723d5755",
                 "shasum": ""
             },
             "require": {
@@ -1102,10 +1132,6 @@
     ],
     "minimum-stability": "stable",
     "stability-flags": {
-        "heystack/heystack": 20,
-        "heystack/ecommerce-core": 20,
-        "heystack/ecommerce-shipping": 20,
-        "heystack/ecommerce-products": 20,
         "sami/sami": 20
     },
     "platform": {
