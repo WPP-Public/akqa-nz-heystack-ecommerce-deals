@@ -288,7 +288,8 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
             'flat' => array(
                 'Total' => $this->getTotal(),
                 'Description' => $this->getDescription(),
-                'ParentID' => $this->parentReference
+                'ParentID' => $this->parentReference,
+                'DealID' => $this->dealID,
             )
         );
     }

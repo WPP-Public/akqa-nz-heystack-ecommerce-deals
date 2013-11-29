@@ -3,6 +3,7 @@ id: Deal
 flat:
   Total: Decimal(10,2)
   Description: Text
+  DealID: Varchar
 related:
 parent:
   Parent: +Transaction
