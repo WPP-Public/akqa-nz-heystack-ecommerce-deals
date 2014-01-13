@@ -15,7 +15,7 @@ use Heystack\Subsystem\Deals\Traits\HasDealHandler;
 use Heystack\Subsystem\Deals\Result\FreeGift;
 use Heystack\Subsystem\Deals\Traits\HasPurchasableHolder;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
-use Heystack\Subsystem\Products\ProductHolder\ProductHolder;
+use Heystack\Subsystem\Products\ProductHolder\PurchasableHolder;
 
 /**
  *
