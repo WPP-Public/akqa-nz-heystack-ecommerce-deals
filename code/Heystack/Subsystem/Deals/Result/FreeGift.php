@@ -4,7 +4,6 @@ namespace Heystack\Subsystem\Deals\Result;
 
 use Heystack\Subsystem\Core\DataObjectHandler\DataObjectHandlerInterface;
 use Heystack\Subsystem\Core\Identifier\Identifier;
-use Heystack\Subsystem\Core\Interfaces\HasEventServiceInterface;
 use Heystack\Subsystem\Core\State\State;
 use Heystack\Subsystem\Deals\Events\ConditionEvent;
 use Heystack\Subsystem\Deals\Events;
@@ -18,7 +17,7 @@ use Heystack\Subsystem\Deals\Interfaces\ResultInterface;
 use Heystack\Subsystem\Deals\Traits\HasDealHandler;
 use Heystack\Subsystem\Deals\Traits\HasPurchasableHolder;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
-use Heystack\Subsystem\Products\ProductHolder\Events as ProductEvents;
+use Heystack\Subsystem\Purchasable\PurchasableHolder\Events as ProductEvents;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -192,7 +191,7 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
      * When products are removed we need to set free quantities to 0
      * This will handle the
      */
-    protected function onProductRemove()
+    public function onProductRemove()
     {
         foreach ($this->purchasableHolder->getPurchasables() as $purchasable) {
             if ($purchasable instanceof DealPurchasableInterface) {

@@ -28,7 +28,7 @@ services:
 
   deals.subscriber:
     class: %deal.subscriber.class%
-    arguments: [@event_dispatcher, @storage, @productholder]
+    arguments: [@event_dispatcher, @storage, @purchasableholder]
     abstract: true
 
   deals.condition.configuration:
@@ -45,17 +45,17 @@ services:
 
   deals.condition.minimumcarttotal:
       class: %deal.condition.minimumcarttotal.class%
-      arguments: [@productholder, @currency_service]
+      arguments: [@purchasableholder, @currency_service]
       abstract: true
 
   deals.condition.quantityofpurchasablesincart:
       class: %deal.condition.quantityofpurchasablesincart.class%
-      arguments: [@productholder]
+      arguments: [@purchasableholder]
       abstract: true
 
   deals.condition.purchasablehasquantityincart:
       class: %deal.condition.purchasablehasquantityincart.class%
-      arguments: [@productholder]
+      arguments: [@purchasableholder]
       abstract: true
 
   deals.result.configuration:
@@ -64,7 +64,7 @@ services:
 
   deals.result.freegift:
     class: %deal.result.freegift.class%
-    arguments: [@event_dispatcher, @productholder, @dataobject_handler]
+    arguments: [@event_dispatcher, @purchasableholder, @dataobject_handler]
     abstract: true
 
   deals.result.shipping:
@@ -74,17 +74,17 @@ services:
 
   deals.result.cartdiscount:
     class: %deal.result.cartdiscount.class%
-    arguments: [@event_dispatcher, @productholder, @currency_service]
+    arguments: [@event_dispatcher, @purchasableholder, @currency_service]
     abstract: true
 
   deals.result.purchasablediscount:
     class: %deal.result.purchasablediscount.class%
-    arguments: [@event_dispatcher, @productholder, @currency_service]
+    arguments: [@event_dispatcher, @purchasableholder, @currency_service]
     abstract: true
 
   deals.result.cheapestpurchasablediscount:
     class: %deal.result.cheapestpurchasablediscount.class%
-    arguments: [@event_dispatcher, @productholder]
+    arguments: [@event_dispatcher, @purchasableholder]
     abstract: true
 
   dealhandler_schema:

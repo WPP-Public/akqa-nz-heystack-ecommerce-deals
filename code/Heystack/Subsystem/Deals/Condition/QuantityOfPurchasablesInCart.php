@@ -16,7 +16,7 @@ use Heystack\Subsystem\Deals\Result\FreeGift;
 use Heystack\Subsystem\Deals\Traits\HasDealHandler;
 use Heystack\Subsystem\Deals\Traits\HasPurchasableHolder;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
-use Heystack\Subsystem\Products\ProductHolder\PurchasableHolder;
+use Heystack\Subsystem\Purchasable\PurchasableHolder\PurchasableHolder;
 
 /**
  *
@@ -115,7 +115,9 @@ class QuantityOfPurchasablesInCart implements ConditionInterface, ConditionAlmos
 
         }
 
-        $purchasables = call_user_func_array('array_merge', $purchasables);
+        if (count($purchasables)) {
+            $purchasables = call_user_func_array('array_merge', $purchasables);
+        }
 
         foreach ($purchasables as $purchasable) {
 

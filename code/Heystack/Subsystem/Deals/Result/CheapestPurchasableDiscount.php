@@ -250,13 +250,13 @@ class CheapestPurchasableDiscount implements ResultInterface, ResultWithConditio
 
             foreach ($this->purchasableIdentifiers as $purchasableIdentifier) {
 
-                $productHolderPurchasables = $this->purchasableHolder->getPurchasablesByPrimaryIdentifier($purchasableIdentifier);
+                $purchasableHolderPurchasables = $this->purchasableHolder->getPurchasablesByPrimaryIdentifier($purchasableIdentifier);
 
-                if(is_array($productHolderPurchasables)){
+                if(is_array($purchasableHolderPurchasables)){
 
                     $purchasables = array_merge(
                         $purchasables,
-                        $productHolderPurchasables
+                        $purchasableHolderPurchasables
                     );
 
                 }

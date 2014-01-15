@@ -19,7 +19,7 @@ use Heystack\Subsystem\Ecommerce\Currency\Events as CurrencyEvents;
 use Heystack\Subsystem\Ecommerce\Locale\Events as LocaleEvents;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 use Heystack\Subsystem\Ecommerce\Transaction\Events as TransactionEvents;
-use Heystack\Subsystem\Products\ProductHolder\Events as ProductHolderEvents;
+use Heystack\Subsystem\Purchasable\PurchasableHolder\Events as PurchasableHolderEvents;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -80,9 +80,9 @@ class Subscriber implements EventSubscriberInterface
         return array(
             CurrencyEvents::CHANGED                                 => array('onUpdateTotal', 0),
             LocaleEvents::CHANGED                                   => array('onUpdateTotal', 0),
-            ProductHolderEvents::PURCHASABLE_ADDED                  => array('onUpdateTotal', 0),
-            ProductHolderEvents::PURCHASABLE_CHANGED                => array('onUpdateTotal', 0),
-            ProductHolderEvents::PURCHASABLE_REMOVED                => array('onUpdateTotal', 0),
+            PurchasableHolderEvents::PURCHASABLE_ADDED              => array('onUpdateTotal', 0),
+            PurchasableHolderEvents::PURCHASABLE_CHANGED            => array('onUpdateTotal', 0),
+            PurchasableHolderEvents::PURCHASABLE_REMOVED            => array('onUpdateTotal', 0),
             Events::TOTAL_UPDATED                                   => array('onTotalUpdated', 0),
             Backend::IDENTIFIER . '.' . TransactionEvents::STORED   => array('onTransactionStored', 10)
         );
