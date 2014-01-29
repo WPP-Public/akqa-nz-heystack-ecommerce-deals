@@ -118,7 +118,12 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
      */
     public function process(DealHandlerInterface $dealHandler)
     {
-        $total = $this->getPurchasable()->getUnitPrice() * $dealHandler->getConditionsMetCount();
+        $purchasable = $this->getPurchasable();
+
+        $total = $purchasable->getUnitPrice() * $dealHandler->getConditionsMetCount();
+
+        $purchasable->setDealDiscount($dealHandler->getIdentifier(), $total);
+
         $this->eventService->dispatch(Events::RESULT_PROCESSED, new ResultEvent($this));
         return $total;
     }

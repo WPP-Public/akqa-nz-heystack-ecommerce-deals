@@ -42,4 +42,17 @@ interface DealPurchasableInterface extends PurchasableInterface
      * @return int
      */
     public function getFreeQuantity(IdentifierInterface $dealIdentifier = null);
+
+    /**
+     * @param IdentifierInterface $dealIdentifier
+     * @param $discountAmount
+     * @return mixed
+     */
+    public function setDealDiscount(IdentifierInterface $dealIdentifier, $discountAmount);
+
+    /**
+     * @param IdentifierInterface $dealIdentifier
+     * @return float
+     */
+    public function getDealDiscount(IdentifierInterface $dealIdentifier = null);
 }

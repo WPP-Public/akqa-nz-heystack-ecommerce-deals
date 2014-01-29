@@ -16,7 +16,8 @@ use Heystack\Subsystem\Core\Identifier\IdentifierInterface;
 trait DealPurchasableTrait
 {
 
-    protected $freeQuantities = array();
+    protected $freeQuantities = [];
+    protected $dealDiscounts = [];
 
     /**
      * @param \Heystack\Subsystem\Core\Identifier\IdentifierInterface $dealIdentifier
@@ -82,19 +83,41 @@ trait DealPurchasableTrait
 
         }
 
-        $total = 0;
-
-        foreach ($this->freeQuantities as $quantity) {
-
-            $total += $quantity;
-
-        }
-
-        return $total;
+        return array_sum($this->freeQuantities);
     }
 
     public function getFreeQuantities()
     {
         return $this->freeQuantities;
+    }
+
+    /**
+     * @param IdentifierInterface $dealIdentifier
+     * @param $discountAmount
+     */
+    public function setDealDiscount(IdentifierInterface $dealIdentifier, $discountAmount)
+    {
+        $this->dealDiscounts[$dealIdentifier->getFull()] = $discountAmount;
+    }
+
+    /**
+     * @param IdentifierInterface $dealIdentifier
+     * @return float
+     */
+    public function getDealDiscount(IdentifierInterface $dealIdentifier = null)
+    {
+        if (!is_null($dealIdentifier)) {
+
+            if (isset($this->dealDiscounts[$dealIdentifier->getFull()])) {
+
+                return $this->dealDiscounts[$dealIdentifier->getFull()];
+
+            }
+
+            return 0;
+
+        }
+
+        return array_sum($this->dealDiscounts);
     }
 }

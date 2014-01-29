@@ -160,6 +160,12 @@ class CheapestPurchasableDiscount implements ResultInterface, ResultWithConditio
 
         }
 
+        if ($purchasable instanceof DealPurchasableInterface) {
+
+            $purchasable->setDealDiscount($dealHandler->getIdentifier(), $this->totalDiscount);
+
+        }
+
         $this->eventService->dispatch(Events::RESULT_PROCESSED, new ResultEvent($this));
 
         return $this->totalDiscount;

@@ -7,8 +7,11 @@ use Heystack\Subsystem\Deals\Events;
 use Heystack\Subsystem\Deals\Events\ResultEvent;
 use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
 use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
+use Heystack\Subsystem\Deals\Interfaces\DealPurchasableInterface;
+use Heystack\Subsystem\Deals\Interfaces\HasDealHandlerInterface;
 use Heystack\Subsystem\Deals\Interfaces\HasPurchasableHolderInterface;
 use Heystack\Subsystem\Deals\Interfaces\ResultInterface;
+use Heystack\Subsystem\Deals\Traits\HasDealHandler;
 use Heystack\Subsystem\Deals\Traits\HasPurchasableHolder;
 use Heystack\Subsystem\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
 use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
@@ -21,9 +24,10 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * @author Glenn Bautista <glenn@heyday.co.nz>
  * @package Ecommerce-Deals
  */
-class PurchasableDiscount implements ResultInterface, HasPurchasableHolderInterface
+class PurchasableDiscount implements ResultInterface, HasPurchasableHolderInterface, HasDealHandlerInterface
 {
     use HasPurchasableHolder;
+    use HasDealHandler;
 
     const RESULT_TYPE = 'PurchasableDiscount';
     const PURCHASABLE_DISCOUNT_AMOUNTS = 'purchasable_discount_amounts';
@@ -172,7 +176,7 @@ class PurchasableDiscount implements ResultInterface, HasPurchasableHolderInterf
 
             foreach ($this->purchasableIdentifiers as $purchasableIdentifier) {
 
-                $quantity += $this->getPurchasableIdentifierQuantity($purchasableIdentifier);
+                $quantity += $this->getPurchasableIdentifierQuantity($purchasableIdentifier, $discount);
 
             }
 
@@ -198,7 +202,8 @@ class PurchasableDiscount implements ResultInterface, HasPurchasableHolderInterf
     }
 
     /**
-     * Gets the total price from the purchasable holder based on the primary identifier
+     * Gets the total price from the purchasable holder based on the primary identifier and sets the
+     * deal discount amount on the purchasable
      *
      * @param Identifier $purchasableIdentifier
      * @return float
@@ -213,9 +218,14 @@ class PurchasableDiscount implements ResultInterface, HasPurchasableHolderInterf
 
             foreach ($purchasables as $purchasable) {
 
-                if ($purchasable instanceof PurchasableInterface) {
+                if ($purchasable instanceof DealPurchasableInterface) {
 
                     $total += $purchasable->getTotal();
+
+                    $purchasable->setDealDiscount(
+                        $this->getDealHandler()->getIdentifier(),
+                        ($purchasable->getTotal() / 100) * $this->discountPercentage
+                    );
 
                 }
 
@@ -227,12 +237,14 @@ class PurchasableDiscount implements ResultInterface, HasPurchasableHolderInterf
     }
 
     /**
-     * Gets the total quantity from the purchasable holder based on the primary identifier
+     * Gets the total quantity from the purchasable holder based on the primary identifier and sets the
+     * deal discount amount on the purchasable
      *
      * @param Identifier $purchasableIdentifier
+     * @param float $discountAmount
      * @return int
      */
-    protected function getPurchasableIdentifierQuantity(Identifier $purchasableIdentifier)
+    protected function getPurchasableIdentifierQuantity(Identifier $purchasableIdentifier, $discountAmount)
     {
         $quantity = 0;
 
@@ -242,9 +254,14 @@ class PurchasableDiscount implements ResultInterface, HasPurchasableHolderInterf
 
             foreach ($purchasables as $purchasable) {
 
-                if ($purchasable instanceof PurchasableInterface) {
+                if ($purchasable instanceof DealPurchasableInterface) {
 
                     $quantity += $purchasable->getQuantity();
+
+                    $purchasable->setDealDiscount(
+                        $this->getDealHandler()->getIdentifier(),
+                        $discountAmount * $quantity
+                    );
 
                 }
 
