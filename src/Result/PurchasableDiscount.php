@@ -7,6 +7,7 @@ use Heystack\Deals\Events;
 use Heystack\Deals\Events\ResultEvent;
 use Heystack\Deals\Interfaces\AdaptableConfigurationInterface;
 use Heystack\Deals\Interfaces\DealHandlerInterface;
+use Heystack\Deals\Interfaces\DealPurchasableInterface;
 use Heystack\Deals\Interfaces\ResultInterface;
 use Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
@@ -183,7 +184,7 @@ class PurchasableDiscount
 
             foreach ($this->purchasableIdentifiers as $purchasableIdentifier) {
 
-                $quantity += $this->getPurchasableIdentifierQuantity($purchasableIdentifier);
+                $quantity += $this->getPurchasableIdentifierQuantity($purchasableIdentifier, $discount);
 
             }
 
@@ -206,7 +207,8 @@ class PurchasableDiscount
     }
 
     /**
-     * Gets the total price from the purchasable holder based on the primary identifier
+     * Gets the total price from the purchasable holder based on the primary identifier and sets the
+     * deal discount amount on the purchasable
      *
      * @param Identifier $purchasableIdentifier
      * @return \SebastianBergmann\Money\Money
@@ -221,9 +223,19 @@ class PurchasableDiscount
 
             foreach ($purchasables as $purchasable) {
 
-                if ($purchasable instanceof PurchasableInterface) {
+                if ($purchasable instanceof DealPurchasableInterface) {
 
                     $total = $total->add($purchasable->getTotal());
+
+                    list($purchasableDiscount, ) = $purchasable->getTotal()->allocateByRatios(
+                        $this->discountPercentage,
+                        100 - $this->discountPercentage
+                    );
+
+                    $purchasable->setDealDiscount(
+                        $this->getDealHandler()->getIdentifier(),
+                        $purchasableDiscount
+                    );
 
                 }
 
@@ -235,12 +247,14 @@ class PurchasableDiscount
     }
 
     /**
-     * Gets the total quantity from the purchasable holder based on the primary identifier
+     * Gets the total quantity from the purchasable holder based on the primary identifier and sets the
+     * deal discount amount on the purchasable
      *
      * @param Identifier $purchasableIdentifier
+     * @param float $discountAmount
      * @return int
      */
-    protected function getPurchasableIdentifierQuantity(Identifier $purchasableIdentifier)
+    protected function getPurchasableIdentifierQuantity(Identifier $purchasableIdentifier,Money $discountAmount)
     {
         $quantity = 0;
 
@@ -250,9 +264,14 @@ class PurchasableDiscount
 
             foreach ($purchasables as $purchasable) {
 
-                if ($purchasable instanceof PurchasableInterface) {
+                if ($purchasable instanceof DealPurchasableInterface) {
 
                     $quantity += $purchasable->getQuantity();
+
+                    $purchasable->setDealDiscount(
+                        $this->getDealHandler()->getIdentifier(),
+                        $discountAmount->multiply($purchasable->getQuantity())
+                    );
 
                 }
 

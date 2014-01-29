@@ -3,6 +3,7 @@
 namespace Heystack\Deals\Traits;
 
 use Heystack\Core\Identifier\IdentifierInterface;
+use SebastianBergmann\Money\Money;
 
 /**
  * This trait implements the functionality defined in the DealPurchasableInterface.
@@ -17,6 +18,7 @@ trait DealPurchasableTrait
 {
 
     protected $freeQuantities = [];
+    protected $dealDiscounts = [];
 
     /**
      * @param \Heystack\Core\Identifier\IdentifierInterface $dealIdentifier
@@ -82,19 +84,56 @@ trait DealPurchasableTrait
 
         }
 
-        $total = 0;
-
-        foreach ($this->freeQuantities as $quantity) {
-
-            $total += $quantity;
-
-        }
-
-        return $total;
+        return array_sum($this->freeQuantities);
     }
 
     public function getFreeQuantities()
     {
         return $this->freeQuantities;
     }
+
+    /**
+     * @param IdentifierInterface $dealIdentifier
+     * @param $discountAmount
+     */
+    public function setDealDiscount(IdentifierInterface $dealIdentifier, $discountAmount)
+    {
+        $this->dealDiscounts[$dealIdentifier->getFull()] = $discountAmount;
+    }
+
+    /**
+     * @param IdentifierInterface $dealIdentifier
+     * @return float
+     */
+    public function getDealDiscount(IdentifierInterface $dealIdentifier = null)
+    {
+        if (!is_null($dealIdentifier)) {
+
+            if (isset($this->dealDiscounts[$dealIdentifier->getFull()])) {
+
+                return $this->dealDiscounts[$dealIdentifier->getFull()];
+
+            }
+
+            return $this->getCurrencyService()->getZeroMoney();
+
+        }
+
+        $total = $this->getCurrencyService()->getZeroMoney();
+
+        foreach ( $this->dealDiscounts as $dealDiscount ) {
+
+            if ($dealDiscount instanceof Money) {
+                $total = $total->add($dealDiscount);
+            }
+
+        }
+
+        return $total;
+    }
+
+    /**
+     * @return \Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface
+     */
+    abstract function getCurrencyService();
 }

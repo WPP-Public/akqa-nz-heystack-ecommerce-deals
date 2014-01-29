@@ -6,7 +6,10 @@ use Heystack\Deals\Events;
 use Heystack\Deals\Events\ResultEvent;
 use Heystack\Deals\Interfaces\AdaptableConfigurationInterface;
 use Heystack\Deals\Interfaces\DealHandlerInterface;
+use Heystack\Deals\Interfaces\DealPurchasableInterface;
+use Heystack\Deals\Interfaces\HasDealHandlerInterface;
 use Heystack\Deals\Interfaces\ResultInterface;
+use Heystack\Deals\Traits\HasDealHandler;
 use Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 use Heystack\Purchasable\PurchasableHolder\Interfaces\HasPurchasableHolderInterface;
@@ -20,9 +23,10 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * @author Glenn Bautista <glenn@heyday.co.nz>
  * @package Ecommerce-Deals
  */
-class CartDiscount implements ResultInterface, HasPurchasableHolderInterface
+class CartDiscount implements ResultInterface, HasPurchasableHolderInterface, HasDealHandlerInterface
 {
     use HasPurchasableHolderTrait;
+    use HasDealHandler;
 
     const RESULT_TYPE = 'CartDiscount';
     const CART_DISCOUNT_AMOUNTS = 'cart_discount_amounts';
@@ -48,7 +52,6 @@ class CartDiscount implements ResultInterface, HasPurchasableHolderInterface
      */
     protected $currencyService;
 
-
     /**
      * @param EventDispatcherInterface $eventService
      * @param PurchasableHolderInterface $purchasableHolder
@@ -61,7 +64,8 @@ class CartDiscount implements ResultInterface, HasPurchasableHolderInterface
         PurchasableHolderInterface $purchasableHolder,
         CurrencyServiceInterface $currencyService,
         AdaptableConfigurationInterface $configuration
-    ) {
+    )
+    {
         $this->eventService = $eventService;
         $this->purchasableHolder = $purchasableHolder;
         $this->currencyService = $currencyService;
@@ -140,17 +144,40 @@ class CartDiscount implements ResultInterface, HasPurchasableHolderInterface
             $currencyCode = $currency->getCurrencyCode();
             
             if (isset($this->discountAmounts[$currencyCode])) {
-                return new Money($this->discountAmounts[$currencyCode] * $currency->getSubUnit(), $currency);
-            } else {
-                return $this->currencyService->getZeroMoney();
+                $discount = new Money($this->discountAmounts[$currencyCode] * $currency->getSubUnit(), $currency);
             }
         }
 
         if ($this->discountPercentage) {
             $total = $this->purchasableHolder->getTotal();
-            list($newTotal, ) = $total->allocateByRatios([$this->discountPercentage, 100 - $this->discountPercentage]);
-            
-            return $newTotal;
+            list($discount, ) = $total->allocateByRatios([$this->discountPercentage, 100 - $this->discountPercentage]);
+        }
+
+        if ($discount instanceof Money) {
+
+            $purchasables = $this->purchasableHolder->getPurchasables();
+
+            $total = $this->purchasableHolder->getTotal();
+
+            foreach ($purchasables as $purchasable) {
+
+                if ($purchasable instanceof DealPurchasableInterface) {
+
+                    $discountRatio = $purchasable->getTotal()->getAmount() / $total->getAmount();
+
+                    list($purchasableDiscount, ) = $discount->allocateByRatios(
+                        $discountRatio,
+                        1 - $discountRatio
+                    );
+
+                    $purchasable->setDealDiscount(
+                        $this->getDealHandler()->getIdentifier(),
+                        $purchasableDiscount
+                    );
+
+                }
+
+            }
         }
         
         return $this->currencyService->getZeroMoney();

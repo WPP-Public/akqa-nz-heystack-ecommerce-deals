@@ -4,6 +4,7 @@ namespace Heystack\Deals\Interfaces;
 
 use Heystack\Core\Identifier\IdentifierInterface;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableInterface;
+use SebastianBergmann\Money\Money;
 
 /**
  *
@@ -42,4 +43,17 @@ interface DealPurchasableInterface extends PurchasableInterface
      * @return int
      */
     public function getFreeQuantity(IdentifierInterface $dealIdentifier = null);
+
+    /**
+     * @param IdentifierInterface $dealIdentifier
+     * @param $discountAmount
+     * @return mixed
+     */
+    public function setDealDiscount(IdentifierInterface $dealIdentifier, Money $discountAmount);
+
+    /**
+     * @param IdentifierInterface $dealIdentifier
+     * @return \SebastianBergmann\Money\Money
+     */
+    public function getDealDiscount(IdentifierInterface $dealIdentifier = null);
 }

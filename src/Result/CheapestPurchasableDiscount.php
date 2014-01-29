@@ -104,8 +104,10 @@ class CheapestPurchasableDiscount
      */
     public function process(DealHandlerInterface $dealHandler)
     {
-        /// Reset the free count for this deal of all the purchasables.
-        // TODO: Document Why?
+        $this->totalDiscount = $this->getCurrencyService()->getZeroMoney();
+
+        // Reset the free count for this deal of all the purchasables. We need to do this because
+        // a new 'cheaper' product may have been added to the purchasable holder in the meantime
         $purchasables = $this->purchasableHolder->getPurchasables();
 
         if (is_array($purchasables) && count($purchasables)) {
@@ -120,7 +122,6 @@ class CheapestPurchasableDiscount
             }
 
         }
-
 
         $count = $dealHandler->getConditionsMetCount();
 
@@ -165,7 +166,15 @@ class CheapestPurchasableDiscount
 
             }
 
-            $this->totalDiscount += $purchasable->getUnitPrice() * $countData['count'];
+            $purchasableDiscount = $purchasable->getUnitPrice()->multiply($countData['count']);
+
+            $this->totalDiscount = $this->totalDiscount->add($purchasableDiscount);
+
+            if ($purchasable instanceof DealPurchasableInterface) {
+
+                $purchasable->setDealDiscount($dealHandler->getIdentifier(), $this->totalDiscount);
+
+            }
 
         }
 
@@ -186,13 +195,20 @@ class CheapestPurchasableDiscount
 
                     $purchasable->setFreeQuantity($dealIdentifier, 0);
 
+                    if ($purchasable instanceof DealPurchasableInterface) {
+
+                        $purchasable->setDealDiscount($dealIdentifier, $this->getCurrencyService()->getZeroMoney());
+
+                    }
+
                 }
 
             }
 
         }
 
-        // TODO: Does this need to do this?
+        // We need to save the purchasable Holder's state because it keeps track of the state of each purchasable
+        // in the transaction.
         $this->purchasableHolder->saveState();
     }
 

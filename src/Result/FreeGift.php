@@ -116,6 +116,8 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
             $total = $this->currencyService->getZeroMoney();
         }
 
+        $purchasable->setDealDiscount($dealHandler->getIdentifier(), $total);
+
         $this->eventService->dispatch(Events::RESULT_PROCESSED, new ResultEvent($this));
 
         return $total;
