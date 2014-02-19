@@ -61,23 +61,21 @@ class ContainerExtension extends Extension
             $dealsDbConfig = array(
                 'deals' => array()
             );
-            (new DBClosureLoader(
-                function (DealDataInterface $record) use (&$dealsDbConfig) {
-                    $configArray = $record->getConfigArray();
+            
+            $handler = function (DealDataInterface $record) use (&$dealsDbConfig) {
+                $configArray = $record->getConfigArray();
 
-                    if (is_array($configArray)) {
+                if (is_array($configArray)) {
 
-                        $dealsDbConfig['deals'][$record->getName()] = $configArray;
+                    $dealsDbConfig['deals'][$record->getName()] = $configArray;
 
-                    }
                 }
-            ))->load(
-                new \SQLQuery(
-                    $config['deals_db']['select'],
-                    $config['deals_db']['from'],
-                    $config['deals_db']['where']
-                )
-            );
+            };
+            
+            $resource = call_user_func([$config['deals_db']['from'], 'get'])->where($config['deals_db']['where']);
+            
+            (new DBClosureLoader($handler))->load($resource);
+            
             $configs[] = $dealsDbConfig;
         }
 
