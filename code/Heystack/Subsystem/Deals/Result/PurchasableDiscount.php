@@ -41,7 +41,7 @@ class PurchasableDiscount implements ResultInterface, HasPurchasableHolderInterf
     /**
      * @var array of \Heystack\Subsystem\Core\Identifier\Identifier
      */
-    protected $purchasableIdentifiers = array();
+    protected $purchasableIdentifiers = [];
     /**
      * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
      */
@@ -135,7 +135,7 @@ class PurchasableDiscount implements ResultInterface, HasPurchasableHolderInterf
 
     public static function getSubscribedEvents()
     {
-        return array();
+        return [];
     }
 
     /**

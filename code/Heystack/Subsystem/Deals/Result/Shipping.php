@@ -108,7 +108,7 @@ class Shipping implements ResultInterface
 
     public static function getSubscribedEvents()
     {
-        return array();
+        return [];
     }
 
     /**

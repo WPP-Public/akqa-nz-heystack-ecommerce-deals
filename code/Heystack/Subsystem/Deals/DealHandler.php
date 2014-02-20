@@ -44,7 +44,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
      * The conditions that need to be met for the deal
      * @var \Heystack\Subsystem\Deals\Interfaces\ConditionInterface[]
      */
-    protected $conditions = array();
+    protected $conditions = [];
     /**
      * The result of the deal if conditions are met
      * @var \Heystack\Subsystem\Deals\Interfaces\ResultInterface
@@ -224,7 +224,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
      */
     public function conditionsMet($dispatchEvents = true)
     {
-        $met = array();
+        $met = [];
 
         foreach ($this->conditions as $condition) {
 
@@ -282,15 +282,15 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     public function getStorableData()
     {
         //loop of conditions, use result to prepare a combined description
-        return array(
+        return [
             'id' => 'Deal',
             'parent' => true,
-            'flat' => array(
+            'flat' => [
                 'Total' => $this->getTotal(),
                 'Description' => $this->getDescription(),
                 'ParentID' => $this->parentReference
-            )
-        );
+            ]
+        ];
     }
 
     /**
@@ -298,7 +298,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
      */
     protected function getDescription()
     {
-        $conditionDescriptions = array();
+        $conditionDescriptions = [];
         foreach ($this->conditions as $condition) {
             $conditionDescriptions[] = $condition->getDescription();
         }
@@ -334,9 +334,9 @@ DESCRIPTION;
      */
     public function getStorableBackendIdentifiers()
     {
-        return array(
+        return [
             Backend::IDENTIFIER
-        );
+        ];
     }
 
     /**

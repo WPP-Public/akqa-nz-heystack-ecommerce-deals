@@ -30,9 +30,9 @@ class DealHandlerTest extends \PHPUnit_Framework_TestCase
             $eventDispatcherStub,
             self::DEAL_ID,
             serialize(
-                array(
+                [
                     'test' => 'message'
-                )
+                ]
             )
         );
     }
@@ -49,9 +49,9 @@ class DealHandlerTest extends \PHPUnit_Framework_TestCase
             ->method('getByKey')
             ->will(
                 $this->returnValue(
-                    array(
+                    [
                         DealHandler::TOTAL_KEY => self::INITIAL_TOTAL
-                    )
+                    ]
                 )
             );
 
@@ -192,25 +192,25 @@ Result:
 $resultDescription
 DESCRIPTION;
 
-        $expectedInitialResult = array(
+        $expectedInitialResult = [
             'id' => 'Deal',
             'parent' => true,
-            'flat' => array(
+            'flat' => [
                 'Total' => self::INITIAL_TOTAL,
                 'Description' => $description,
                 'ParentID' => self::PARENT_REFERENCE
-            )
-        );
+            ]
+        ];
 
-        $expectedFinalResult = array(
+        $expectedFinalResult = [
             'id' => 'Deal',
             'parent' => true,
-            'flat' => array(
+            'flat' => [
                 'Total' => self::FINAL_TOTAL,
                 'Description' => $description,
                 'ParentID' => self::PARENT_REFERENCE
-            )
-        );
+            ]
+        ];
 
         $this->dealHandler->addCondition($this->getConditionStub());
         $this->dealHandler->setResult($this->getResultStub());
@@ -416,9 +416,9 @@ DESCRIPTION;
             ->method('getConditions')
             ->will(
                 $this->returnValue(
-                    array(
+                    [
                         $condition
-                    )
+                    ]
                 )
             );
 

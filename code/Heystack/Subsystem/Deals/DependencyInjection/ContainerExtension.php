@@ -58,9 +58,9 @@ class ContainerExtension extends Extension
         );
 
         if (isset($config['deals_db'])) {
-            $dealsDbConfig = array(
-                'deals' => array()
-            );
+            $dealsDbConfig = [
+                'deals' => []
+            ];
             
             $handler = function (DealDataInterface $record) use (&$dealsDbConfig) {
                 $configArray = $record->getConfigArray();
@@ -168,9 +168,9 @@ class ContainerExtension extends Extension
         //Set the result on the deal
         $dealDefinition->addMethodCall(
             'setResult',
-            array(
+            [
                 new Reference($resultID)
-            )
+            ]
         );
 
 
@@ -213,9 +213,9 @@ class ContainerExtension extends Extension
         //Add the condition to the deal
         $dealDefinition->addMethodCall(
             'addCondition',
-            array(
+            [
                 new Reference($conditionDefinitionID)
-            )
+            ]
         );
     }
     /**

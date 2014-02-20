@@ -22,7 +22,7 @@ class ConditionEventTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $this->dealHandler = $this->getMockBuilder('Heystack\Subsystem\Deals\DealHandler')
-            ->setConstructorArgs(array($this->state, $this->eventDispatcher, 'testDeal', null))
+            ->setConstructorArgs([$this->state, $this->eventDispatcher, 'testDeal', null])
             ->getMock();
 
         $this->event = new ConditionEvent($this->dealHandler);

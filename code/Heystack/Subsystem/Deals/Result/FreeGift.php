@@ -96,11 +96,11 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
 
     public static function getSubscribedEvents()
     {
-        return array(
+        return [
             Events::CONDITIONS_NOT_MET => 'onConditionsNotMet',
             Events::CONDITIONS_MET     => 'onConditionsMet',
-            ProductEvents::PURCHASABLE_REMOVED => array('onProductRemove', 100)
-        );
+            ProductEvents::PURCHASABLE_REMOVED => ['onProductRemove', 100]
+        ];
     }
 
     /**

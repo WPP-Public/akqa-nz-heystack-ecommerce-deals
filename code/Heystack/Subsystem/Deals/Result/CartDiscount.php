@@ -100,7 +100,7 @@ class CartDiscount implements ResultInterface, HasPurchasableHolderInterface
 
     public static function getSubscribedEvents()
     {
-        return array();
+        return [];
     }
 
     /**

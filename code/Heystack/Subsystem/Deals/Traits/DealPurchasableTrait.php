@@ -16,7 +16,7 @@ use Heystack\Subsystem\Core\Identifier\IdentifierInterface;
 trait DealPurchasableTrait
 {
 
-    protected $freeQuantities = array();
+    protected $freeQuantities = [];
 
     /**
      * @param \Heystack\Subsystem\Core\Identifier\IdentifierInterface $dealIdentifier

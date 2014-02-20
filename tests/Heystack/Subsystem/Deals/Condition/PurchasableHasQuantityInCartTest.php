@@ -77,7 +77,7 @@ class PurchasableHasQuantityInCartTest extends \PHPUnit_Framework_TestCase
                     PurchasableHasQuantityInCart::MINIMUM_QUANTITY_KEY, 1
                 ],
                 [
-                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, array(1)
+                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, [1]
                 ]
             ],
             [
@@ -85,7 +85,7 @@ class PurchasableHasQuantityInCartTest extends \PHPUnit_Framework_TestCase
                     PurchasableHasQuantityInCart::MINIMUM_QUANTITY_KEY, 1
                 ],
                 [
-                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, array(1)
+                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, [1]
                 ]
             ]
         );
@@ -116,12 +116,12 @@ class PurchasableHasQuantityInCartTest extends \PHPUnit_Framework_TestCase
         $this->configureStub(
             [
                 [
-                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, array(1)
+                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, [1]
                 ]
             ],
             [
                 [
-                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, array(1)
+                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, [1]
                 ]
             ]
         );
@@ -135,7 +135,7 @@ class PurchasableHasQuantityInCartTest extends \PHPUnit_Framework_TestCase
                     PurchasableHasQuantityInCart::MINIMUM_QUANTITY_KEY, 1
                 ],
                 [
-                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, array(1)
+                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, [1]
                 ]
             ],
             [
@@ -143,7 +143,7 @@ class PurchasableHasQuantityInCartTest extends \PHPUnit_Framework_TestCase
                     PurchasableHasQuantityInCart::MINIMUM_QUANTITY_KEY, 1
                 ],
                 [
-                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, array(1)
+                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, [1]
                 ]
             ]
         );
@@ -159,7 +159,7 @@ class PurchasableHasQuantityInCartTest extends \PHPUnit_Framework_TestCase
                     PurchasableHasQuantityInCart::MINIMUM_QUANTITY_KEY, 1
                 ],
                 [
-                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, array(1)
+                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, [1]
                 ]
             ],
             [
@@ -167,13 +167,13 @@ class PurchasableHasQuantityInCartTest extends \PHPUnit_Framework_TestCase
                     PurchasableHasQuantityInCart::MINIMUM_QUANTITY_KEY, 1
                 ],
                 [
-                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, array(1)
+                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, [1]
                 ]
             ]
         );
 
         $this->purchasableQuantityInCartCondition->setMinimumQuantity(4);
-        $this->purchasableQuantityInCartCondition->setPurchasableIdentifiers(array(4));
+        $this->purchasableQuantityInCartCondition->setPurchasableIdentifiers([4]);
 
         $this->assertEquals($this->purchasableQuantityInCartCondition->getDescription(), 'One of them items must have at least ' . $this->purchasableQuantityInCartCondition->getMinimumQuantity() . ' quantity in the cart. Items include ' . implode($this->purchasableQuantityInCartCondition->getPurchasableIdentifiers(), ','));
 
@@ -216,7 +216,7 @@ class PurchasableHasQuantityInCartTest extends \PHPUnit_Framework_TestCase
 
         $this->purchaseableHolder->expects($this->any())
             ->method('getPurchasablesByPrimaryIdentifier')
-            ->will($this->returnValue(array($this->testProduct, $this->testProductTwo)));
+            ->will($this->returnValue([$this->testProduct, $this->testProductTwo]));
 
         $eventService = $this->getMockBuilder('Heystack\Subsystem\Core\EventDispatcher')
             ->disableOriginalConstructor()
@@ -227,11 +227,11 @@ class PurchasableHasQuantityInCartTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($eventService));
 
         $productOne = $this->getMockBuilder('Heystack\Subsystem\Core\Identifier\Identifier')
-            ->setConstructorArgs(array(1))
+            ->setConstructorArgs([1])
             ->getMock();
 
         $productTwo = $this->getMockBuilder('Heystack\Subsystem\Core\Identifier\Identifier')
-            ->setConstructorArgs(array(2))
+            ->setConstructorArgs([2])
             ->getMock();
 
         $this->configureStub(
@@ -240,7 +240,7 @@ class PurchasableHasQuantityInCartTest extends \PHPUnit_Framework_TestCase
                     PurchasableHasQuantityInCart::MINIMUM_QUANTITY_KEY, 5
                 ],
                 [
-                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, array($productOne, $productTwo)
+                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, [$productOne, $productTwo]
                 ]
             ],
             [
@@ -248,7 +248,7 @@ class PurchasableHasQuantityInCartTest extends \PHPUnit_Framework_TestCase
                     PurchasableHasQuantityInCart::MINIMUM_QUANTITY_KEY, 5
                 ],
                 [
-                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, array($productOne, $productTwo)
+                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, [$productOne, $productTwo]
                 ]
             ]
         );
@@ -294,7 +294,7 @@ class PurchasableHasQuantityInCartTest extends \PHPUnit_Framework_TestCase
 
         $this->purchaseableHolder->expects($this->any())
             ->method('getPurchasablesByPrimaryIdentifier')
-            ->will($this->returnValue(array($this->testProduct, $this->testProductTwo)));
+            ->will($this->returnValue([$this->testProduct, $this->testProductTwo]));
 
         $eventService = $this->getMockBuilder('Heystack\Subsystem\Core\EventDispatcher')
             ->disableOriginalConstructor()
@@ -305,11 +305,11 @@ class PurchasableHasQuantityInCartTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($eventService));
 
         $productOne = $this->getMockBuilder('Heystack\Subsystem\Core\Identifier\Identifier')
-            ->setConstructorArgs(array(1))
+            ->setConstructorArgs([1])
             ->getMock();
 
         $productTwo = $this->getMockBuilder('Heystack\Subsystem\Core\Identifier\Identifier')
-            ->setConstructorArgs(array(2))
+            ->setConstructorArgs([2])
             ->getMock();
 
         $this->configureStub(
@@ -318,7 +318,7 @@ class PurchasableHasQuantityInCartTest extends \PHPUnit_Framework_TestCase
                     PurchasableHasQuantityInCart::MINIMUM_QUANTITY_KEY, 5
                 ],
                 [
-                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, array($productOne, $productTwo)
+                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, [$productOne, $productTwo]
                 ]
             ],
             [
@@ -326,7 +326,7 @@ class PurchasableHasQuantityInCartTest extends \PHPUnit_Framework_TestCase
                     PurchasableHasQuantityInCart::MINIMUM_QUANTITY_KEY, 5
                 ],
                 [
-                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, array($productOne, $productTwo)
+                    PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS, [$productOne, $productTwo]
                 ]
             ]
         );

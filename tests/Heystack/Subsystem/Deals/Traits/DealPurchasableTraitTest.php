@@ -91,13 +91,13 @@ class DealPurchasableTraitTest extends \PHPUnit_Framework_TestCase
     public function testGetFreeQuantities()
     {
         $quantities = $this->trait->getFreeQuantities();
-        $this->assertEquals($quantities, array());
+        $this->assertEquals($quantities, []);
 
         $this->trait->setFreeQuantity($this->identifier, 12);
 
         $quantities = $this->trait->getFreeQuantities();
 
-        $this->assertEquals($quantities, array('' => 12));
+        $this->assertEquals($quantities, ['' => 12]);
 
     }
 

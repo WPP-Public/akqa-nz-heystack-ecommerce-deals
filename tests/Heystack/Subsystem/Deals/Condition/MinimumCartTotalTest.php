@@ -71,12 +71,12 @@ class MinimumCartTotalTest extends \PHPUnit_Framework_TestCase
         $this->configureStub(
             [
                 [
-                    MinimumCartTotal::AMOUNTS_KEY, array("NZ" => 10)
+                    MinimumCartTotal::AMOUNTS_KEY, ["NZ" => 10]
                 ]
             ],
             [
                 [
-                    MinimumCartTotal::AMOUNTS_KEY, array("NZ" => 10)
+                    MinimumCartTotal::AMOUNTS_KEY, ["NZ" => 10]
                 ]
             ]
         );
@@ -88,12 +88,12 @@ class MinimumCartTotalTest extends \PHPUnit_Framework_TestCase
         $this->configureStub(
             [
                 [
-                    MinimumCartTotal::AMOUNTS_KEY, array("NZ" => 10)
+                    MinimumCartTotal::AMOUNTS_KEY, ["NZ" => 10]
                 ]
             ],
             [
                 [
-                    MinimumCartTotal::AMOUNTS_KEY, array("NZ" => 10)
+                    MinimumCartTotal::AMOUNTS_KEY, ["NZ" => 10]
                 ]
             ]
         );
@@ -107,12 +107,12 @@ class MinimumCartTotalTest extends \PHPUnit_Framework_TestCase
         $this->configureStub(
             [
                 [
-                    MinimumCartTotal::AMOUNTS_KEY, array("NZ" => 10)
+                    MinimumCartTotal::AMOUNTS_KEY, ["NZ" => 10]
                 ]
             ],
             [
                 [
-                    MinimumCartTotal::AMOUNTS_KEY, array("NZ" => 10)
+                    MinimumCartTotal::AMOUNTS_KEY, ["NZ" => 10]
                 ]
             ]
         );
@@ -127,19 +127,19 @@ class MinimumCartTotalTest extends \PHPUnit_Framework_TestCase
         $this->configureStub(
             [
                 [
-                    MinimumCartTotal::AMOUNTS_KEY, array("NZ" => 10)
+                    MinimumCartTotal::AMOUNTS_KEY, ["NZ" => 10]
                 ]
             ],
             [
                 [
-                    MinimumCartTotal::AMOUNTS_KEY, array("NZ" => 10)
+                    MinimumCartTotal::AMOUNTS_KEY, ["NZ" => 10]
                 ]
             ]
         );
 
-        $this->minimumCartCondition->setAmounts(array("NZ" => 10));
+        $this->minimumCartCondition->setAmounts(["NZ" => 10]);
 
-        $this->assertEquals($this->minimumCartCondition->getAmounts(), array("NZ" => 10));
+        $this->assertEquals($this->minimumCartCondition->getAmounts(), ["NZ" => 10]);
     }
 
     private function setBasicStubs()
@@ -182,7 +182,7 @@ class MinimumCartTotalTest extends \PHPUnit_Framework_TestCase
 
         $this->purchaseableHolder->expects($this->any())
             ->method('getPurchasables')
-            ->will($this->returnValue(array($this->testProduct, $this->testProductTwo)));
+            ->will($this->returnValue([$this->testProduct, $this->testProductTwo]));
 
         $eventService = $this->getMockBuilder('Heystack\Subsystem\Core\EventDispatcher')
             ->disableOriginalConstructor()
@@ -204,12 +204,12 @@ class MinimumCartTotalTest extends \PHPUnit_Framework_TestCase
         $this->configureStub(
             [
                 [
-                    MinimumCartTotal::AMOUNTS_KEY, array("NZ" => 10)
+                    MinimumCartTotal::AMOUNTS_KEY, ["NZ" => 10]
                 ]
             ],
             [
                 [
-                    MinimumCartTotal::AMOUNTS_KEY, array("NZ" => 10)
+                    MinimumCartTotal::AMOUNTS_KEY, ["NZ" => 10]
                 ]
             ]
         );
@@ -225,12 +225,12 @@ class MinimumCartTotalTest extends \PHPUnit_Framework_TestCase
         $this->configureStub(
             [
                 [
-                    MinimumCartTotal::AMOUNTS_KEY, array("NZ" => 10)
+                    MinimumCartTotal::AMOUNTS_KEY, ["NZ" => 10]
                 ]
             ],
             [
                 [
-                    MinimumCartTotal::AMOUNTS_KEY, array("NZ" => 10)
+                    MinimumCartTotal::AMOUNTS_KEY, ["NZ" => 10]
                 ]
             ]
         );
@@ -246,12 +246,12 @@ class MinimumCartTotalTest extends \PHPUnit_Framework_TestCase
         $this->configureStub(
             [
                 [
-                    MinimumCartTotal::AMOUNTS_KEY, array("NZ" => 10)
+                    MinimumCartTotal::AMOUNTS_KEY, ["NZ" => 10]
                 ]
             ],
             [
                 [
-                    MinimumCartTotal::AMOUNTS_KEY, array("NZ" => 10)
+                    MinimumCartTotal::AMOUNTS_KEY, ["NZ" => 10]
                 ]
             ]
         );
@@ -271,12 +271,12 @@ class MinimumCartTotalTest extends \PHPUnit_Framework_TestCase
         $this->configureStub(
             [
                 [
-                    MinimumCartTotal::AMOUNTS_KEY, array("NZ" => 10)
+                    MinimumCartTotal::AMOUNTS_KEY, ["NZ" => 10]
                 ]
             ],
             [
                 [
-                    MinimumCartTotal::AMOUNTS_KEY, array("NZ" => 10)
+                    MinimumCartTotal::AMOUNTS_KEY, ["NZ" => 10]
                 ]
             ]
         );
@@ -299,12 +299,12 @@ class MinimumCartTotalTest extends \PHPUnit_Framework_TestCase
         $this->configureStub(
             [
                 [
-                    MinimumCartTotal::AMOUNTS_KEY, array("NZ" => 10)
+                    MinimumCartTotal::AMOUNTS_KEY, ["NZ" => 10]
                 ]
             ],
             [
                 [
-                    MinimumCartTotal::AMOUNTS_KEY, array("NZ" => 10)
+                    MinimumCartTotal::AMOUNTS_KEY, ["NZ" => 10]
                 ]
             ]
         );

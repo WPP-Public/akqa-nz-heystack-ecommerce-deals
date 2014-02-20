@@ -33,7 +33,7 @@ class QuantityOfPurchasablesInCart implements ConditionInterface, ConditionAlmos
     const PURCHASABLE_IDENTIFIERS = 'purchasables_identifiers';
     const MINIMUM_QUANTITY_KEY = 'minimum_quantity';
 
-    protected $purchasableIdentifiers = array();
+    protected $purchasableIdentifiers = [];
     protected $minimumQuantity;
     protected $configuration;
 
@@ -101,7 +101,7 @@ class QuantityOfPurchasablesInCart implements ConditionInterface, ConditionAlmos
     {
         $quantity = 0;
 
-        $purchasables = array();
+        $purchasables = [];
 
         foreach ($this->purchasableIdentifiers as $purchasableIdentifier) {
 

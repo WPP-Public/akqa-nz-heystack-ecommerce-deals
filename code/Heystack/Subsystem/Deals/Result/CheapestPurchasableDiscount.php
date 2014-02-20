@@ -34,7 +34,7 @@ class CheapestPurchasableDiscount implements ResultInterface, ResultWithConditio
     const PURCHASABLE_KEY = 'purchasable';
     const QUANTITY_KEY = 'quantity';
 
-    protected $purchasableIdentifiers = array();
+    protected $purchasableIdentifiers = [];
 
     protected $totalDiscount = 0;
 
@@ -76,9 +76,9 @@ class CheapestPurchasableDiscount implements ResultInterface, ResultWithConditio
 
     public static function getSubscribedEvents()
     {
-        return array(
+        return [
             Events::CONDITIONS_NOT_MET => 'onConditionsNotMet'
-        );
+        ];
     }
 
     /**
@@ -117,7 +117,7 @@ class CheapestPurchasableDiscount implements ResultInterface, ResultWithConditio
 
         $actionablePurchasables = $this->getActionablePurchasables();
 
-        $cheapestCount = array();
+        $cheapestCount = [];
 
         for ($i = 0; $i < $count; $i++) {
 
@@ -129,10 +129,10 @@ class CheapestPurchasableDiscount implements ResultInterface, ResultWithConditio
 
                 if(!isset($cheapestCount[$fullIdentifierString])){
 
-                    $cheapestCount[$fullIdentifierString] = array(
+                    $cheapestCount[$fullIdentifierString] = [
                         'purchasable' => $cheapest,
                         'count' => 1
-                    );
+                    ];
 
                 }else{
 
@@ -227,15 +227,15 @@ class CheapestPurchasableDiscount implements ResultInterface, ResultWithConditio
 
     protected function getActionablePurchasables()
     {
-        $actionablePurchasables = array();
+        $actionablePurchasables = [];
         $purchasables = $this->getPurchasables();
 
         foreach($purchasables as $purchasable){
 
-            $actionablePurchasables[$purchasable->getIdentifier()->getFull()] = array(
+            $actionablePurchasables[$purchasable->getIdentifier()->getFull()] = [
                 self::PURCHASABLE_KEY => $purchasable,
                 self::QUANTITY_KEY => $purchasable->getQuantity()
-            );
+            ];
 
         }
 
@@ -244,7 +244,7 @@ class CheapestPurchasableDiscount implements ResultInterface, ResultWithConditio
 
     protected function getPurchasables()
     {
-        $purchasables = array();
+        $purchasables = [];
 
         if (count($this->purchasableIdentifiers)) {
 
@@ -276,17 +276,17 @@ class CheapestPurchasableDiscount implements ResultInterface, ResultWithConditio
     public function getConditions()
     {
 
-        $productConfig = array(
+        $productConfig = [
             Condition\PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS => $this->purchasableIdentifiers,
             Condition\PurchasableHasQuantityInCart::MINIMUM_QUANTITY_KEY => 1
 
-        );
+        ];
 
         $purchasableInCartCondition = new Condition\PurchasableHasQuantityInCart($this->getPurchasableHolder(), new AdaptableConfiguration($productConfig));
 
-        return array(
+        return [
             $purchasableInCartCondition
-        );
+        ];
 
     }
 

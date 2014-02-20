@@ -32,7 +32,7 @@ class PurchasableHasQuantityInCart implements ConditionInterface, ConditionAlmos
     const PURCHASABLE_IDENTIFIERS = 'purchasables_identifiers';
     const MINIMUM_QUANTITY_KEY = 'minimum_quantity';
 
-    protected $purchasableIdentifiers = array();
+    protected $purchasableIdentifiers = [];
     protected $minimumQuantity;
     protected $configuration;
 
@@ -102,7 +102,7 @@ class PurchasableHasQuantityInCart implements ConditionInterface, ConditionAlmos
     public function met()
     {
         $met = false;
-        $purchasables = array();
+        $purchasables = [];
 
         foreach ($this->purchasableIdentifiers as $purchasableIdentifier) {
 
@@ -136,7 +136,7 @@ class PurchasableHasQuantityInCart implements ConditionInterface, ConditionAlmos
     {
         $purchasableHolder = $this->getPurchasableHolder();
         $met = false;
-        $purchasables = array();
+        $purchasables = [];
 
         if ($purchasableHolder instanceof HasEventServiceInterface) {
             $this->purchasableHolder->getEventService()->setEnabled(false);
