@@ -1,13 +1,13 @@
 <?php
 
-namespace Heystack\Subsystem\Deals\Traits;
+namespace Heystack\Deals\Traits;
 
-use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
+use Heystack\Deals\Interfaces\DealHandlerInterface;
 
 trait HasDealHandler
 {
     /**
-     * @var \Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface
+     * @var \Heystack\Deals\Interfaces\DealHandlerInterface
      */
     protected $dealHandler;
 
@@ -17,7 +17,7 @@ trait HasDealHandler
     }
 
     /**
-     * @return \Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface
+     * @return \Heystack\Deals\Interfaces\DealHandlerInterface
      */
     public function getDealHandler()
     {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Heystack\Subsystem\Deals\Traits;
+namespace Heystack\Deals\Traits;
 
-use Heystack\Subsystem\Core\Identifier\IdentifierInterface;
+use Heystack\Core\Identifier\IdentifierInterface;
 
 /**
  * This trait implements the functionality defined in the DealPurchasableInterface.
@@ -19,7 +19,7 @@ trait DealPurchasableTrait
     protected $freeQuantities = [];
 
     /**
-     * @param \Heystack\Subsystem\Core\Identifier\IdentifierInterface $dealIdentifier
+     * @param \Heystack\Core\Identifier\IdentifierInterface $dealIdentifier
      * @param int $quantity
      */
     public function setFreeQuantity(IdentifierInterface $dealIdentifier, $quantity)
@@ -28,7 +28,7 @@ trait DealPurchasableTrait
     }
 
     /**
-     * @param \Heystack\Subsystem\Core\Identifier\IdentifierInterface $dealIdentifier
+     * @param \Heystack\Core\Identifier\IdentifierInterface $dealIdentifier
      * @param int $quantity
      */
     public function addFreeQuantity(IdentifierInterface $dealIdentifier, $quantity = 1)
@@ -37,7 +37,7 @@ trait DealPurchasableTrait
     }
 
     /**
-     * @param \Heystack\Subsystem\Core\Identifier\IdentifierInterface $dealIdentifier
+     * @param \Heystack\Core\Identifier\IdentifierInterface $dealIdentifier
      * @param int $quantity
      */
     public function subtractFreeQuantity(IdentifierInterface $dealIdentifier, $quantity = 1)
@@ -46,7 +46,7 @@ trait DealPurchasableTrait
     }
 
     /**
-     * @param \Heystack\Subsystem\Core\Identifier\IdentifierInterface $dealIdentifier
+     * @param \Heystack\Core\Identifier\IdentifierInterface $dealIdentifier
      * @return bool
      */
     public function hasFreeItems(IdentifierInterface $dealIdentifier = null)
@@ -71,7 +71,7 @@ trait DealPurchasableTrait
     }
 
     /**
-     * @param \Heystack\Subsystem\Core\Identifier\IdentifierInterface $dealIdentifier
+     * @param \Heystack\Core\Identifier\IdentifierInterface $dealIdentifier
      * @return int
      */
     public function getFreeQuantity(IdentifierInterface $dealIdentifier = null)

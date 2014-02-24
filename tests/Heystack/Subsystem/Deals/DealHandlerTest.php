@@ -1,9 +1,9 @@
 <?php
-namespace Heystack\Subsystem\Deals\Test;
+namespace Heystack\Deals\Test;
 
-use Heystack\Subsystem\Core\Storage\Backends\SilverStripeOrm\Backend;
-use Heystack\Subsystem\Deals\DealHandler;
-use Heystack\Subsystem\Ecommerce\Transaction\TransactionModifierTypes;
+use Heystack\Core\Storage\Backends\SilverStripeOrm\Backend;
+use Heystack\Deals\DealHandler;
+use Heystack\Ecommerce\Transaction\TransactionModifierTypes;
 
 class DealHandlerTest extends \PHPUnit_Framework_TestCase
 {
@@ -41,7 +41,7 @@ class DealHandlerTest extends \PHPUnit_Framework_TestCase
      */
     protected function getStateStub()
     {
-        $stateServiceStub = $this->getMockBuilder('Heystack\Subsystem\Core\State\State')
+        $stateServiceStub = $this->getMockBuilder('Heystack\Core\State\State')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -72,7 +72,7 @@ class DealHandlerTest extends \PHPUnit_Framework_TestCase
     
     protected function getConditionStub()
     {
-        $condition = $this->getMockBuilder('Heystack\Subsystem\Deals\Interfaces\ConditionInterface')
+        $condition = $this->getMockBuilder('Heystack\Deals\Interfaces\ConditionInterface')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -93,7 +93,7 @@ class DealHandlerTest extends \PHPUnit_Framework_TestCase
     
     protected function getResultStub()
     {
-        $result = $this->getMockBuilder('Heystack\Subsystem\Deals\Interfaces\ResultInterface')
+        $result = $this->getMockBuilder('Heystack\Deals\Interfaces\ResultInterface')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -113,7 +113,7 @@ class DealHandlerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Heystack\Subsystem\Deals\DealHandler::getPromotionalMessage
+     * @covers Heystack\Deals\DealHandler::getPromotionalMessage
      */
     public function testGetPromotionalMessage()
     {
@@ -121,7 +121,7 @@ class DealHandlerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Heystack\Subsystem\Deals\DealHandler::addCondition
+     * @covers Heystack\Deals\DealHandler::addCondition
      */
     public function testAddCondition()
     {
@@ -130,7 +130,7 @@ class DealHandlerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($condition, reset($conditions));
 
         // test conditions which have a dealhandler attached
-        $condition = $this->getMockBuilder('Heystack\Subsystem\Deals\Condition\QuantityOfPurchasablesInCart')
+        $condition = $this->getMockBuilder('Heystack\Deals\Condition\QuantityOfPurchasablesInCart')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -142,15 +142,15 @@ class DealHandlerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Heystack\Subsystem\Deals\DealHandler::getIdentifier
+     * @covers Heystack\Deals\DealHandler::getIdentifier
      */
     public function testGetIdentifier()
     {
-        $this->assertInstanceOf('Heystack\Subsystem\Core\Identifier\Identifier', $this->dealHandler->getIdentifier());
+        $this->assertInstanceOf('Heystack\Core\Identifier\Identifier', $this->dealHandler->getIdentifier());
     }
 
     /**
-     * @covers Heystack\Subsystem\Deals\DealHandler::getTotal
+     * @covers Heystack\Deals\DealHandler::getTotal
      */
     public function testGetTotal()
     {
@@ -161,7 +161,7 @@ class DealHandlerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Heystack\Subsystem\Deals\DealHandler::conditionsMet
+     * @covers Heystack\Deals\DealHandler::conditionsMet
      */
     public function testConditionsMet()
     {
@@ -171,7 +171,7 @@ class DealHandlerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Heystack\Subsystem\Deals\DealHandler::getType
+     * @covers Heystack\Deals\DealHandler::getType
      */
     public function testGetType()
     {
@@ -179,7 +179,7 @@ class DealHandlerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Heystack\Subsystem\Deals\DealHandler::getStorableData
+     * @covers Heystack\Deals\DealHandler::getStorableData
      */
     public function testGetStorableData()
     {
@@ -224,7 +224,7 @@ DESCRIPTION;
     }
 
     /**
-     * @covers Heystack\Subsystem\Deals\DealHandler::getStorableIdentifier
+     * @covers Heystack\Deals\DealHandler::getStorableIdentifier
      */
     public function testGetStorableIdentifier()
     {
@@ -232,7 +232,7 @@ DESCRIPTION;
     }
 
     /**
-     * @covers Heystack\Subsystem\Deals\DealHandler::getSchemaName
+     * @covers Heystack\Deals\DealHandler::getSchemaName
      */
     public function testGetSchemaName()
     {
@@ -240,7 +240,7 @@ DESCRIPTION;
     }
 
     /**
-     * @covers Heystack\Subsystem\Deals\DealHandler::getStorableBackendIdentifiers
+     * @covers Heystack\Deals\DealHandler::getStorableBackendIdentifiers
      */
     public function testGetStorableBackendIdentifiers()
     {
@@ -248,7 +248,7 @@ DESCRIPTION;
     }
 
     /**
-     * @covers Heystack\Subsystem\Deals\DealHandler::getParentReference
+     * @covers Heystack\Deals\DealHandler::getParentReference
      */
     public function testGetParentReference()
     {
@@ -258,7 +258,7 @@ DESCRIPTION;
     }
 
     /**
-     * @covers Heystack\Subsystem\Deals\DealHandler::updateTotal
+     * @covers Heystack\Deals\DealHandler::updateTotal
      */
     public function testUpdateTotal()
     {
@@ -268,7 +268,7 @@ DESCRIPTION;
 
         $this->assertEquals(self::FINAL_TOTAL, $this->dealHandler->getTotal());
 
-        $condition = $this->getMockBuilder('Heystack\Subsystem\Deals\Interfaces\ConditionInterface')
+        $condition = $this->getMockBuilder('Heystack\Deals\Interfaces\ConditionInterface')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -292,7 +292,7 @@ DESCRIPTION;
     }
 
     /**
-     * @covers Heystack\Subsystem\Deals\DealHandler::getConditions
+     * @covers Heystack\Deals\DealHandler::getConditions
      */
     public function testGetConditions()
     {
@@ -303,7 +303,7 @@ DESCRIPTION;
     }
 
     /**
-     * @covers Heystack\Subsystem\Deals\DealHandler::getConditionsMetCount
+     * @covers Heystack\Deals\DealHandler::getConditionsMetCount
      */
     public function testGetConditionsMetCount()
     {
@@ -314,7 +314,7 @@ DESCRIPTION;
     }
 
     /**
-     * @covers Heystack\Subsystem\Deals\DealHandler::getResult
+     * @covers Heystack\Deals\DealHandler::getResult
      */
     public function testGetResult()
     {
@@ -323,12 +323,12 @@ DESCRIPTION;
     }
 
     /**
-     * @covers Heystack\Subsystem\Deals\DealHandler::almostMet
+     * @covers Heystack\Deals\DealHandler::almostMet
      * @depends testAddCondition
      */
     public function testAlmostMet()
     {
-        $condition = $this->getMockBuilder('Heystack\Subsystem\Deals\Condition\QuantityOfPurchasablesInCart')
+        $condition = $this->getMockBuilder('Heystack\Deals\Condition\QuantityOfPurchasablesInCart')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -350,7 +350,7 @@ DESCRIPTION;
     }
 
     /**
-     * @covers Heystack\Subsystem\Deals\DealHandler::setStateService
+     * @covers Heystack\Deals\DealHandler::setStateService
      */
     public function testSetStateService()
     {
@@ -359,7 +359,7 @@ DESCRIPTION;
     }
 
     /**
-     * @covers Heystack\Subsystem\Deals\DealHandler::getStateService
+     * @covers Heystack\Deals\DealHandler::getStateService
      * @depends testSetStateService
      */
     public function testGetStateService()
@@ -369,7 +369,7 @@ DESCRIPTION;
     }
 
     /**
-     * @covers Heystack\Subsystem\Deals\DealHandler::setData
+     * @covers Heystack\Deals\DealHandler::setData
      */
     public function testSetData()
     {
@@ -378,7 +378,7 @@ DESCRIPTION;
     }
 
     /**
-     * @covers Heystack\Subsystem\Deals\DealHandler::getData
+     * @covers Heystack\Deals\DealHandler::getData
      * @depends testSetData
      */
     public function testGetData()
@@ -388,7 +388,7 @@ DESCRIPTION;
     }
 
     /**
-     * @covers Heystack\Subsystem\Deals\DealHandler::setResult
+     * @covers Heystack\Deals\DealHandler::setResult
      * @depends testGetConditions
      */
     public function testSetResult()
@@ -396,7 +396,7 @@ DESCRIPTION;
 
         $condition = $this->getConditionStub();
 
-        $result = $this->getMockBuilder('Heystack\Subsystem\Deals\Result\CheapestPurchasableDiscount')
+        $result = $this->getMockBuilder('Heystack\Deals\Result\CheapestPurchasableDiscount')
             ->disableOriginalConstructor()
             ->getMock();
 

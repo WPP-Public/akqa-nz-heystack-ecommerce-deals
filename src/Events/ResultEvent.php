@@ -1,23 +1,23 @@
 <?php
 
-namespace Heystack\Subsystem\Deals\Events;
+namespace Heystack\Deals\Events;
 
-use Heystack\Subsystem\Deals\Interfaces\ResultInterface;
+use Heystack\Deals\Interfaces\ResultInterface;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
  * Class ResultEvent
- * @package Heystack\Subsystem\Deals
+ * @package Heystack\Deals
  */
 class ResultEvent extends Event
 {
     /**
-     * @var \Heystack\Subsystem\Deals\Interfaces\ResultInterface
+     * @var \Heystack\Deals\Interfaces\ResultInterface
      */
     protected $result;
 
     /**
-     * @param \Heystack\Subsystem\Deals\Interfaces\ResultInterface $result
+     * @param \Heystack\Deals\Interfaces\ResultInterface $result
      */
     public function __construct(ResultInterface $result)
     {
@@ -25,7 +25,7 @@ class ResultEvent extends Event
     }
 
     /**
-     * @return \Heystack\Subsystem\Deals\Interfaces\ResultInterface
+     * @return \Heystack\Deals\Interfaces\ResultInterface
      */
     public function getResult()
     {
@@ -33,7 +33,7 @@ class ResultEvent extends Event
     }
 
     /**
-     * @return \Heystack\Subsystem\Core\EventDispatcher
+     * @return \Heystack\Core\EventDispatcher
      */
     public function getDispatcher()
     {

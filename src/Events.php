@@ -8,7 +8,7 @@
 /**
  * Shipping namespace
  */
-namespace Heystack\Subsystem\Deals;
+namespace Heystack\Deals;
 
 /**
  * Events holds constant references to triggerable dispatch events.

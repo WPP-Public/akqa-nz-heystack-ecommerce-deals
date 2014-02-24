@@ -1,8 +1,8 @@
 <?php
 
-namespace Heystack\Subsystem\Deals;
+namespace Heystack\Deals;
 
-use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
+use Heystack\Deals\Interfaces\AdaptableConfigurationInterface;
 
 /**
  *

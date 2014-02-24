@@ -1,23 +1,23 @@
 <?php
 
-namespace Heystack\Subsystem\Deals;
+namespace Heystack\Deals;
 
-use Heystack\Subsystem\Core\Identifier\Identifier;
-use Heystack\Subsystem\Core\State\State;
-use Heystack\Subsystem\Core\State\StateableInterface;
-use Heystack\Subsystem\Core\Storage\Backends\SilverStripeOrm\Backend;
-use Heystack\Subsystem\Core\Storage\StorableInterface;
-use Heystack\Subsystem\Core\Storage\Traits\ParentReferenceTrait;
-use Heystack\Subsystem\Deals\Events\ConditionEvent;
-use Heystack\Subsystem\Deals\Interfaces\ConditionAlmostMetInterface;
-use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
-use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
-use Heystack\Subsystem\Deals\Interfaces\HasDealHandlerInterface;
-use Heystack\Subsystem\Deals\Interfaces\ResultInterface;
-use Heystack\Subsystem\Deals\Interfaces\ResultWithConditionsInterface;
-use Heystack\Subsystem\Ecommerce\Transaction\Traits\TransactionModifierSerializeTrait;
-use Heystack\Subsystem\Ecommerce\Transaction\Traits\TransactionModifierStateTrait;
-use Heystack\Subsystem\Ecommerce\Transaction\TransactionModifierTypes;
+use Heystack\Core\Identifier\Identifier;
+use Heystack\Core\State\State;
+use Heystack\Core\State\StateableInterface;
+use Heystack\Core\Storage\Backends\SilverStripeOrm\Backend;
+use Heystack\Core\Storage\StorableInterface;
+use Heystack\Core\Storage\Traits\ParentReferenceTrait;
+use Heystack\Deals\Events\ConditionEvent;
+use Heystack\Deals\Interfaces\ConditionAlmostMetInterface;
+use Heystack\Deals\Interfaces\ConditionInterface;
+use Heystack\Deals\Interfaces\DealHandlerInterface;
+use Heystack\Deals\Interfaces\HasDealHandlerInterface;
+use Heystack\Deals\Interfaces\ResultInterface;
+use Heystack\Deals\Interfaces\ResultWithConditionsInterface;
+use Heystack\Ecommerce\Transaction\Traits\TransactionModifierSerializeTrait;
+use Heystack\Ecommerce\Transaction\Traits\TransactionModifierStateTrait;
+use Heystack\Ecommerce\Transaction\TransactionModifierTypes;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -42,16 +42,16 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     const TOTAL_KEY = 'total';
     /**
      * The conditions that need to be met for the deal
-     * @var \Heystack\Subsystem\Deals\Interfaces\ConditionInterface[]
+     * @var \Heystack\Deals\Interfaces\ConditionInterface[]
      */
     protected $conditions = [];
     /**
      * The result of the deal if conditions are met
-     * @var \Heystack\Subsystem\Deals\Interfaces\ResultInterface
+     * @var \Heystack\Deals\Interfaces\ResultInterface
      */
     protected $result;
     /**
-     * @var \Heystack\Subsystem\Core\State\State
+     * @var \Heystack\Core\State\State
      */
     protected $stateService;
 
@@ -79,7 +79,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     protected $promotionalMessage;
 
     /**
-     * @param \Heystack\Subsystem\Core\State\State $stateService
+     * @param \Heystack\Core\State\State $stateService
      */
     public function setStateService($stateService)
     {
@@ -87,7 +87,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     }
 
     /**
-     * @return \Heystack\Subsystem\Core\State\State
+     * @return \Heystack\Core\State\State
      */
     public function getStateService()
     {
@@ -140,7 +140,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     }
 
     /**
-     * @param \Heystack\Subsystem\Deals\Interfaces\ResultInterface $result
+     * @param \Heystack\Deals\Interfaces\ResultInterface $result
      * @return mixed|void
      */
     public function setResult(ResultInterface $result)
@@ -165,7 +165,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     }
 
     /**
-     * @param \Heystack\Subsystem\Deals\Interfaces\ConditionInterface $condition
+     * @param \Heystack\Deals\Interfaces\ConditionInterface $condition
      * @return mixed|void
      */
     public function addCondition(ConditionInterface $condition)
@@ -181,7 +181,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
 
     /**
      * Returns a unique identifier
-     * @return \Heystack\Subsystem\Core\Identifier\Identifier
+     * @return \Heystack\Core\Identifier\Identifier
      */
     public function getIdentifier()
     {

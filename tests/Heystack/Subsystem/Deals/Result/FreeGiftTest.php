@@ -1,8 +1,8 @@
 <?php
 
-namespace Heystack\Subsystem\Deals\Test\Result;
+namespace Heystack\Deals\Test\Result;
 
-use Heystack\Subsystem\Deals\Result\FreeGift;
+use Heystack\Deals\Result\FreeGift;
 
 class FreeGiftTest extends \PHPUnit_Framework_TestCase
 {
@@ -23,15 +23,15 @@ class FreeGiftTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->purchasableHolderStub = $this->getMockBuilder('Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface')
+        $this->purchasableHolderStub = $this->getMockBuilder('Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->dataObjectHandlerStub = $this->getMockBuilder('Heystack\Subsystem\Core\DataObjectHandler\DataObjectHandlerInterface')
+        $this->dataObjectHandlerStub = $this->getMockBuilder('Heystack\Core\DataObjectHandler\DataObjectHandlerInterface')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->adaptableConfigurationStub = $this->getMockBuilder('Heystack\Subsystem\Deals\AdaptableConfiguration')
+        $this->adaptableConfigurationStub = $this->getMockBuilder('Heystack\Deals\AdaptableConfiguration')
             ->disableOriginalConstructor()
             ->getMock();
     }
@@ -86,11 +86,11 @@ class FreeGiftTest extends \PHPUnit_Framework_TestCase
     {
         $this->configureStub();
 
-        $dealPurchasable = $this->getMockBuilder('Heystack\Subsystem\Deals\Interfaces\DealPurchasableInterface')
+        $dealPurchasable = $this->getMockBuilder('Heystack\Deals\Interfaces\DealPurchasableInterface')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $dealPurchasableTwo = $this->getMockBuilder('Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableInterface')
+        $dealPurchasableTwo = $this->getMockBuilder('Heystack\Ecommerce\Purchasable\Interfaces\PurchasableInterface')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -113,7 +113,7 @@ class FreeGiftTest extends \PHPUnit_Framework_TestCase
 
     public function testSetDealHandler()
     {
-        $dealHandler = $this->getMockBuilder('Heystack\Subsystem\Deals\DealHandler')
+        $dealHandler = $this->getMockBuilder('Heystack\Deals\DealHandler')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -127,7 +127,7 @@ class FreeGiftTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetDealHandler()
     {
-        $dealHandler = $this->getMockBuilder('Heystack\Subsystem\Deals\DealHandler')
+        $dealHandler = $this->getMockBuilder('Heystack\Deals\DealHandler')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -144,7 +144,7 @@ class FreeGiftTest extends \PHPUnit_Framework_TestCase
     {
         $this->configureStub();
 
-        $dealPurchasable = $this->getMockBuilder('Heystack\Subsystem\Deals\Interfaces\DealPurchasableInterface')
+        $dealPurchasable = $this->getMockBuilder('Heystack\Deals\Interfaces\DealPurchasableInterface')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -160,7 +160,7 @@ class FreeGiftTest extends \PHPUnit_Framework_TestCase
                 $this->returnValue($dealPurchasable)
             );
 
-        $dealHandler = $this->getMockBuilder('Heystack\Subsystem\Deals\DealHandler')
+        $dealHandler = $this->getMockBuilder('Heystack\Deals\DealHandler')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -187,7 +187,7 @@ class FreeGiftTest extends \PHPUnit_Framework_TestCase
 
         $this->configureStub();
 
-        $dealPurchasable = $this->getMockBuilder('Heystack\Subsystem\Deals\Interfaces\DealPurchasableInterface')
+        $dealPurchasable = $this->getMockBuilder('Heystack\Deals\Interfaces\DealPurchasableInterface')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -197,7 +197,7 @@ class FreeGiftTest extends \PHPUnit_Framework_TestCase
                 $this->onConsecutiveCalls($dealPurchasable)
             );
 
-        $dealIdentifier = $this->getMockBuilder('Heystack\Subsystem\Core\Identifier\Identifier')
+        $dealIdentifier = $this->getMockBuilder('Heystack\Core\Identifier\Identifier')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -207,7 +207,7 @@ class FreeGiftTest extends \PHPUnit_Framework_TestCase
                 $this->returnValue(true)
             );
 
-        $dealHandler = $this->getMockBuilder('Heystack\Subsystem\Deals\DealHandler')
+        $dealHandler = $this->getMockBuilder('Heystack\Deals\DealHandler')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -217,7 +217,7 @@ class FreeGiftTest extends \PHPUnit_Framework_TestCase
                 $this->returnValue($dealIdentifier)
             );
 
-        $event = $this->getMockBuilder('Heystack\Subsystem\Deals\Events\ConditionEvent')
+        $event = $this->getMockBuilder('Heystack\Deals\Events\ConditionEvent')
             ->disableOriginalConstructor()
             ->getMock();
 

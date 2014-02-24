@@ -24,7 +24,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Heystack\\Subsystem\\Deals\\": "src/"
+            "Heystack\\Deals\\": "src/"
         }
     },
     "extra": {

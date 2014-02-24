@@ -1,8 +1,8 @@
 <?php
 
-namespace Heystack\Subsystem\Deals\Interfaces;
+namespace Heystack\Deals\Interfaces;
 
-use Heystack\Subsystem\Ecommerce\Transaction\Interfaces\TransactionModifierInterface;
+use Heystack\Ecommerce\Transaction\Interfaces\TransactionModifierInterface;
 
 /**
  *
@@ -47,7 +47,7 @@ interface DealHandlerInterface extends TransactionModifierInterface
     public function getConditionsMetCount();
 
     /**
-     * @return \Heystack\Subsystem\Deals\Interfaces\ResultInterface
+     * @return \Heystack\Deals\Interfaces\ResultInterface
      */
     public function getResult();
 

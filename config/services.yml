@@ -2,23 +2,23 @@ parameters:
 
   deal.data.class: Deal
 
-  deal.handler.class: Heystack\Subsystem\Deals\DealHandler
+  deal.handler.class: Heystack\Deals\DealHandler
 
-  deal.subscriber.class: Heystack\Subsystem\Deals\Subscriber
+  deal.subscriber.class: Heystack\Deals\Subscriber
 
-  deal.condition.configuration.class: Heystack\Subsystem\Deals\AdaptableConfiguration
-  deal.condition.startdate.class: Heystack\Subsystem\Deals\Condition\StartDate
-  deal.condition.enddate.class: Heystack\Subsystem\Deals\Condition\EndDate
-  deal.condition.minimumcarttotal.class: Heystack\Subsystem\Deals\Condition\MinimumCartTotal
-  deal.condition.quantityofpurchasablesincart.class: Heystack\Subsystem\Deals\Condition\QuantityOfPurchasablesInCart
-  deal.condition.purchasablehasquantityincart.class: Heystack\Subsystem\Deals\Condition\PurchasableHasQuantityInCart
+  deal.condition.configuration.class: Heystack\Deals\AdaptableConfiguration
+  deal.condition.startdate.class: Heystack\Deals\Condition\StartDate
+  deal.condition.enddate.class: Heystack\Deals\Condition\EndDate
+  deal.condition.minimumcarttotal.class: Heystack\Deals\Condition\MinimumCartTotal
+  deal.condition.quantityofpurchasablesincart.class: Heystack\Deals\Condition\QuantityOfPurchasablesInCart
+  deal.condition.purchasablehasquantityincart.class: Heystack\Deals\Condition\PurchasableHasQuantityInCart
 
-  deal.result.configuration.class: Heystack\Subsystem\Deals\AdaptableConfiguration
-  deal.result.freegift.class: Heystack\Subsystem\Deals\Result\FreeGift
-  deal.result.shipping.class: Heystack\Subsystem\Deals\Result\Shipping
-  deal.result.cartdiscount.class: Heystack\Subsystem\Deals\Result\CartDiscount
-  deal.result.purchasablediscount.class: Heystack\Subsystem\Deals\Result\PurchasableDiscount
-  deal.result.cheapestpurchasablediscount.class: Heystack\Subsystem\Deals\Result\CheapestPurchasableDiscount
+  deal.result.configuration.class: Heystack\Deals\AdaptableConfiguration
+  deal.result.freegift.class: Heystack\Deals\Result\FreeGift
+  deal.result.shipping.class: Heystack\Deals\Result\Shipping
+  deal.result.cartdiscount.class: Heystack\Deals\Result\CartDiscount
+  deal.result.purchasablediscount.class: Heystack\Deals\Result\PurchasableDiscount
+  deal.result.cheapestpurchasablediscount.class: Heystack\Deals\Result\CheapestPurchasableDiscount
 
 services:
   deals.deal_handler:

@@ -8,18 +8,18 @@
 /**
  * Tax namespace
  */
-namespace Heystack\Subsystem\Deals;
+namespace Heystack\Deals;
 
-use Heystack\Subsystem\Core\Storage\Backends\SilverStripeOrm\Backend;
-use Heystack\Subsystem\Core\Storage\Event as StorageEvent;
-use Heystack\Subsystem\Core\Storage\Storage;
-use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
-use Heystack\Subsystem\Deals\Result\FreeGift;
-use Heystack\Subsystem\Ecommerce\Currency\Events as CurrencyEvents;
-use Heystack\Subsystem\Ecommerce\Locale\Events as LocaleEvents;
-use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
-use Heystack\Subsystem\Ecommerce\Transaction\Events as TransactionEvents;
-use Heystack\Subsystem\Purchasable\PurchasableHolder\Events as PurchasableHolderEvents;
+use Heystack\Core\Storage\Backends\SilverStripeOrm\Backend;
+use Heystack\Core\Storage\Event as StorageEvent;
+use Heystack\Core\Storage\Storage;
+use Heystack\Deals\Interfaces\DealHandlerInterface;
+use Heystack\Deals\Result\FreeGift;
+use Heystack\Ecommerce\Currency\Events as CurrencyEvents;
+use Heystack\Ecommerce\Locale\Events as LocaleEvents;
+use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
+use Heystack\Ecommerce\Transaction\Events as TransactionEvents;
+use Heystack\Purchasable\PurchasableHolder\Events as PurchasableHolderEvents;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -41,18 +41,18 @@ class Subscriber implements EventSubscriberInterface
 
     /**
      * Holds the Deal Handler
-     * @var \Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface
+     * @var \Heystack\Deals\Interfaces\DealHandlerInterface
      */
     protected $dealHandler;
 
     /**
      * Holds the storage service
-     * @var \Heystack\Subsystem\Core\Storage\Storage
+     * @var \Heystack\Core\Storage\Storage
      */
     protected $storageService;
 
     /**
-     * @var \Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface
+     * @var \Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface
      */
     protected $purchasableHolder;
 

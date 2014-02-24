@@ -1,13 +1,13 @@
 <?php
 
-namespace Heystack\Subsystem\Deals\Traits;
+namespace Heystack\Deals\Traits;
 
-use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
+use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 
 trait HasPurchasableHolder
 {
     /**
-     * @var \Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface
+     * @var \Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface
      */
     protected $purchasableHolder;
 
@@ -17,7 +17,7 @@ trait HasPurchasableHolder
     }
 
     /**
-     * @return \Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface
+     * @return \Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface
      */
     public function getPurchasableHolder()
     {

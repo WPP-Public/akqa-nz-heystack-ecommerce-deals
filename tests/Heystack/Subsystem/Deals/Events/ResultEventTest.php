@@ -1,6 +1,6 @@
 <?php
 
-namespace Heystack\Subsystem\Deals\Events;
+namespace Heystack\Deals\Events;
 
 class ResultEventTest extends \PHPUnit_Framework_TestCase
 {
@@ -13,7 +13,7 @@ class ResultEventTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
 
-        $this->eventDispatcher = $this->getMockBuilder('Heystack\Subsystem\Core\EventDispatcher')
+        $this->eventDispatcher = $this->getMockBuilder('Heystack\Core\EventDispatcher')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -21,7 +21,7 @@ class ResultEventTest extends \PHPUnit_Framework_TestCase
             ->method('getDispatcher')
             ->will($this->returnSelf());
 
-        $this->result = $this->getMockBuilder('Heystack\Subsystem\Deals\Interfaces\ResultInterface')
+        $this->result = $this->getMockBuilder('Heystack\Deals\Interfaces\ResultInterface')
             ->disableOriginalConstructor()
             ->getMock();
 

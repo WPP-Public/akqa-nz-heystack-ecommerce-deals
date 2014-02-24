@@ -14,4 +14,4 @@ $loader = require BASE_PATH . '/vendor/autoload.php';
 use Symfony\Component\ClassLoader\ClassMapGenerator;
 
 $loader->addClassMap(ClassMapGenerator::createMap(BASE_PATH . '/sapphire'));
-$loader->add('Heystack\Subsystem\Deals\Test', __DIR__);
+$loader->add('Heystack\Deals\Test', __DIR__);

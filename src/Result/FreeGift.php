@@ -1,23 +1,23 @@
 <?php
 
-namespace Heystack\Subsystem\Deals\Result;
+namespace Heystack\Deals\Result;
 
-use Heystack\Subsystem\Core\DataObjectHandler\DataObjectHandlerInterface;
-use Heystack\Subsystem\Core\Identifier\Identifier;
-use Heystack\Subsystem\Core\State\State;
-use Heystack\Subsystem\Deals\Events\ConditionEvent;
-use Heystack\Subsystem\Deals\Events;
-use Heystack\Subsystem\Deals\Events\ResultEvent;
-use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
-use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
-use Heystack\Subsystem\Deals\Interfaces\DealPurchasableInterface;
-use Heystack\Subsystem\Deals\Interfaces\HasDealHandlerInterface;
-use Heystack\Subsystem\Deals\Interfaces\HasPurchasableHolderInterface;
-use Heystack\Subsystem\Deals\Interfaces\ResultInterface;
-use Heystack\Subsystem\Deals\Traits\HasDealHandler;
-use Heystack\Subsystem\Deals\Traits\HasPurchasableHolder;
-use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
-use Heystack\Subsystem\Purchasable\PurchasableHolder\Events as ProductEvents;
+use Heystack\Core\DataObjectHandler\DataObjectHandlerInterface;
+use Heystack\Core\Identifier\Identifier;
+use Heystack\Core\State\State;
+use Heystack\Deals\Events\ConditionEvent;
+use Heystack\Deals\Events;
+use Heystack\Deals\Events\ResultEvent;
+use Heystack\Deals\Interfaces\AdaptableConfigurationInterface;
+use Heystack\Deals\Interfaces\DealHandlerInterface;
+use Heystack\Deals\Interfaces\DealPurchasableInterface;
+use Heystack\Deals\Interfaces\HasDealHandlerInterface;
+use Heystack\Deals\Interfaces\HasPurchasableHolderInterface;
+use Heystack\Deals\Interfaces\ResultInterface;
+use Heystack\Deals\Traits\HasDealHandler;
+use Heystack\Deals\Traits\HasPurchasableHolder;
+use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
+use Heystack\Purchasable\PurchasableHolder\Events as ProductEvents;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -40,11 +40,11 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
      */
     protected $eventService;
     /**
-     * @var \Heystack\Subsystem\Core\State\State
+     * @var \Heystack\Core\State\State
      */
     protected $stateService;
     /**
-     * @var \Heystack\Subsystem\Core\DataObjectHandler\DataObjectHandlerInterface
+     * @var \Heystack\Core\DataObjectHandler\DataObjectHandlerInterface
      */
     protected $dataObjectHandler;
     /**
@@ -216,7 +216,7 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
     /**
      * Retrieve the purchasable either from the purchasable holder or the data store
      *
-     * @return \Heystack\Subsystem\Deals\Interfaces\DealPurchasableInterface
+     * @return \Heystack\Deals\Interfaces\DealPurchasableInterface
      */
     public function getPurchasable()
     {

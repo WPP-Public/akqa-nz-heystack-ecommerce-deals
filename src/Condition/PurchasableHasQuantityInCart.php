@@ -1,27 +1,27 @@
 <?php
 
-namespace Heystack\Subsystem\Deals\Condition;
+namespace Heystack\Deals\Condition;
 
-use Heystack\Subsystem\Core\Identifier\Identifier;
-use Heystack\Subsystem\Core\Interfaces\HasEventServiceInterface;
-use Heystack\Subsystem\Core\Traits\HasEventService;
-use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
-use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
-use Heystack\Subsystem\Deals\Interfaces\ConditionAlmostMetInterface;
-use Heystack\Subsystem\Deals\Interfaces\HasDealHandlerInterface;
-use Heystack\Subsystem\Deals\Interfaces\HasPurchasableHolderInterface;
-use Heystack\Subsystem\Deals\Interfaces\NonPurchasableInterface;
-use Heystack\Subsystem\Deals\Traits\HasDealHandler;
-use Heystack\Subsystem\Deals\Result\FreeGift;
-use Heystack\Subsystem\Deals\Traits\HasPurchasableHolder;
-use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
-use Heystack\Subsystem\Purchasable\PurchasableHolder\PurchasableHolder;
+use Heystack\Core\Identifier\Identifier;
+use Heystack\Core\Interfaces\HasEventServiceInterface;
+use Heystack\Core\Traits\HasEventService;
+use Heystack\Deals\Interfaces\AdaptableConfigurationInterface;
+use Heystack\Deals\Interfaces\ConditionInterface;
+use Heystack\Deals\Interfaces\ConditionAlmostMetInterface;
+use Heystack\Deals\Interfaces\HasDealHandlerInterface;
+use Heystack\Deals\Interfaces\HasPurchasableHolderInterface;
+use Heystack\Deals\Interfaces\NonPurchasableInterface;
+use Heystack\Deals\Traits\HasDealHandler;
+use Heystack\Deals\Result\FreeGift;
+use Heystack\Deals\Traits\HasPurchasableHolder;
+use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
+use Heystack\Purchasable\PurchasableHolder\PurchasableHolder;
 
 /**
  *
  * @copyright  Heyday
  * @author Stevie Mayhew <stevie@heyday.co.nz>
- * @package \Heystack\Subsystem\Deals\Condition
+ * @package \Heystack\Deals\Condition
  */
 class PurchasableHasQuantityInCart implements ConditionInterface, ConditionAlmostMetInterface, HasDealHandlerInterface, HasPurchasableHolderInterface
 {

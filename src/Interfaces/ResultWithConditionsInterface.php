@@ -1,11 +1,11 @@
 <?php
 
-namespace Heystack\Subsystem\Deals\Interfaces;
+namespace Heystack\Deals\Interfaces;
 
 
 interface ResultWithConditionsInterface {
     /**
-     * @return array Heystack\Subsystem\Deals\Interfaces\ConditionInterface
+     * @return array Heystack\Deals\Interfaces\ConditionInterface
      */
     public function getConditions();
 

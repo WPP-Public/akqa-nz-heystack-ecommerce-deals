@@ -1,26 +1,26 @@
 <?php
 
-namespace Heystack\Subsystem\Deals\Condition;
+namespace Heystack\Deals\Condition;
 
-use Heystack\Subsystem\Core\Interfaces\HasEventServiceInterface;
-use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
-use Heystack\Subsystem\Deals\Interfaces\ConditionAlmostMetInterface;
-use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
-use Heystack\Subsystem\Deals\Interfaces\DealPurchasableInterface;
-use Heystack\Subsystem\Deals\Interfaces\HasDealHandlerInterface;
-use Heystack\Subsystem\Deals\Interfaces\HasPurchasableHolderInterface;
-use Heystack\Subsystem\Deals\Interfaces\NonPurchasableInterface;
-use Heystack\Subsystem\Deals\Result\FreeGift;
-use Heystack\Subsystem\Deals\Traits\HasDealHandler;
-use Heystack\Subsystem\Deals\Traits\HasPurchasableHolder;
-use Heystack\Subsystem\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
-use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
+use Heystack\Core\Interfaces\HasEventServiceInterface;
+use Heystack\Deals\Interfaces\AdaptableConfigurationInterface;
+use Heystack\Deals\Interfaces\ConditionAlmostMetInterface;
+use Heystack\Deals\Interfaces\ConditionInterface;
+use Heystack\Deals\Interfaces\DealPurchasableInterface;
+use Heystack\Deals\Interfaces\HasDealHandlerInterface;
+use Heystack\Deals\Interfaces\HasPurchasableHolderInterface;
+use Heystack\Deals\Interfaces\NonPurchasableInterface;
+use Heystack\Deals\Result\FreeGift;
+use Heystack\Deals\Traits\HasDealHandler;
+use Heystack\Deals\Traits\HasPurchasableHolder;
+use Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
+use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 
 /**
  *
  * @copyright  Heyday
  * @author Glenn Bautista <glenn@heyday.co.nz>
- * @package \Heystack\Subsystem\Deals\Condition
+ * @package \Heystack\Deals\Condition
  */
 class MinimumCartTotal implements ConditionInterface, ConditionAlmostMetInterface, HasDealHandlerInterface, HasPurchasableHolderInterface
 {
@@ -33,7 +33,7 @@ class MinimumCartTotal implements ConditionInterface, ConditionAlmostMetInterfac
     protected $amounts;
 
     /**
-     * @var \Heystack\Subsystem\Ecommerce\Currency\Interfaces\CurrencyServiceInterface
+     * @var \Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface
      */
     protected $currencyService;
 

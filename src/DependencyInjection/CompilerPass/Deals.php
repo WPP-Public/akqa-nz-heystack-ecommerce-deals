@@ -8,7 +8,7 @@
 /**
  * CompilerPass namespace
  */
-namespace Heystack\Subsystem\Deals\DependencyInjection\CompilerPass;
+namespace Heystack\Deals\DependencyInjection\CompilerPass;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

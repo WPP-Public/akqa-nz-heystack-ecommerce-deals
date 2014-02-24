@@ -1,6 +1,6 @@
 <?php
 
-namespace Heystack\Subsystem\Deals\Events;
+namespace Heystack\Deals\Events;
 
 class ConditionEventTest extends \PHPUnit_Framework_TestCase
 {
@@ -13,15 +13,15 @@ class ConditionEventTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
 
-        $this->state = $this->getMockBuilder('Heystack\Subsystem\Core\State\State')
+        $this->state = $this->getMockBuilder('Heystack\Core\State\State')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->eventDispatcher = $this->getMockBuilder('Heystack\Subsystem\Core\EventDispatcher')
+        $this->eventDispatcher = $this->getMockBuilder('Heystack\Core\EventDispatcher')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->dealHandler = $this->getMockBuilder('Heystack\Subsystem\Deals\DealHandler')
+        $this->dealHandler = $this->getMockBuilder('Heystack\Deals\DealHandler')
             ->setConstructorArgs([$this->state, $this->eventDispatcher, 'testDeal', null])
             ->getMock();
 

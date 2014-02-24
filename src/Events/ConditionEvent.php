@@ -8,9 +8,9 @@
 /**
  * Storage namespace
  */
-namespace Heystack\Subsystem\Deals\Events;
+namespace Heystack\Deals\Events;
 
-use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
+use Heystack\Deals\Interfaces\DealHandlerInterface;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
@@ -42,7 +42,7 @@ class ConditionEvent extends Event
     }
 
     /**
-     * @return \Heystack\Subsystem\Core\EventDispatcher
+     * @return \Heystack\Core\EventDispatcher
      */
     public function getDispatcher()
     {

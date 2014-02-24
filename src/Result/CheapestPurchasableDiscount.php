@@ -1,23 +1,23 @@
 <?php
-namespace Heystack\Subsystem\Deals\Result;
+namespace Heystack\Deals\Result;
 
-use Heystack\Subsystem\Core\Identifier\Identifier;
-use Heystack\Subsystem\Deals\AdaptableConfiguration;
-use Heystack\Subsystem\Deals\Condition;
-use Heystack\Subsystem\Deals\Events\ConditionEvent;
-use Heystack\Subsystem\Deals\Events;
-use Heystack\Subsystem\Deals\Events\ResultEvent;
-use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
-use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
-use Heystack\Subsystem\Deals\Interfaces\DealPurchasableInterface;
-use Heystack\Subsystem\Deals\Interfaces\HasDealHandlerInterface;
-use Heystack\Subsystem\Deals\Interfaces\HasPurchasableHolderInterface;
-use Heystack\Subsystem\Deals\Interfaces\ResultInterface;
-use Heystack\Subsystem\Deals\Interfaces\ResultWithConditionsInterface;
-use Heystack\Subsystem\Deals\Traits\HasDealHandler;
-use Heystack\Subsystem\Deals\Traits\HasPurchasableHolder;
-use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
-use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableInterface;
+use Heystack\Core\Identifier\Identifier;
+use Heystack\Deals\AdaptableConfiguration;
+use Heystack\Deals\Condition;
+use Heystack\Deals\Events\ConditionEvent;
+use Heystack\Deals\Events;
+use Heystack\Deals\Events\ResultEvent;
+use Heystack\Deals\Interfaces\AdaptableConfigurationInterface;
+use Heystack\Deals\Interfaces\DealHandlerInterface;
+use Heystack\Deals\Interfaces\DealPurchasableInterface;
+use Heystack\Deals\Interfaces\HasDealHandlerInterface;
+use Heystack\Deals\Interfaces\HasPurchasableHolderInterface;
+use Heystack\Deals\Interfaces\ResultInterface;
+use Heystack\Deals\Interfaces\ResultWithConditionsInterface;
+use Heystack\Deals\Traits\HasDealHandler;
+use Heystack\Deals\Traits\HasPurchasableHolder;
+use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
+use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class CheapestPurchasableDiscount implements ResultInterface, ResultWithConditionsInterface, HasPurchasableHolderInterface, HasDealHandlerInterface

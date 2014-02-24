@@ -1,14 +1,14 @@
 <?php
 
-namespace Heystack\Subsystem\Deals\Interfaces;
+namespace Heystack\Deals\Interfaces;
 
-use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
+use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 
 /**
  *
  * @copyright  Heyday
  * @author Stevie Mayhew <stevie@heyday.co.nz>
- * @package Heystack\Subsystem\Deals\Interfaces
+ * @package Heystack\Deals\Interfaces
  */
 interface HasPurchasableHolderInterface
 {

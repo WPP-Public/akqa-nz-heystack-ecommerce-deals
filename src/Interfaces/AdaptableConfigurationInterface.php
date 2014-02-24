@@ -1,6 +1,6 @@
 <?php
 
-namespace Heystack\Subsystem\Deals\Interfaces;
+namespace Heystack\Deals\Interfaces;
 
 /**
  *

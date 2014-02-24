@@ -1,17 +1,17 @@
 <?php
 
-namespace Heystack\Subsystem\Deals\Result;
+namespace Heystack\Deals\Result;
 
-use Heystack\Subsystem\Core\Identifier\Identifier;
-use Heystack\Subsystem\Deals\Events;
-use Heystack\Subsystem\Deals\Events\ResultEvent;
-use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
-use Heystack\Subsystem\Deals\Interfaces\DealHandlerInterface;
-use Heystack\Subsystem\Deals\Interfaces\HasPurchasableHolderInterface;
-use Heystack\Subsystem\Deals\Interfaces\ResultInterface;
-use Heystack\Subsystem\Deals\Traits\HasPurchasableHolder;
-use Heystack\Subsystem\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
-use Heystack\Subsystem\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
+use Heystack\Core\Identifier\Identifier;
+use Heystack\Deals\Events;
+use Heystack\Deals\Events\ResultEvent;
+use Heystack\Deals\Interfaces\AdaptableConfigurationInterface;
+use Heystack\Deals\Interfaces\DealHandlerInterface;
+use Heystack\Deals\Interfaces\HasPurchasableHolderInterface;
+use Heystack\Deals\Interfaces\ResultInterface;
+use Heystack\Deals\Traits\HasPurchasableHolder;
+use Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
+use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -37,7 +37,7 @@ class CartDiscount implements ResultInterface, HasPurchasableHolderInterface
     protected $eventService;
 
     /**
-     * @var \Heystack\Subsystem\Ecommerce\Currency\Interfaces\CurrencyServiceInterface
+     * @var \Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface
      */
     protected $currencyService;
 

@@ -8,13 +8,13 @@
 /**
  * Dependency Injection namespace
  */
-namespace Heystack\Subsystem\Deals\DependencyInjection;
+namespace Heystack\Deals\DependencyInjection;
 
-use Heystack\Subsystem\Core\Loader\DBClosureLoader;
-use Heystack\Subsystem\Core\Services as CoreServices;
-use Heystack\Subsystem\Deals\Config\ContainerConfig;
-use Heystack\Subsystem\Deals\Interfaces\DealDataInterface;
-use Heystack\Subsystem\Ecommerce\Services as EcommerceServices;
+use Heystack\Core\Loader\DBClosureLoader;
+use Heystack\Core\Services as CoreServices;
+use Heystack\Deals\Config\ContainerConfig;
+use Heystack\Deals\Interfaces\DealDataInterface;
+use Heystack\Ecommerce\Services as EcommerceServices;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

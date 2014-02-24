@@ -1,10 +1,10 @@
 <?php
 
-namespace Heystack\Subsystem\Deals\Condition;
+namespace Heystack\Deals\Condition;
 
-use Heystack\Subsystem\Deals\Interfaces\AdaptableConfigurationInterface;
-use Heystack\Subsystem\Deals\Interfaces\ConditionAlmostMetInterface;
-use Heystack\Subsystem\Deals\Interfaces\ConditionInterface;
+use Heystack\Deals\Interfaces\AdaptableConfigurationInterface;
+use Heystack\Deals\Interfaces\ConditionAlmostMetInterface;
+use Heystack\Deals\Interfaces\ConditionInterface;
 
 /**
  * Determine whether the current date is less than the end date

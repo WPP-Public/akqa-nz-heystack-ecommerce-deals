@@ -1,5 +1,5 @@
 <?php
-namespace Heystack\Subsystem\Deals\Test;
+namespace Heystack\Deals\Test;
 
 class HasDealHandlerTest extends \PHPUnit_Framework_TestCase
 {
@@ -9,8 +9,8 @@ class HasDealHandlerTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->trait = $this->getObjectForTrait('Heystack\Subsystem\Deals\Traits\HasDealHandler');
-        $this->dealHandler = $this->getMockBuilder('Heystack\Subsystem\Deals\DealHandler')
+        $this->trait = $this->getObjectForTrait('Heystack\Deals\Traits\HasDealHandler');
+        $this->dealHandler = $this->getMockBuilder('Heystack\Deals\DealHandler')
             ->disableOriginalConstructor()
             ->getMock();
     }
