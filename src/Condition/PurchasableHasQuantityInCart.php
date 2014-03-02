@@ -2,9 +2,7 @@
 
 namespace Heystack\Deals\Condition;
 
-use Heystack\Core\Identifier\Identifier;
 use Heystack\Core\Interfaces\HasEventServiceInterface;
-use Heystack\Core\Traits\HasEventService;
 use Heystack\Deals\Interfaces\AdaptableConfigurationInterface;
 use Heystack\Deals\Interfaces\ConditionInterface;
 use Heystack\Deals\Interfaces\ConditionAlmostMetInterface;
@@ -12,10 +10,8 @@ use Heystack\Deals\Interfaces\HasDealHandlerInterface;
 use Heystack\Deals\Interfaces\HasPurchasableHolderInterface;
 use Heystack\Deals\Interfaces\NonPurchasableInterface;
 use Heystack\Deals\Traits\HasDealHandler;
-use Heystack\Deals\Result\FreeGift;
 use Heystack\Deals\Traits\HasPurchasableHolder;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
-use Heystack\Purchasable\PurchasableHolder\PurchasableHolder;
 
 /**
  *

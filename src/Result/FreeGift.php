@@ -2,9 +2,7 @@
 
 namespace Heystack\Deals\Result;
 
-use Heystack\Core\DataObjectHandler\DataObjectHandlerInterface;
 use Heystack\Core\Identifier\Identifier;
-use Heystack\Core\State\State;
 use Heystack\Deals\Events\ConditionEvent;
 use Heystack\Deals\Events;
 use Heystack\Deals\Events\ResultEvent;
@@ -44,10 +42,6 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
      */
     protected $stateService;
     /**
-     * @var \Heystack\Core\DataObjectHandler\DataObjectHandlerInterface
-     */
-    protected $dataObjectHandler;
-    /**
      * @var string
      */
     protected $purchasableClass;
@@ -59,19 +53,16 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
     /**
      * @param EventDispatcherInterface $eventService
      * @param PurchasableHolderInterface $purchasableHolder
-     * @param DataObjectHandlerInterface $dataObjectHandler
      * @param AdaptableConfigurationInterface $configuration
      * @throws \Exception if the configuration is incorrect
      */
     public function __construct(
         EventDispatcherInterface $eventService,
         PurchasableHolderInterface $purchasableHolder,
-        DataObjectHandlerInterface $dataObjectHandler,
         AdaptableConfigurationInterface $configuration
     ) {
         $this->eventService = $eventService;
         $this->purchasableHolder = $purchasableHolder;
-        $this->dataObjectHandler = $dataObjectHandler;
 
         if ($configuration->hasConfig(self::PURCHASABLE_CLASS)) {
 
@@ -225,8 +216,8 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
         );
 
         if (!$purchasable instanceof DealPurchasableInterface) {
-
-            $purchasable = $this->dataObjectHandler->getDataObjectById($this->purchasableClass, $this->purchasableID);
+            
+            $purchasable = \DataList::create($this->purchasableClass)->byID($this->purchasableID);
 
         }
 
