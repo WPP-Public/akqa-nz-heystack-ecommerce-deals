@@ -89,12 +89,14 @@ services:
 
   dealhandler_schema:
     class: %yaml_data_object_schema.class%
-    arguments: [ ecommerce-deals/config/storage/dealhandler.yml, @state_global ]
+    arguments: [ ecommerce-deals/config/storage/dealhandler.yml ]
     tags:
-      - { name: dataobject_generator.schema }
+      - { name: schema }
+      - { name: autoinject, arguments: true }
 
   transaction_dealhandler_schema:
     class: %yaml_data_object_schema.class%
-    arguments: [ ecommerce-deals/config/storage/transaction_dealhandler.yml, @state_global ]
+    arguments: [ ecommerce-deals/config/storage/transaction_dealhandler.yml ]
     tags:
-      - { name: dataobject_generator.schema }
+      - { name: schema }
+      - { name: autoinject, arguments: true }
