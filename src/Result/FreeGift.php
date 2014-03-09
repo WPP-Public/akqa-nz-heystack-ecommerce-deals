@@ -3,6 +3,7 @@
 namespace Heystack\Deals\Result;
 
 use Heystack\Core\Identifier\Identifier;
+use Heystack\Core\Traits\HasEventServiceTrait;
 use Heystack\Deals\Events\ConditionEvent;
 use Heystack\Deals\Events;
 use Heystack\Deals\Events\ResultEvent;
@@ -10,12 +11,12 @@ use Heystack\Deals\Interfaces\AdaptableConfigurationInterface;
 use Heystack\Deals\Interfaces\DealHandlerInterface;
 use Heystack\Deals\Interfaces\DealPurchasableInterface;
 use Heystack\Deals\Interfaces\HasDealHandlerInterface;
-use Heystack\Deals\Interfaces\HasPurchasableHolderInterface;
 use Heystack\Deals\Interfaces\ResultInterface;
 use Heystack\Deals\Traits\HasDealHandler;
-use Heystack\Deals\Traits\HasPurchasableHolder;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 use Heystack\Purchasable\PurchasableHolder\Events as ProductEvents;
+use Heystack\Purchasable\PurchasableHolder\Interfaces\HasPurchasableHolderInterface;
+use Heystack\Purchasable\PurchasableHolder\Traits\HasPurchasableHolderTrait;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -27,20 +28,12 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasableHolderInterface
 {
     use HasDealHandler;
-    use HasPurchasableHolder;
+    use HasPurchasableHolderTrait;
+    use HasEventServiceTrait;
 
     const RESULT_TYPE = 'FreeGift';
     const PURCHASABLE_CLASS = 'purchasable_class';
     const PURCHASABLE_ID = 'purchasable_id';
-
-    /**
-     * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
-     */
-    protected $eventService;
-    /**
-     * @var \Heystack\Core\State\State
-     */
-    protected $stateService;
     /**
      * @var string
      */

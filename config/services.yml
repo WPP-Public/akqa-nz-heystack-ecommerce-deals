@@ -28,7 +28,7 @@ services:
 
   deals.subscriber:
     class: %deal.subscriber.class%
-    arguments: [@event_dispatcher, @storage, @purchasableholder]
+    arguments: [@event_dispatcher, @storage, @purchasableholder, @state]
     abstract: true
 
   deals.condition.configuration:

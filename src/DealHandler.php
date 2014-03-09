@@ -6,8 +6,9 @@ use Heystack\Core\Identifier\Identifier;
 use Heystack\Core\State\State;
 use Heystack\Core\State\StateableInterface;
 use Heystack\Core\Storage\Backends\SilverStripeOrm\Backend;
-use Heystack\Core\Storage\StorableInterface;
 use Heystack\Core\Storage\Traits\ParentReferenceTrait;
+use Heystack\Core\Traits\HasEventServiceTrait;
+use Heystack\Core\Traits\HasStateServiceTrait;
 use Heystack\Deals\Events\ConditionEvent;
 use Heystack\Deals\Interfaces\ConditionAlmostMetInterface;
 use Heystack\Deals\Interfaces\ConditionInterface;
@@ -15,9 +16,12 @@ use Heystack\Deals\Interfaces\DealHandlerInterface;
 use Heystack\Deals\Interfaces\HasDealHandlerInterface;
 use Heystack\Deals\Interfaces\ResultInterface;
 use Heystack\Deals\Interfaces\ResultWithConditionsInterface;
+use Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
+use Heystack\Ecommerce\Currency\Traits\HasCurrencyServiceTrait;
 use Heystack\Ecommerce\Transaction\Traits\TransactionModifierSerializeTrait;
 use Heystack\Ecommerce\Transaction\Traits\TransactionModifierStateTrait;
 use Heystack\Ecommerce\Transaction\TransactionModifierTypes;
+use SebastianBergmann\Money\Money;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -26,20 +30,22 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * @author     Glenn Bautista <glenn@heyday.co.nz>
  * @package    Ecommerce-Deals
  */
-class DealHandler implements DealHandlerInterface, StateableInterface, \Serializable, StorableInterface
+class DealHandler implements
+    DealHandlerInterface,
+    StateableInterface,
+    \Serializable
 {
     use TransactionModifierStateTrait;
     use TransactionModifierSerializeTrait;
     use ParentReferenceTrait;
+    use HasCurrencyServiceTrait
+    use HasEventServiceTrait;
+    use HasStateServiceTrait;
 
     /**
      * Identifier for state
      */
     const IDENTIFIER = 'deal';
-    /**
-     * The total key for state
-     */
-    const TOTAL_KEY = 'total';
     /**
      * The conditions that need to be met for the deal
      * @var \Heystack\Deals\Interfaces\ConditionInterface[]
@@ -51,22 +57,11 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
      */
     protected $result;
     /**
-     * @var \Heystack\Core\State\State
+     * @var \SebastianBergmann\Money\Money
      */
-    protected $stateService;
-
+    protected $total;
     /**
-     * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
-     */
-    protected $eventService;
-
-    /**
-     * @var array
-     */
-    protected $data;
-
-    /**
-     * @var
+     * @var string
      */
     protected $dealID;
     /**
@@ -79,53 +74,26 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     protected $promotionalMessage;
 
     /**
-     * @param \Heystack\Core\State\State $stateService
-     */
-    public function setStateService($stateService)
-    {
-        $this->stateService = $stateService;
-    }
-
-    /**
-     * @return \Heystack\Core\State\State
-     */
-    public function getStateService()
-    {
-        return $this->stateService;
-    }
-
-    /**
-     * @param array $data
-     */
-    public function setData($data)
-    {
-        $this->data = $data;
-    }
-
-    /**
-     * @return array
-     */
-    public function getData()
-    {
-        return $this->data;
-    }
-
-    /**
      * @param State $stateService
      * @param EventDispatcherInterface $eventService
-     * @param                          $dealID
-     * @param                          $promotionalMessage
+     * @param \Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface $currencyService
+     * @param $dealID
+     * @param $promotionalMessage
      */
     public function __construct(
         State $stateService,
         EventDispatcherInterface $eventService,
+        CurrencyServiceInterface $currencyService,
         $dealID,
         $promotionalMessage
     ) {
         $this->stateService = $stateService;
         $this->eventService = $eventService;
+        $this->currencyService = $currencyService;
         $this->dealID = $dealID;
         $this->promotionalMessage = @unserialize($promotionalMessage); //TODO: This has to be changed.
+        
+        $this->total = $this->currencyService->getZeroMoney();
 
         $this->restoreState();
     }
@@ -141,7 +109,7 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
 
     /**
      * @param \Heystack\Deals\Interfaces\ResultInterface $result
-     * @return mixed|void
+     * @return void
      */
     public function setResult(ResultInterface $result)
     {
@@ -190,24 +158,26 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
 
     /**
      * Returns the total value of the TransactionModifier for use in the Transaction
+     * @return \SebastianBergmann\Money\Money
      */
     public function getTotal()
     {
-        return isset($this->data[self::TOTAL_KEY]) ? $this->data[self::TOTAL_KEY] : 0;
+        return $this->total;
     }
 
     /**
      * Update the total of the modifier
+     * @return void
      */
     public function updateTotal()
     {
         if ($this->conditionsMet() && $this->result instanceof ResultInterface) {
             $total = $this->result->process($this);
         } else {
-            $total = 0;
+            $total = $this->currencyService->getZeroMoney();
         }
-
-        $this->data[self::TOTAL_KEY] = $total;
+        
+        $this->total = $total;
 
         $this->saveState();
 
@@ -277,6 +247,55 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
     }
 
     /**
+     * @return \Heystack\Deals\Interfaces\ConditionInterface[]
+     */
+    public function getConditions()
+    {
+        return $this->conditions;
+    }
+
+    /**
+     * Returns the number of times that each condition was met more than once
+     * @return int
+     */
+    public function getConditionsMetCount()
+    {
+        return $this->conditionsMetCount;
+    }
+
+    /**
+     * @return \Heystack\Deals\Interfaces\ResultInterface
+     */
+    public function getResult()
+    {
+        return $this->result;
+    }
+
+    /**
+     * Returns whether the deal is almost completed based on the conditions it has
+     * @return boolean
+     */
+    public function almostMet()
+    {
+        $almostMet = true;
+
+        foreach ($this->getConditions() as $condition) {
+
+            if ($condition instanceof ConditionAlmostMetInterface) {
+
+                if (!$condition->almostMet()) {
+                    $almostMet = false;
+                    break;
+                }
+
+            }
+
+        }
+
+        return $almostMet;
+    }
+
+    /**
      * @return array
      */
     public function getStorableData()
@@ -286,30 +305,11 @@ class DealHandler implements DealHandlerInterface, StateableInterface, \Serializ
             'id' => 'Deal',
             'parent' => true,
             'flat' => [
-                'Total' => $this->getTotal(),
+                'Total' => $this->total->getAmount() /  $this->total->getCurrency()->getSubUnit(),
                 'Description' => $this->getDescription(),
                 'ParentID' => $this->parentReference
             ]
         ];
-    }
-
-    /**
-     * @return string
-     */
-    protected function getDescription()
-    {
-        $conditionDescriptions = [];
-        foreach ($this->conditions as $condition) {
-            $conditionDescriptions[] = $condition->getDescription();
-        }
-        $conditionDescription = implode(PHP_EOL, $conditionDescriptions);
-        $resultDescription = $this->result instanceof ResultInterface ? $this->result->getDescription() : 'No Result';
-        return <<<DESCRIPTION
-Conditions:
-$conditionDescription
-Result:
-$resultDescription
-DESCRIPTION;
     }
 
     /**
@@ -340,50 +340,42 @@ DESCRIPTION;
     }
 
     /**
-     * @return array of conditions
+     * Helper function for getting the state of the deal handler
+     * @return string
      */
-    public function getConditions()
+    protected function getDescription()
     {
-        return $this->conditions;
-    }
-
-    /**
-     * Returns the number of times that each condition was met more than once
-     * @return int
-     */
-    public function getConditionsMetCount()
-    {
-        return $this->conditionsMetCount;
-    }
-
-    public function getResult()
-    {
-        return $this->result;
-    }
-
-    /**
-     * Returns whether the deal is almost completed based on the conditions it has
-     * @return boolean
-     */
-    public function almostMet()
-    {
-        $almostMet = true;
-
-        foreach ($this->getConditions() as $condition) {
-
-            if ($condition instanceof ConditionAlmostMetInterface) {
-
-                if (!$condition->almostMet()) {
-                    $almostMet = false;
-                    break;
-                }
-
-            }
-
+        $conditionDescriptions = [];
+        foreach ($this->conditions as $condition) {
+            $conditionDescriptions[] = $condition->getDescription();
         }
-
-        return $almostMet;
+        $conditionDescription = implode(PHP_EOL, $conditionDescriptions);
+        $resultDescription = $this->result instanceof ResultInterface ? $this->result->getDescription() : 'No Result';
+        return <<<DESCRIPTION
+Conditions:
+$conditionDescription
+Result:
+$resultDescription
+DESCRIPTION;
     }
 
+    /**
+     * @param mixed $data
+     * @return void
+     */
+    public function setData($data)
+    {
+        if ($data instanceof Money) {
+            $this->total = $data;
+        }
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getData()
+    {
+        return $this->total;
+    }
 
 }

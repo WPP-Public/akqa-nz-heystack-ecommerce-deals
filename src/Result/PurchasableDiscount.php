@@ -7,12 +7,13 @@ use Heystack\Deals\Events;
 use Heystack\Deals\Events\ResultEvent;
 use Heystack\Deals\Interfaces\AdaptableConfigurationInterface;
 use Heystack\Deals\Interfaces\DealHandlerInterface;
-use Heystack\Deals\Interfaces\HasPurchasableHolderInterface;
 use Heystack\Deals\Interfaces\ResultInterface;
-use Heystack\Deals\Traits\HasPurchasableHolder;
 use Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableInterface;
+use Heystack\Purchasable\PurchasableHolder\Interfaces\HasPurchasableHolderInterface;
+use Heystack\Purchasable\PurchasableHolder\Traits\HasPurchasableHolderTrait;
+use SebastianBergmann\Money\Money;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -21,9 +22,12 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * @author Glenn Bautista <glenn@heyday.co.nz>
  * @package Ecommerce-Deals
  */
-class PurchasableDiscount implements ResultInterface, HasPurchasableHolderInterface
+class PurchasableDiscount
+    implements
+        ResultInterface,
+        HasPurchasableHolderInterface
 {
-    use HasPurchasableHolder;
+    use HasPurchasableHolderTrait;
 
     const RESULT_TYPE = 'PurchasableDiscount';
     const PURCHASABLE_DISCOUNT_AMOUNTS = 'purchasable_discount_amounts';
@@ -143,11 +147,14 @@ class PurchasableDiscount implements ResultInterface, HasPurchasableHolderInterf
      */
     public function getDescription()
     {
-        return 'Purchasable Discount: Discount of ' . $this->getTotal();
+        $total = $this->getTotal();
+        return 'Purchasable Discount: Discount of ' . ($total->getAmount() / $total->getCurrency()->getSubUnit());
     }
 
     /**
      * Main function that determines what the result does
+     * @param \Heystack\Deals\Interfaces\DealHandlerInterface $dealHandler
+     * @return \SebastianBergmann\Money\Money
      */
     public function process(DealHandlerInterface $dealHandler)
     {
@@ -158,15 +165,19 @@ class PurchasableDiscount implements ResultInterface, HasPurchasableHolderInterf
     /**
      * Calculates the total discounts
      *
-     * @return mixed
+     * @return \SebastianBergmann\Money\Money
      */
     protected function getTotal()
     {
         if (is_array($this->discountAmounts) && count($this->discountAmounts)) {
-
-            $currencyCode = $this->currencyService->getActiveCurrencyCode();
-
-            $discount = isset($this->discountAmounts[$currencyCode]) ? $this->discountAmounts[$currencyCode] : 0;
+            $currency = $this->currencyService->getActiveCurrency();
+            $currencyCode = $currency->getCurrencyCode();
+            
+            if ($this->discountAmounts[$currencyCode]) {
+                $discount = new Money($this->discountAmounts[$currencyCode] * $currency->getSubUnit(), $currency);
+            } else {
+                $discount = $this->currencyService->getZeroMoney();
+            }
 
             $quantity = 0;
 
@@ -176,36 +187,33 @@ class PurchasableDiscount implements ResultInterface, HasPurchasableHolderInterf
 
             }
 
-            return $quantity * $discount;
-
+            return $discount->multiply($quantity);
         }
 
         if ($this->discountPercentage) {
-
-            $total = 0;
+            $total = $this->currencyService->getZeroMoney();
 
             foreach ($this->purchasableIdentifiers as $purchasableIdentifier) {
-
-                $total += $this->getPurchasableIdentifierTotal($purchasableIdentifier);
-
+                $total = $total->add($this->getPurchasableIdentifierTotal($purchasableIdentifier));
             }
-
-            return (($total / 100) * $this->discountPercentage);
-
+            
+            list($newTotal, ) = $total->allocateByRatios([$this->discountPercentage, 100 - $this->discountPercentage]);
+            
+            return $newTotal;
         }
 
-        return 0;
+        return $this->currencyService->getZeroMoney();
     }
 
     /**
      * Gets the total price from the purchasable holder based on the primary identifier
      *
      * @param Identifier $purchasableIdentifier
-     * @return float
+     * @return \SebastianBergmann\Money\Money
      */
     protected function getPurchasableIdentifierTotal(Identifier $purchasableIdentifier)
     {
-        $total = 0;
+        $total = $this->currencyService->getZeroMoney();
 
         $purchasables = $this->purchasableHolder->getPurchasablesByPrimaryIdentifier($purchasableIdentifier);
 
@@ -215,7 +223,7 @@ class PurchasableDiscount implements ResultInterface, HasPurchasableHolderInterf
 
                 if ($purchasable instanceof PurchasableInterface) {
 
-                    $total += $purchasable->getTotal();
+                    $total = $total->add($purchasable->getTotal());
 
                 }
 

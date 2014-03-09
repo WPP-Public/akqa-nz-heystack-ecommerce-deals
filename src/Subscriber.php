@@ -10,9 +10,12 @@
  */
 namespace Heystack\Deals;
 
+use Heystack\Core\State\State;
 use Heystack\Core\Storage\Backends\SilverStripeOrm\Backend;
 use Heystack\Core\Storage\Event as StorageEvent;
 use Heystack\Core\Storage\Storage;
+use Heystack\Core\Traits\HasEventServiceTrait;
+use Heystack\Core\Traits\HasStateServiceTrait;
 use Heystack\Deals\Interfaces\DealHandlerInterface;
 use Heystack\Deals\Result\FreeGift;
 use Heystack\Ecommerce\Currency\Events as CurrencyEvents;
@@ -20,6 +23,7 @@ use Heystack\Ecommerce\Locale\Events as LocaleEvents;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 use Heystack\Ecommerce\Transaction\Events as TransactionEvents;
 use Heystack\Purchasable\PurchasableHolder\Events as PurchasableHolderEvents;
+use Heystack\Purchasable\PurchasableHolder\Traits\HasPurchasableHolderTrait;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -33,11 +37,9 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class Subscriber implements EventSubscriberInterface
 {
-    /**
-     * Holds the Event Dispatcher Service
-     * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
-     */
-    protected $eventService;
+    use HasEventServiceTrait;
+    use HasPurchasableHolderTrait;
+    use HasStateServiceTrait;
 
     /**
      * Holds the Deal Handler
@@ -52,23 +54,26 @@ class Subscriber implements EventSubscriberInterface
     protected $storageService;
 
     /**
-     * @var \Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface
-     */
-    protected $purchasableHolder;
-
-    /**
      * Creates the ShippingHandler Subscriber object
      * @param EventDispatcherInterface $eventService
      * @param Storage $storageService
      * @param PurchasableHolderInterface $purchasableHolder
      * @param DealHandlerInterface $dealHandler
+     * @param \Heystack\Core\State\State $stateService
      */
-    public function __construct(EventDispatcherInterface $eventService, Storage $storageService, PurchasableHolderInterface $purchasableHolder, DealHandlerInterface $dealHandler)
+    public function __construct(
+        EventDispatcherInterface $eventService,
+        Storage $storageService,
+        PurchasableHolderInterface $purchasableHolder,
+        DealHandlerInterface $dealHandler,
+        State $stateService
+    )
     {
         $this->eventService = $eventService;
         $this->dealHandler = $dealHandler;
         $this->storageService = $storageService;
         $this->purchasableHolder = $purchasableHolder;
+        $this->stateService = $stateService;
     }
 
     /**
@@ -111,14 +116,11 @@ class Subscriber implements EventSubscriberInterface
      */
     public function onTransactionStored(StorageEvent $event)
     {
-        if($this->dealHandler->getTotal() > 0 ){
-
+        if ($this->dealHandler->getTotal()->getAmount() > 0){
             $this->dealHandler->setParentReference($event->getParentReference());
-
             $this->storageService->process($this->dealHandler);
-
             $this->eventService->dispatch(Events::STORED);
-
+            $this->stateService->removeByKey($this->dealHandler->getIdentifier()->getFull());
         }
     }
 }

@@ -1,7 +1,5 @@
-data_provider_id: transaction
 id: Transaction
 flat:
 parent:
-related:
 children:
   Deals: +Deal

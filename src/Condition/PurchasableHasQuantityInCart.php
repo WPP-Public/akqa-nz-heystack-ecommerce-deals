@@ -7,11 +7,11 @@ use Heystack\Deals\Interfaces\AdaptableConfigurationInterface;
 use Heystack\Deals\Interfaces\ConditionInterface;
 use Heystack\Deals\Interfaces\ConditionAlmostMetInterface;
 use Heystack\Deals\Interfaces\HasDealHandlerInterface;
-use Heystack\Deals\Interfaces\HasPurchasableHolderInterface;
 use Heystack\Deals\Interfaces\NonPurchasableInterface;
 use Heystack\Deals\Traits\HasDealHandler;
-use Heystack\Deals\Traits\HasPurchasableHolder;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
+use Heystack\Purchasable\PurchasableHolder\Interfaces\HasPurchasableHolderInterface;
+use Heystack\Purchasable\PurchasableHolder\Traits\HasPurchasableHolderTrait;
 
 /**
  *
@@ -19,10 +19,15 @@ use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
  * @author Stevie Mayhew <stevie@heyday.co.nz>
  * @package \Heystack\Deals\Condition
  */
-class PurchasableHasQuantityInCart implements ConditionInterface, ConditionAlmostMetInterface, HasDealHandlerInterface, HasPurchasableHolderInterface
+class PurchasableHasQuantityInCart
+    implements
+        ConditionInterface,
+        ConditionAlmostMetInterface,
+        HasDealHandlerInterface,
+        HasPurchasableHolderInterface
 {
     use HasDealHandler;
-    use HasPurchasableHolder;
+    use HasPurchasableHolderTrait;
 
     const CONDITION_TYPE = 'PurchasableHasQuantityInCart';
     const PURCHASABLE_IDENTIFIERS = 'purchasables_identifiers';

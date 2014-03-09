@@ -1,9 +1,7 @@
-data_provider_id: dealhandler
 id: Deal
 flat:
   Total: Decimal(10,2)
   Description: Text
-related:
 parent:
   Parent: +Transaction
 children:

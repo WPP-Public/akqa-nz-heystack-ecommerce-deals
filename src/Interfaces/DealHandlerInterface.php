@@ -2,6 +2,8 @@
 
 namespace Heystack\Deals\Interfaces;
 
+use Heystack\Core\Storage\Interfaces\ParentReferenceInterface;
+use Heystack\Core\Storage\StorableInterface;
 use Heystack\Ecommerce\Transaction\Interfaces\TransactionModifierInterface;
 
 /**
@@ -10,22 +12,22 @@ use Heystack\Ecommerce\Transaction\Interfaces\TransactionModifierInterface;
  * @author Glenn Bautista <glenn@heyday.co.nz>
  * @package Ecommerce-Deals
  */
-interface DealHandlerInterface extends TransactionModifierInterface
+interface DealHandlerInterface extends TransactionModifierInterface, ParentReferenceInterface, StorableInterface
 {
     /**
      * @param ResultInterface $result
-     * @return mixed
+     * @return void
      */
     public function setResult(ResultInterface $result);
 
     /**
-     * @param ConditionInterface $condition
-     * @return mixed
+     * @param \Heystack\Deals\Interfaces\ConditionInterface $condition
+     * @return void
      */
     public function addCondition(ConditionInterface $condition);
 
     /**
-     * @return mixed
+     * @return void
      */
     public function updateTotal();
 
@@ -36,7 +38,7 @@ interface DealHandlerInterface extends TransactionModifierInterface
     public function getPromotionalMessage($type);
 
     /**
-     * @return array
+     * @return \Heystack\Deals\Interfaces\ConditionInterface[]
      */
     public function getConditions();
 
@@ -53,7 +55,7 @@ interface DealHandlerInterface extends TransactionModifierInterface
 
     /**
      * Returns whether the deal is almost completed based on the conditions it has
-     * @return boolean
+     * @return bool
      */
     public function almostMet();
 }

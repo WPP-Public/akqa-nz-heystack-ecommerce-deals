@@ -10,6 +10,7 @@ use Heystack\Deals\Interfaces\DealHandlerInterface;
 use Heystack\Deals\Interfaces\ResultInterface;
 use Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
 use Heystack\Shipping\Interfaces\ShippingHandlerInterface;
+use SebastianBergmann\Money\Money;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -116,11 +117,14 @@ class Shipping implements ResultInterface
      */
     public function getDescription()
     {
-        return 'Free shipping: Discount of ' . $this->getTotal();
+        $total = $this->getTotal();
+        return 'Free shipping: Discount of ' . ($total->getAmount() / $total->getCurrency()->getSubUnit());
     }
 
     /**
      * Main function that determines what the result does
+     * @param \Heystack\Deals\Interfaces\DealHandlerInterface $dealHandler
+     * @return \SebastianBergmann\Money\Money
      */
     public function process(DealHandlerInterface $dealHandler)
     {
@@ -129,30 +133,38 @@ class Shipping implements ResultInterface
     }
 
     /**
-     * @return mixed
+     * @return \SebastianBergmann\Money\Money
      */
     protected function getTotal()
     {
         $total = $this->shippingService->getTotal();
 
         if ($this->isFree) {
-
             return $total;
-
         }
 
         if ($this->discountAmounts) {
-
-            $currencyCode = $this->currencyService->getActiveCurrencyCode();
-
-            return isset($this->discountAmounts[$currencyCode]) ? $this->discountAmounts[$currencyCode] : 0;
-
+            $currency = $this->currencyService->getActiveCurrency();
+            $currencyCode = $currency->getCurrencyCode();
+            
+            if (isset($this->discountAmounts[$currencyCode])) {
+                $newTotal = new Money($this->discountAmounts[$currencyCode] * $currency->getSubUnit(), $currency);
+                
+                if ($newTotal->greaterThan($total)) {
+                    return $total;
+                } else {
+                    return $newTotal;
+                }
+            } else {
+                return $this->currencyService->getZeroMoney();
+            }
         }
 
         if ($this->discountPercentage) {
-
-            return (($total / 100) * $this->discountPercentage);
-
+            list($newTotal, ) = $total->allocateByRatios([$this->discountPercentage, 100 - $this->discountPercentage]);
+            return $newTotal;
         }
+        
+        return $this->currencyService->getZeroMoney();
     }
 }

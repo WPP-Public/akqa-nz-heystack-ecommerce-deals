@@ -2,16 +2,16 @@
 
 namespace Heystack\Deals\Result;
 
-use Heystack\Core\Identifier\Identifier;
 use Heystack\Deals\Events;
 use Heystack\Deals\Events\ResultEvent;
 use Heystack\Deals\Interfaces\AdaptableConfigurationInterface;
 use Heystack\Deals\Interfaces\DealHandlerInterface;
-use Heystack\Deals\Interfaces\HasPurchasableHolderInterface;
 use Heystack\Deals\Interfaces\ResultInterface;
-use Heystack\Deals\Traits\HasPurchasableHolder;
 use Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
+use Heystack\Purchasable\PurchasableHolder\Interfaces\HasPurchasableHolderInterface;
+use Heystack\Purchasable\PurchasableHolder\Traits\HasPurchasableHolderTrait;
+use SebastianBergmann\Money\Money;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -22,13 +22,20 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 class CartDiscount implements ResultInterface, HasPurchasableHolderInterface
 {
-    use HasPurchasableHolder;
+    use HasPurchasableHolderTrait;
 
     const RESULT_TYPE = 'CartDiscount';
     const CART_DISCOUNT_AMOUNTS = 'cart_discount_amounts';
     const CART_DISCOUNT_PERCENTAGE = 'cart_discount_percentage';
 
+    /**
+     * @var array
+     */
     protected $discountAmounts;
+
+    /**
+     * @var
+     */
     protected $discountPercentage;
 
     /**
@@ -108,11 +115,14 @@ class CartDiscount implements ResultInterface, HasPurchasableHolderInterface
      */
     public function getDescription()
     {
-        return 'Cart Discount: Discount of ' . $this->getTotal();
+        $total = $this->getTotal();
+        return 'Cart Discount: Discount of ' . ($total->getAmount() / $total->getCurrency()->getSubUnit());
     }
 
     /**
      * Main function that determines what the result does
+     * @param \Heystack\Deals\Interfaces\DealHandlerInterface $dealHandler
+     * @return \SebastianBergmann\Money\Money
      */
     public function process(DealHandlerInterface $dealHandler)
     {
@@ -121,24 +131,28 @@ class CartDiscount implements ResultInterface, HasPurchasableHolderInterface
     }
 
     /**
-     * @return mixed
+     * @return \SebastianBergmann\Money\Money
      */
     protected function getTotal()
     {
-        $total = $this->purchasableHolder->getTotal();
-
         if ($this->discountAmounts) {
-
-            $currencyCode = $this->currencyService->getActiveCurrencyCode();
-
-            return isset($this->discountAmounts[$currencyCode]) ? $this->discountAmounts[$currencyCode] : 0;
-
+            $currency = $this->currencyService->getActiveCurrency();
+            $currencyCode = $currency->getCurrencyCode();
+            
+            if (isset($this->discountAmounts[$currencyCode])) {
+                return new Money($this->discountAmounts[$currencyCode] * $currency->getSubUnit(), $currency);
+            } else {
+                return $this->currencyService->getZeroMoney();
+            }
         }
 
         if ($this->discountPercentage) {
-
-            return (($total / 100) * $this->discountPercentage);
-
+            $total = $this->purchasableHolder->getTotal();
+            list($newTotal, ) = $total->allocateByRatios([$this->discountPercentage, 100 - $this->discountPercentage]);
+            
+            return $newTotal;
         }
+        
+        return $this->currencyService->getZeroMoney();
     }
 }

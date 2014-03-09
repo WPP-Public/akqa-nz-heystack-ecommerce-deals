@@ -8,13 +8,13 @@ use Heystack\Deals\Interfaces\ConditionAlmostMetInterface;
 use Heystack\Deals\Interfaces\ConditionInterface;
 use Heystack\Deals\Interfaces\DealPurchasableInterface;
 use Heystack\Deals\Interfaces\HasDealHandlerInterface;
-use Heystack\Deals\Interfaces\HasPurchasableHolderInterface;
+use Heystack\Ecommerce\Currency\Traits\HasCurrencyServiceTrait;
+use Heystack\Purchasable\PurchasableHolder\Interfaces\HasPurchasableHolderInterface;
 use Heystack\Deals\Interfaces\NonPurchasableInterface;
-use Heystack\Deals\Result\FreeGift;
 use Heystack\Deals\Traits\HasDealHandler;
-use Heystack\Deals\Traits\HasPurchasableHolder;
 use Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
+use Heystack\Purchasable\PurchasableHolder\Traits\HasPurchasableHolderTrait;
 
 /**
  *
@@ -22,20 +22,21 @@ use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
  * @author Glenn Bautista <glenn@heyday.co.nz>
  * @package \Heystack\Deals\Condition
  */
-class MinimumCartTotal implements ConditionInterface, ConditionAlmostMetInterface, HasDealHandlerInterface, HasPurchasableHolderInterface
+class MinimumCartTotal
+    implements
+        ConditionInterface,
+        ConditionAlmostMetInterface,
+        HasDealHandlerInterface,
+        HasPurchasableHolderInterface
 {
     use HasDealHandler;
-    use HasPurchasableHolder;
+    use HasPurchasableHolderTrait;
+    use HasCurrencyServiceTrait;
 
     const CONDITION_TYPE = 'MinimumCartTotal';
     const AMOUNTS_KEY = 'amounts';
 
     protected $amounts;
-
-    /**
-     * @var \Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface
-     */
-    protected $currencyService;
 
     /**
      * The amount condition determines whether the total in the product holder is greater than or equal to the configured threshold amount.
@@ -62,9 +63,7 @@ class MinimumCartTotal implements ConditionInterface, ConditionAlmostMetInterfac
         }
 
         $this->purchasableHolder = $purchasableHolder;
-
         $this->currencyService = $currencyService;
-
     }
 
     /**
@@ -93,9 +92,9 @@ class MinimumCartTotal implements ConditionInterface, ConditionAlmostMetInterfac
 
             if ($purchasable instanceof DealPurchasableInterface) {
 
-                if ($purchasable->hasFreeItems()){
+                if ($purchasable->hasFreeItems()) {
 
-                    $total -= $purchasable->getFreeQuantity() * $purchasable->getUnitPrice();
+                    $total = $total->subtract($purchasable->getUnitPrice()->multiply($purchasable->getFreeQuantity()));
 
                 }
 
@@ -103,13 +102,8 @@ class MinimumCartTotal implements ConditionInterface, ConditionAlmostMetInterfac
 
         }
 
-        if (isset($this->amounts[$activeCurrencyCode]) && $total >= $this->amounts[$activeCurrencyCode]) {
-
-            return true;
-
-        }
-
-        return false;
+        // TODO: Units..
+        return isset($this->amounts[$activeCurrencyCode]) && ($total->getAmount() / $total->getCurrency()->getSubUnit()) >= $this->amounts[$activeCurrencyCode];
     }
 
     public function almostMet()
@@ -122,6 +116,7 @@ class MinimumCartTotal implements ConditionInterface, ConditionAlmostMetInterfac
         }
 
         if ($purchasableHolder instanceof HasEventServiceInterface) {
+            // TODO: Refactor?
             $this->purchasableHolder->getEventService()->setEnabled(false);
         }
 
@@ -148,11 +143,11 @@ class MinimumCartTotal implements ConditionInterface, ConditionAlmostMetInterfac
         }
 
         if ($purchasableHolder instanceof HasEventServiceInterface) {
+            // TODO: Refactor?
             $this->purchasableHolder->getEventService()->setEnabled(true);
         }
 
         return $met;
-
     }
 
     /**
