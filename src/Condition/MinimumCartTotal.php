@@ -117,7 +117,7 @@ class MinimumCartTotal
 
         if ($purchasableHolder instanceof HasEventServiceInterface) {
             // TODO: Refactor?
-            $this->purchasableHolder->getEventService()->setEnabled(false);
+            $purchasableHolder->getEventService()->setEnabled(false);
         }
 
         foreach ($this->purchasableHolder->getPurchasables() as $purchasable) {
@@ -129,10 +129,10 @@ class MinimumCartTotal
                 $quantity = $purchasable->getQuantity();
 
                 $this->purchasableHolder->setPurchasable($purchasable, $quantity + 1);
-                $this->purchasableHolder->updateTotal();
+                $this->purchasableHolder->updateTotal(true);
                 $met = $this->met();
                 $this->purchasableHolder->setPurchasable($purchasable, $quantity);
-                $this->purchasableHolder->updateTotal();
+                $this->purchasableHolder->updateTotal(true);
 
                 if ($met) {
                     break;
@@ -144,7 +144,7 @@ class MinimumCartTotal
 
         if ($purchasableHolder instanceof HasEventServiceInterface) {
             // TODO: Refactor?
-            $this->purchasableHolder->getEventService()->setEnabled(true);
+            $purchasableHolder->getEventService()->setEnabled(true);
         }
 
         return $met;

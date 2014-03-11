@@ -38,7 +38,7 @@ class DealHandler implements
     use TransactionModifierStateTrait;
     use TransactionModifierSerializeTrait;
     use ParentReferenceTrait;
-    use HasCurrencyServiceTrait
+    use HasCurrencyServiceTrait;
     use HasEventServiceTrait;
     use HasStateServiceTrait;
 

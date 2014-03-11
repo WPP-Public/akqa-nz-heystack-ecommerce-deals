@@ -23,7 +23,7 @@ parameters:
 services:
   deals.deal_handler:
     class: %deal.handler.class%
-    arguments: [@state, @event_dispatcher]
+    arguments: [ @state, @event_dispatcher, @currency_service ]
     abstract: true
 
   deals.subscriber:

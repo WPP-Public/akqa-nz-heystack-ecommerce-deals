@@ -58,22 +58,22 @@ class Subscriber implements EventSubscriberInterface
      * @param EventDispatcherInterface $eventService
      * @param Storage $storageService
      * @param PurchasableHolderInterface $purchasableHolder
-     * @param DealHandlerInterface $dealHandler
      * @param \Heystack\Core\State\State $stateService
+     * @param DealHandlerInterface $dealHandler
      */
     public function __construct(
         EventDispatcherInterface $eventService,
         Storage $storageService,
         PurchasableHolderInterface $purchasableHolder,
-        DealHandlerInterface $dealHandler,
-        State $stateService
+        State $stateService,
+        DealHandlerInterface $dealHandler
     )
     {
         $this->eventService = $eventService;
-        $this->dealHandler = $dealHandler;
         $this->storageService = $storageService;
         $this->purchasableHolder = $purchasableHolder;
         $this->stateService = $stateService;
+        $this->dealHandler = $dealHandler;
     }
 
     /**
