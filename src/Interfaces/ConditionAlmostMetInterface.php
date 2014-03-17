@@ -3,13 +3,12 @@
 namespace Heystack\Deals\Interfaces;
 
 /**
- *
  * @copyright  Heyday
  * @author Stevie Mayhew <stevie@heyday.co.nz>
  * @package Heystack\Deals\Interfaces
  */
-interface ConditionAlmostMetInterface {
-
+interface ConditionAlmostMetInterface
+{
     /**
      * Check if the condition is almost met
      *
@@ -20,5 +19,4 @@ interface ConditionAlmostMetInterface {
      * @return boolean
      */
     public function almostMet();
-
 }

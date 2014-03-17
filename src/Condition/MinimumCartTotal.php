@@ -129,10 +129,10 @@ class MinimumCartTotal
                 $quantity = $purchasable->getQuantity();
 
                 $this->purchasableHolder->setPurchasable($purchasable, $quantity + 1);
-                $this->purchasableHolder->updateTotal(true);
+                $this->purchasableHolder->updateTotal(false);
                 $met = $this->met();
                 $this->purchasableHolder->setPurchasable($purchasable, $quantity);
-                $this->purchasableHolder->updateTotal(true);
+                $this->purchasableHolder->updateTotal(false);
 
                 if ($met) {
                     break;
