@@ -13,6 +13,8 @@ use Heystack\Deals\Interfaces\DealPurchasableInterface;
 use Heystack\Deals\Interfaces\HasDealHandlerInterface;
 use Heystack\Deals\Interfaces\ResultInterface;
 use Heystack\Deals\Traits\HasDealHandler;
+use Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
+use Heystack\Ecommerce\Currency\Traits\HasCurrencyServiceTrait;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 use Heystack\Purchasable\PurchasableHolder\Events as ProductEvents;
 use Heystack\Purchasable\PurchasableHolder\Interfaces\HasPurchasableHolderInterface;
@@ -30,6 +32,7 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
     use HasDealHandler;
     use HasPurchasableHolderTrait;
     use HasEventServiceTrait;
+    use HasCurrencyServiceTrait;
 
     const RESULT_TYPE = 'FreeGift';
     const PURCHASABLE_CLASS = 'purchasable_class';
@@ -47,15 +50,18 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
      * @param EventDispatcherInterface $eventService
      * @param PurchasableHolderInterface $purchasableHolder
      * @param AdaptableConfigurationInterface $configuration
+     * @param CurrencyServiceInterface $currencyService
      * @throws \Exception if the configuration is incorrect
      */
     public function __construct(
         EventDispatcherInterface $eventService,
         PurchasableHolderInterface $purchasableHolder,
+        CurrencyServiceInterface $currencyService,
         AdaptableConfigurationInterface $configuration
     ) {
         $this->eventService = $eventService;
         $this->purchasableHolder = $purchasableHolder;
+        $this->currencyService = $currencyService;
 
         if ($configuration->hasConfig(self::PURCHASABLE_CLASS)) {
 
@@ -101,8 +107,16 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
      */
     public function process(DealHandlerInterface $dealHandler)
     {
-        $total = $this->getPurchasable()->getUnitPrice() * $dealHandler->getConditionsMetCount();
+        $purchasable = $this->getPurchasable();
+        
+        if ($purchasable instanceof $this->purchasableClass) {
+            $total = $this->getPurchasable()->getUnitPrice()->multiply($dealHandler->getConditionsMetCount());
+        } else {
+            $total = $this->currencyService->getZeroMoney();
+        }
+
         $this->eventService->dispatch(Events::RESULT_PROCESSED, new ResultEvent($this));
+
         return $total;
     }
 
@@ -135,35 +149,37 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
 
             $event->getDispatcher()->setEnabled(false);
 
-
             $purchasable = $this->getPurchasable();
-            $purchasableAlreadyInCart = $this->purchasableHolder->getPurchasable($purchasable->getIdentifier());
 
-            if ($purchasableAlreadyInCart instanceof DealPurchasableInterface) {
+            if ($purchasable instanceof DealPurchasableInterface) {
+                $purchasableAlreadyInCart = $this->purchasableHolder->getPurchasable($purchasable->getIdentifier());
 
-                if ($purchasableAlreadyInCart->getFreeQuantity() === 0) {
+                if ($purchasableAlreadyInCart instanceof DealPurchasableInterface) {
 
-                    $this->purchasableHolder->addPurchasable($purchasableAlreadyInCart);
+                    if ($purchasableAlreadyInCart->getFreeQuantity() === 0) {
 
-                } else if ($purchasableAlreadyInCart->getFreeQuantity() < $deal->getConditionsMetCount()) {
+                        $this->purchasableHolder->addPurchasable($purchasableAlreadyInCart);
 
-                    $this->purchasableHolder->addPurchasable($purchasableAlreadyInCart);
+                    } else if ($purchasableAlreadyInCart->getFreeQuantity() < $deal->getConditionsMetCount()) {
 
+                        $this->purchasableHolder->addPurchasable($purchasableAlreadyInCart);
+
+                    }
+
+                } else {
+
+                    // make sure there is an appropriate number of the product in the cart
+                    $this->purchasableHolder->setPurchasable(
+                        $purchasable,
+                        max(
+                            $purchasable->getQuantity(),
+                            $conditionsMetCount
+                        )
+                    );
                 }
 
-            } else {
-
-                // make sure there is an appropriate number of the product in the cart
-                $this->purchasableHolder->setPurchasable(
-                    $purchasable,
-                    max(
-                        $purchasable->getQuantity(),
-                        $conditionsMetCount
-                    )
-                );
+                $purchasable->setFreeQuantity($dealIdentifier, $conditionsMetCount);
             }
-
-            $purchasable->setFreeQuantity($dealIdentifier, $conditionsMetCount);
 
             $event->getDispatcher()->setEnabled(true);
             $purchasableHolder->updateTotal();
@@ -209,7 +225,7 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
         );
 
         if (!$purchasable instanceof DealPurchasableInterface) {
-            
+
             $purchasable = \DataList::create($this->purchasableClass)->byID($this->purchasableID);
 
         }

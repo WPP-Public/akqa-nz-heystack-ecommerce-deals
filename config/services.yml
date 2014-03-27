@@ -64,7 +64,7 @@ services:
 
   deals.result.freegift:
     class: %deal.result.freegift.class%
-    arguments: [@event_dispatcher, @purchasableholder]
+    arguments: [@event_dispatcher, @purchasableholder, @currency_service]
     abstract: true
 
   deals.result.shipping:
