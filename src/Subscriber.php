@@ -17,7 +17,6 @@ use Heystack\Core\Storage\Storage;
 use Heystack\Core\Traits\HasEventServiceTrait;
 use Heystack\Core\Traits\HasStateServiceTrait;
 use Heystack\Deals\Interfaces\DealHandlerInterface;
-use Heystack\Deals\Result\FreeGift;
 use Heystack\Ecommerce\Currency\Events as CurrencyEvents;
 use Heystack\Ecommerce\Locale\Events as LocaleEvents;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;

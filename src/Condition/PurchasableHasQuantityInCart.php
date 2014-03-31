@@ -4,8 +4,8 @@ namespace Heystack\Deals\Condition;
 
 use Heystack\Core\Interfaces\HasEventServiceInterface;
 use Heystack\Deals\Interfaces\AdaptableConfigurationInterface;
-use Heystack\Deals\Interfaces\ConditionInterface;
 use Heystack\Deals\Interfaces\ConditionAlmostMetInterface;
+use Heystack\Deals\Interfaces\ConditionInterface;
 use Heystack\Deals\Interfaces\HasDealHandlerInterface;
 use Heystack\Deals\Interfaces\NonPurchasableInterface;
 use Heystack\Deals\Traits\HasDealHandler;

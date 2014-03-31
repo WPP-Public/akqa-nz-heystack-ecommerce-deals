@@ -2,7 +2,6 @@
 
 namespace Heystack\Deals\Result;
 
-use Heystack\Core\Identifier\Identifier;
 use Heystack\Deals\Events;
 use Heystack\Deals\Events\ResultEvent;
 use Heystack\Deals\Interfaces\AdaptableConfigurationInterface;
