@@ -51,6 +51,8 @@ class Subscriber implements EventSubscriberInterface
      * @var \Heystack\Core\Storage\Storage
      */
     protected $storageService;
+    
+    protected $currencyChanging;
 
     /**
      * Creates the ShippingHandler Subscriber object
@@ -82,13 +84,13 @@ class Subscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            CurrencyEvents::CHANGED                                 => ['onUpdateTotal', 0],
-            LocaleEvents::CHANGED                                   => ['onUpdateTotal', 0],
-            PurchasableHolderEvents::PURCHASABLE_ADDED              => ['onUpdateTotal', 0],
-            PurchasableHolderEvents::PURCHASABLE_CHANGED            => ['onUpdateTotal', 0],
-            PurchasableHolderEvents::PURCHASABLE_REMOVED            => ['onUpdateTotal', 0],
-            Events::TOTAL_UPDATED                                   => ['onTotalUpdated', 0],
-            Backend::IDENTIFIER . '.' . TransactionEvents::STORED   => ['onTransactionStored', 10]
+            Events::TOTAL_UPDATED                                            => ['onTotalUpdated', 0],
+            CurrencyEvents::CHANGED                                          => ['onCurrencyChanged', 0],
+            LocaleEvents::CHANGED                                            => ['onUpdateTotal', 0],
+            PurchasableHolderEvents::PURCHASABLE_ADDED                       => ['onUpdateTotal', 0],
+            PurchasableHolderEvents::PURCHASABLE_CHANGED                     => ['onUpdateTotal', 0],
+            PurchasableHolderEvents::PURCHASABLE_REMOVED                     => ['onUpdateTotal', 0],
+            sprintf('%s.%s', Backend::IDENTIFIER, TransactionEvents::STORED) => ['onTransactionStored', 10]
         ];
     }
 
@@ -106,7 +108,16 @@ class Subscriber implements EventSubscriberInterface
      */
     public function onTotalUpdated()
     {
-        $this->eventService->dispatch(TransactionEvents::UPDATE);
+        if (!$this->currencyChanging) {
+            $this->eventService->dispatch(TransactionEvents::UPDATE);
+        }
+    }
+    
+    public function onCurrencyChanged()
+    {
+        $this->currencyChanging = true;
+        $this->dealHandler->updateTotal();
+        $this->currencyChanging = false;
     }
 
     /**
