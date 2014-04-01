@@ -10,6 +10,7 @@ use Heystack\Core\Storage\Traits\ParentReferenceTrait;
 use Heystack\Core\Traits\HasEventServiceTrait;
 use Heystack\Core\Traits\HasStateServiceTrait;
 use Heystack\Deals\Events\ConditionEvent;
+use Heystack\Deals\Events\TotalUpdatedEvent;
 use Heystack\Deals\Interfaces\ConditionAlmostMetInterface;
 use Heystack\Deals\Interfaces\ConditionInterface;
 use Heystack\Deals\Interfaces\DealHandlerInterface;
@@ -181,7 +182,10 @@ class DealHandler implements
 
         $this->saveState();
 
-        $this->eventService->dispatch(Events::TOTAL_UPDATED);
+        $this->eventService->dispatch(
+            Events::TOTAL_UPDATED,
+            new TotalUpdatedEvent($this)
+        );
     }
 
     /**

@@ -178,7 +178,7 @@ class CheapestPurchasableDiscount
     {
         $dealIdentifier = $this->getDealHandler()->getIdentifier();
 
-        if ($dealIdentifier->isMatch($event->getDeal()->getIdentifier())) {
+        if ($dealIdentifier->isMatch($event->getDealHandler()->getIdentifier())) {
 
             if (($result = $this->dealHandler->getResult()) instanceof CheapestPurchasableDiscount) {
 

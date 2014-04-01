@@ -11,6 +11,9 @@ trait HasDealHandler
      */
     protected $dealHandler;
 
+    /**
+     * @param DealHandlerInterface $dealHandler
+     */
     public function setDealHandler(DealHandlerInterface $dealHandler)
     {
         $this->dealHandler = $dealHandler;

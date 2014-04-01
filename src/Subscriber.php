@@ -16,6 +16,7 @@ use Heystack\Core\Storage\Event as StorageEvent;
 use Heystack\Core\Storage\Storage;
 use Heystack\Core\Traits\HasEventServiceTrait;
 use Heystack\Core\Traits\HasStateServiceTrait;
+use Heystack\Deals\Events\TotalUpdatedEvent;
 use Heystack\Deals\Interfaces\DealHandlerInterface;
 use Heystack\Ecommerce\Currency\Events as CurrencyEvents;
 use Heystack\Ecommerce\Locale\Events as LocaleEvents;
@@ -106,9 +107,9 @@ class Subscriber implements EventSubscriberInterface
      * Called after the TaxHandler's total is updated.
      * Tells the transaction to update its total.
      */
-    public function onTotalUpdated()
+    public function onTotalUpdated(TotalUpdatedEvent $event)
     {
-        if (!$this->currencyChanging) {
+        if ($event->getDealHandler()->getIdentifier()->isMatch($this->dealHandler->getIdentifier()) && !$this->currencyChanging) {
             $this->eventService->dispatch(TransactionEvents::UPDATE);
         }
     }

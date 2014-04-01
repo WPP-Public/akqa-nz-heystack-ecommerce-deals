@@ -37,7 +37,7 @@ class ConditionEventTest extends \PHPUnit_Framework_TestCase
 
     public function testGetDeal()
     {
-        $this->assertEquals($this->event->getDeal(), $this->dealHandler);
+        $this->assertEquals($this->event->getDealHandler(), $this->dealHandler);
     }
 
     public function testGetDispatcher()

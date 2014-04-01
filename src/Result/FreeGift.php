@@ -2,6 +2,7 @@
 
 namespace Heystack\Deals\Result;
 
+use Heystack\Core\EventDispatcher;
 use Heystack\Core\Identifier\Identifier;
 use Heystack\Core\Traits\HasEventServiceTrait;
 use Heystack\Deals\Events\ConditionEvent;
@@ -135,8 +136,9 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
      *     current amount of times this condition has been met.
      *
      * @param ConditionEvent $event
+     * @param \Heystack\Core\EventDispatcher $dispatcher
      */
-    public function onConditionsMet(ConditionEvent $event)
+    public function onConditionsMet(ConditionEvent $event, EventDispatcher $dispatcher)
     {
         // Should we get the event dispatcher off the event?
         $deal = $this->getDealHandler();
@@ -145,9 +147,9 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
         $purchasableHolder = $this->getPurchasableHolder();
 
         // Only do stuff if it is relevant to this deal
-        if ($dealIdentifier->isMatch($event->getDeal()->getIdentifier())) {
+        if ($dealIdentifier->isMatch($event->getDealHandler()->getIdentifier())) {
 
-            $event->getDispatcher()->setEnabled(false);
+            $dispatcher->setEnabled(false);
 
             $purchasable = $this->getPurchasable();
 
@@ -181,7 +183,7 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
                 $purchasable->setFreeQuantity($dealIdentifier, $conditionsMetCount);
             }
 
-            $event->getDispatcher()->setEnabled(true);
+            $dispatcher->setEnabled(true);
             $purchasableHolder->updateTotal();
 
         }
@@ -204,7 +206,7 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
     {
         $dealIdentifier = $this->getDealHandler()->getIdentifier();
 
-        if ($dealIdentifier->isMatch($event->getDeal()->getIdentifier())) {
+        if ($dealIdentifier->isMatch($event->getDealHandler()->getIdentifier())) {
             if (($purchasable = $this->getPurchasable()) instanceof DealPurchasableInterface) {
                 $purchasable->setFreeQuantity($dealIdentifier, 0);
             }
