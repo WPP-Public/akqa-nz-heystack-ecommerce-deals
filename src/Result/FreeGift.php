@@ -136,9 +136,10 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
      *     current amount of times this condition has been met.
      *
      * @param ConditionEvent $event
+     * @param $eventName
      * @param \Heystack\Core\EventDispatcher $dispatcher
      */
-    public function onConditionsMet(ConditionEvent $event, EventDispatcher $dispatcher)
+    public function onConditionsMet(ConditionEvent $event, $eventName, EventDispatcher $dispatcher)
     {
         // Should we get the event dispatcher off the event?
         $deal = $this->getDealHandler();
