@@ -8,7 +8,7 @@ use Symfony\Component\EventDispatcher\Event;
 
 /**
  * @author  Stevie Mayhew <stevie@heyday.co.nz>
- * @package Heystack
+ * @package Heystack\Deals
  */
 class ConditionEvent extends Event
 {

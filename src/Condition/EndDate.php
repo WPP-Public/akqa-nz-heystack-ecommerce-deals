@@ -43,7 +43,7 @@ class EndDate implements ConditionInterface, ConditionAlmostMetInterface
 
         } else {
 
-            throw new \Exception('EndTimeCondition requires a end date');
+            throw new \Exception('End Date Condition requires a end date');
 
         }
 

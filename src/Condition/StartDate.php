@@ -43,7 +43,7 @@ class StartDate implements ConditionInterface, ConditionAlmostMetInterface
 
         } else {
 
-            throw new \Exception('StartDateCondition requires a start date');
+            throw new \Exception('Start Date Condition requires a start date');
 
         }
 
