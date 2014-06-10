@@ -40,8 +40,19 @@ final class Events
      * Indicates that a condition was not met. (not relying on the data array passed into the met function)
      */
     const CONDITIONS_NOT_MET  = 'deals.conditionsnotmet';
+
     /**
      * Indicates that a set of conditions were met
      */
-    const CONDITIONS_MET  = 'deals.conditionsmet';
+    const CONDITIONS_MET      = 'deals.conditionsmet';
+
+    /**
+     * Indicates that a Coupon has been added
+     */
+    const COUPON_ADDED        = 'coupons.couponadded';
+
+    /**
+     * Indicates that a Coupon has been removed
+     */
+    const COUPON_REMOVED      = 'coupon.couponremoved';
 }

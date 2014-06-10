@@ -1,12 +1,12 @@
 <?php
 /**
- * This file is part of the Ecommerce-Tax package
+ * This file is part of the Ecommerce-Deals package
  *
  * @package Ecommerce-Deals
  */
 
 /**
- * Tax namespace
+ * Deals namespace
  */
 namespace Heystack\Deals;
 
@@ -16,8 +16,13 @@ use Heystack\Core\Storage\Event as StorageEvent;
 use Heystack\Core\Storage\Storage;
 use Heystack\Core\Traits\HasEventServiceTrait;
 use Heystack\Core\Traits\HasStateServiceTrait;
+use Heystack\Deals\Events\DealHandlerEvent;
 use Heystack\Deals\Events\TotalUpdatedEvent;
+use Heystack\Deals\Interfaces\CouponHolderInterface;
+use Heystack\Deals\Interfaces\CouponInterface;
 use Heystack\Deals\Interfaces\DealHandlerInterface;
+use Heystack\Deals\Interfaces\HasCouponHolderInterface;
+use Heystack\Deals\Traits\HasCouponHolderTrait;
 use Heystack\Ecommerce\Currency\Events as CurrencyEvents;
 use Heystack\Ecommerce\Locale\Events as LocaleEvents;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
@@ -26,20 +31,23 @@ use Heystack\Purchasable\PurchasableHolder\Events as PurchasableHolderEvents;
 use Heystack\Purchasable\PurchasableHolder\Traits\HasPurchasableHolderTrait;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Heystack\Deals\Coupon\Events as CouponEvents;
+
 
 /**
- * Handles both subscribing to events and acting on those events needed for TaxHandler to work properly
+ * Handles both subscribing to events and acting on those events needed for DealHandler to work properly
  *
  * @copyright  Heyday
  * @author Glenn Bautista <glenn@heyday.co.nz>
- * @package Ecommerce-Tax
+ * @package Ecommerce-Deals
  * @see Symfony\Component\EventDispatcher
  */
-class Subscriber implements EventSubscriberInterface
+class Subscriber implements EventSubscriberInterface, HasCouponHolderInterface
 {
     use HasEventServiceTrait;
     use HasPurchasableHolderTrait;
     use HasStateServiceTrait;
+    use HasCouponHolderTrait;
 
     /**
      * Holds the Deal Handler
@@ -52,7 +60,7 @@ class Subscriber implements EventSubscriberInterface
      * @var \Heystack\Core\Storage\Storage
      */
     protected $storageService;
-    
+
     protected $currencyChanging;
 
     /**
@@ -68,7 +76,8 @@ class Subscriber implements EventSubscriberInterface
         Storage $storageService,
         PurchasableHolderInterface $purchasableHolder,
         State $stateService,
-        DealHandlerInterface $dealHandler
+        DealHandlerInterface $dealHandler,
+        CouponHolderInterface $couponHolder
     )
     {
         $this->eventService = $eventService;
@@ -76,6 +85,7 @@ class Subscriber implements EventSubscriberInterface
         $this->purchasableHolder = $purchasableHolder;
         $this->stateService = $stateService;
         $this->dealHandler = $dealHandler;
+        $this->couponHolder = $couponHolder;
     }
 
     /**
@@ -85,12 +95,14 @@ class Subscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            Events::TOTAL_UPDATED                                            => ['onTotalUpdated', 0],
-            CurrencyEvents::CHANGED                                          => ['onCurrencyChanged', 0],
-            LocaleEvents::CHANGED                                            => ['onUpdateTotal', 0],
-            PurchasableHolderEvents::PURCHASABLE_ADDED                       => ['onUpdateTotal', 0],
-            PurchasableHolderEvents::PURCHASABLE_CHANGED                     => ['onUpdateTotal', 0],
-            PurchasableHolderEvents::PURCHASABLE_REMOVED                     => ['onUpdateTotal', 0],
+            Events::TOTAL_UPDATED => ['onTotalUpdated', 0],
+            CurrencyEvents::CHANGED => ['onCurrencyChanged', 0],
+            LocaleEvents::CHANGED => ['onUpdateTotal', 0],
+            PurchasableHolderEvents::PURCHASABLE_ADDED => ['onUpdateTotal', 0],
+            PurchasableHolderEvents::PURCHASABLE_CHANGED => ['onUpdateTotal', 0],
+            PurchasableHolderEvents::PURCHASABLE_REMOVED => ['onUpdateTotal', 0],
+            Events::COUPON_REMOVED => ['onUpdateTotal', 0],
+            Events::COUPON_ADDED => ['onUpdateTotal', 0],
             sprintf('%s.%s', Backend::IDENTIFIER, TransactionEvents::STORED) => ['onTransactionStored', 10]
         ];
     }
@@ -113,7 +125,7 @@ class Subscriber implements EventSubscriberInterface
             $this->eventService->dispatch(TransactionEvents::UPDATE);
         }
     }
-    
+
     public function onCurrencyChanged()
     {
         $this->currencyChanging = true;
@@ -127,9 +139,24 @@ class Subscriber implements EventSubscriberInterface
      */
     public function onTransactionStored(StorageEvent $event)
     {
-        if ($this->dealHandler->getTotal()->getAmount() > 0){
+        if ($this->dealHandler->getTotal()->getAmount() > 0) {
             $this->dealHandler->setParentReference($event->getParentReference());
-            $this->storageService->process($this->dealHandler);
+            $results = $this->storageService->process($this->dealHandler);
+
+            //Store the Coupons associated with the deal
+            if (!empty($results[Backend::IDENTIFIER])) {
+                $storedDeal = $results[Backend::IDENTIFIER];
+                $coupons = $this->couponHolder->getCoupons($this->dealHandler->getIdentifier());
+
+                foreach ($coupons as $coupon) {
+                    if ($coupon instanceof CouponInterface) {
+                        $coupon->setParentReference($storedDeal->ID);
+                        $this->storageService->process($coupon);
+                    }
+                }
+
+            }
+
             $this->eventService->dispatch(Events::STORED);
             $this->stateService->removeByKey($this->dealHandler->getIdentifier()->getFull());
         }
