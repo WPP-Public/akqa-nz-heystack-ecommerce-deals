@@ -65,6 +65,7 @@ class ContainerConfig implements ConfigurationInterface
                         ->scalarNode('where')->defaultNull()->end()
                     ->end()
                 ->end()
+                ->scalarNode('coupon_class')->defaultValue('')->end()
             ->end();
 
         return $treeBuilder;

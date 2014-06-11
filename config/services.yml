@@ -1,6 +1,8 @@
 parameters:
 
-  deal.data.class: Deal
+  coupon_holder.class: Heystack\Deals\Coupon\CouponHolder
+  coupon_input_processor.class: Heystack\Deals\Coupon\Input\Processor
+  coupon_output_processor.class: Heystack\Deals\Coupon\Output\Processor
 
   deal.handler.class: Heystack\Deals\DealHandler
 
@@ -12,6 +14,7 @@ parameters:
   deal.condition.minimumcarttotal.class: Heystack\Deals\Condition\MinimumCartTotal
   deal.condition.quantityofpurchasablesincart.class: Heystack\Deals\Condition\QuantityOfPurchasablesInCart
   deal.condition.purchasablehasquantityincart.class: Heystack\Deals\Condition\PurchasableHasQuantityInCart
+  deal.condition.hascoupon.class: Heystack\Deals\Condition\HasCoupon
 
   deal.result.configuration.class: Heystack\Deals\AdaptableConfiguration
   deal.result.freegift.class: Heystack\Deals\Result\FreeGift
@@ -21,6 +24,24 @@ parameters:
   deal.result.cheapestpurchasablediscount.class: Heystack\Deals\Result\CheapestPurchasableDiscount
 
 services:
+  coupon_holder:
+    class: %coupon_holder.class%
+    arguments: [@state, @event_dispatcher]
+    tags:
+      - { name: state.restore }
+
+  coupon_input_processor:
+    class: %coupon_input_processor.class%
+    arguments: [ %coupon.class%, @coupon_holder ]
+    tags:
+      - { name: input_processor_handler.processor }
+
+  coupon_output_procesor:
+    class: %coupon_output_processor.class%
+    arguments: [ %coupon.class% ]
+    tags:
+      - { name: output_processor_handler.processor }
+
   deals.deal_handler:
     class: %deal.handler.class%
     arguments: [ @state, @event_dispatcher, @currency_service ]
@@ -28,7 +49,7 @@ services:
 
   deals.subscriber:
     class: %deal.subscriber.class%
-    arguments: [@event_dispatcher, @storage, @purchasableholder, @state]
+    arguments: [@event_dispatcher, @storage, @purchasableholder, @state, @coupon_holder]
     abstract: true
 
   deals.condition.configuration:
@@ -41,6 +62,11 @@ services:
 
   deals.condition.enddate:
     class: %deal.condition.enddate.class%
+    abstract: true
+
+  deals.condition.hascoupon:
+    class: %deal.condition.hascoupon.class%
+    arguments: [ @coupon_holder ]
     abstract: true
 
   deals.condition.minimumcarttotal:
@@ -97,6 +123,20 @@ services:
   transaction_dealhandler_schema:
     class: %yaml_data_object_schema.class%
     arguments: [ ecommerce-deals/config/storage/transaction_dealhandler.yml ]
+    tags:
+      - { name: schema }
+      - { name: autoinject, arguments: true }
+
+  coupon_schema:
+    class: %yaml_data_object_schema.class%
+    arguments: [ ecommerce-deals/config/storage/coupon.yml ]
+    tags:
+      - { name: schema }
+      - { name: autoinject, arguments: true }
+
+  dealhandler_coupon_schema:
+    class: %yaml_data_object_schema.class%
+    arguments: [ ecommerce-deals/config/storage/dealhandler_coupon.yml ]
     tags:
       - { name: schema }
       - { name: autoinject, arguments: true }

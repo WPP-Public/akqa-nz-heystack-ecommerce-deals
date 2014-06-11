@@ -81,6 +81,12 @@ class ContainerExtension extends Extension
             $configs[] = $dealsDbConfig;
         }
 
+        if (empty($config['coupon_class'])) {
+            $container->setParameter('coupon.class', 'Disabled');
+        } else {
+            $container->setParameter('coupon.class', $config['coupon_class']);
+        }
+
         $config = (new Processor())->processConfiguration(
             new ContainerConfig(),
             $configs
