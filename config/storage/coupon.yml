@@ -1,0 +1,6 @@
+id: Coupon
+flat:
+  Identifier: Text
+  Code: Text
+parent:
+  Parent: +Deal

@@ -1,0 +1,5 @@
+id: Deal
+flat:
+parent:
+children:
+  Coupons: +Coupon

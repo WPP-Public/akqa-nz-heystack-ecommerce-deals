@@ -4,4 +4,3 @@ flat:
   Description: Text
 parent:
   Parent: +Transaction
-children:
