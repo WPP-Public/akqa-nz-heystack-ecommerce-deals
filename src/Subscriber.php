@@ -139,7 +139,7 @@ class Subscriber implements EventSubscriberInterface, HasCouponHolderInterface
      */
     public function onTransactionStored(StorageEvent $event)
     {
-        if ($this->dealHandler->getTotal()->getAmount() > 0) {
+        if ($this->dealHandler->getConditionsMetCount() > 0) {
             $this->dealHandler->setParentReference($event->getParentReference());
             $results = $this->storageService->process($this->dealHandler);
 

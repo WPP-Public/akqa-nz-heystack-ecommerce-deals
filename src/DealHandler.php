@@ -369,8 +369,8 @@ DESCRIPTION;
      */
     public function setData($data)
     {
-        if ($data instanceof Money) {
-            $this->total = $data;
+        if (is_array($data)) {
+            list($this->total, $this->conditionsMetCount) = $data;
         }
     }
 
@@ -379,7 +379,7 @@ DESCRIPTION;
      */
     public function getData()
     {
-        return $this->total;
+        return [$this->total, $this->conditionsMetCount];
     }
 
 }
