@@ -14,7 +14,7 @@ use Heystack\Deals\Interfaces\DealPurchasableInterface;
 use Heystack\Deals\Interfaces\HasDealHandlerInterface;
 use Heystack\Deals\Interfaces\ResultInterface;
 use Heystack\Deals\Interfaces\ResultWithConditionsInterface;
-use Heystack\Deals\Traits\HasDealHandler;
+use Heystack\Deals\Traits\HasDealHandlerTrait;
 use Heystack\Ecommerce\Currency\Traits\HasCurrencyServiceTrait;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableInterface;
@@ -29,7 +29,7 @@ class CheapestPurchasableDiscount
         HasPurchasableHolderInterface,
         HasDealHandlerInterface
 {
-    use HasDealHandler;
+    use HasDealHandlerTrait;
     use HasPurchasableHolderTrait;
     use HasCurrencyServiceTrait;
 

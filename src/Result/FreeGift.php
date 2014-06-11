@@ -13,7 +13,7 @@ use Heystack\Deals\Interfaces\DealHandlerInterface;
 use Heystack\Deals\Interfaces\DealPurchasableInterface;
 use Heystack\Deals\Interfaces\HasDealHandlerInterface;
 use Heystack\Deals\Interfaces\ResultInterface;
-use Heystack\Deals\Traits\HasDealHandler;
+use Heystack\Deals\Traits\HasDealHandlerTrait;
 use Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
 use Heystack\Ecommerce\Currency\Traits\HasCurrencyServiceTrait;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
@@ -30,7 +30,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasableHolderInterface
 {
-    use HasDealHandler;
+    use HasDealHandlerTrait;
     use HasPurchasableHolderTrait;
     use HasEventServiceTrait;
     use HasCurrencyServiceTrait;

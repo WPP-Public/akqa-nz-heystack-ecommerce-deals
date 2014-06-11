@@ -2,13 +2,13 @@
 
 namespace Heystack\Deals\Events;
 
-use Heystack\Deals\Traits\HasDealHandler;
+use Heystack\Deals\Traits\HasDealHandlerTrait;
 use Symfony\Component\EventDispatcher\Event;
 use Heystack\Deals\Interfaces\DealHandlerInterface;
 
 class TotalUpdatedEvent extends Event
 {
-    use HasDealHandler;
+    use HasDealHandlerTrait;
 
     /**
      * @param DealHandlerInterface $dealHandler

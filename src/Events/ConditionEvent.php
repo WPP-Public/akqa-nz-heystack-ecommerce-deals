@@ -3,7 +3,7 @@
 namespace Heystack\Deals\Events;
 
 use Heystack\Deals\Interfaces\DealHandlerInterface;
-use Heystack\Deals\Traits\HasDealHandler;
+use Heystack\Deals\Traits\HasDealHandlerTrait;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
@@ -12,7 +12,7 @@ use Symfony\Component\EventDispatcher\Event;
  */
 class ConditionEvent extends Event
 {
-    use HasDealHandler;
+    use HasDealHandlerTrait;
 
     /**
      * @param DealHandlerInterface $dealHandler

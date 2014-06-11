@@ -9,7 +9,7 @@ use Heystack\Deals\Interfaces\ConditionInterface;
 use Heystack\Deals\Interfaces\DealPurchasableInterface;
 use Heystack\Deals\Interfaces\HasDealHandlerInterface;
 use Heystack\Deals\Interfaces\NonPurchasableInterface;
-use Heystack\Deals\Traits\HasDealHandler;
+use Heystack\Deals\Traits\HasDealHandlerTrait;
 use Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
 use Heystack\Ecommerce\Currency\Traits\HasCurrencyServiceTrait;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
@@ -29,7 +29,7 @@ class MinimumCartTotal
         HasDealHandlerInterface,
         HasPurchasableHolderInterface
 {
-    use HasDealHandler;
+    use HasDealHandlerTrait;
     use HasPurchasableHolderTrait;
     use HasCurrencyServiceTrait;
 

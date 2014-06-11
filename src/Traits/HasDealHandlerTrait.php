@@ -4,7 +4,7 @@ namespace Heystack\Deals\Traits;
 
 use Heystack\Deals\Interfaces\DealHandlerInterface;
 
-trait HasDealHandler
+trait HasDealHandlerTrait
 {
     /**
      * @var \Heystack\Deals\Interfaces\DealHandlerInterface

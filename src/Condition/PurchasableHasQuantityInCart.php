@@ -8,7 +8,7 @@ use Heystack\Deals\Interfaces\ConditionAlmostMetInterface;
 use Heystack\Deals\Interfaces\ConditionInterface;
 use Heystack\Deals\Interfaces\HasDealHandlerInterface;
 use Heystack\Deals\Interfaces\NonPurchasableInterface;
-use Heystack\Deals\Traits\HasDealHandler;
+use Heystack\Deals\Traits\HasDealHandlerTrait;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 use Heystack\Purchasable\PurchasableHolder\Interfaces\HasPurchasableHolderInterface;
 use Heystack\Purchasable\PurchasableHolder\Traits\HasPurchasableHolderTrait;
@@ -26,7 +26,7 @@ class PurchasableHasQuantityInCart
         HasDealHandlerInterface,
         HasPurchasableHolderInterface
 {
-    use HasDealHandler;
+    use HasDealHandlerTrait;
     use HasPurchasableHolderTrait;
 
     const CONDITION_TYPE = 'PurchasableHasQuantityInCart';
@@ -188,7 +188,7 @@ class PurchasableHasQuantityInCart
     public function getDescription()
     {
 
-        return 'One of them items must have at least ' . $this->minimumQuantity . ' quantity in the cart. Items include ' . implode(
+        return 'One of the items must have at least ' . $this->minimumQuantity . ' quantity in the cart. Items include ' . implode(
             ',',
             $this->purchasableIdentifiers
         );
