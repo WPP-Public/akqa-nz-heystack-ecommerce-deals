@@ -70,7 +70,7 @@ class Processor  implements ProcessorInterface, HasCouponHolderInterface
 
             if ($coupon instanceof CouponInterface) {
 
-                $this->voucherService->removeVoucher($coupon->getIdentifier());
+                $this->getCouponHolder()->removeCoupon($coupon->getIdentifier());
 
                 return [
                     'Success' => true

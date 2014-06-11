@@ -80,7 +80,7 @@ class CouponHolder
 
             foreach ($this->coupons as $coupon) {
                 if ($coupon instanceof CouponInterface && $coupon->getDealIdentifier()->isMatch($dealIdentifier)) {
-                    $dealCoupons[] = $coupon;
+                    $dealCoupons[$coupon->getIdentifier()->getFull()] = $coupon;
                 }
             }
 
@@ -88,7 +88,6 @@ class CouponHolder
         }
 
         return $this->coupons;
-
     }
 
     public function addCoupon(CouponInterface $coupon)

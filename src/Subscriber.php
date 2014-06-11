@@ -76,16 +76,16 @@ class Subscriber implements EventSubscriberInterface, HasCouponHolderInterface
         Storage $storageService,
         PurchasableHolderInterface $purchasableHolder,
         State $stateService,
-        DealHandlerInterface $dealHandler,
-        CouponHolderInterface $couponHolder
+        CouponHolderInterface $couponHolder,
+        DealHandlerInterface $dealHandler
     )
     {
         $this->eventService = $eventService;
         $this->storageService = $storageService;
         $this->purchasableHolder = $purchasableHolder;
         $this->stateService = $stateService;
-        $this->dealHandler = $dealHandler;
         $this->couponHolder = $couponHolder;
+        $this->dealHandler = $dealHandler;
     }
 
     /**
@@ -95,14 +95,14 @@ class Subscriber implements EventSubscriberInterface, HasCouponHolderInterface
     public static function getSubscribedEvents()
     {
         return [
-            Events::TOTAL_UPDATED => ['onTotalUpdated', 0],
-            CurrencyEvents::CHANGED => ['onCurrencyChanged', 0],
-            LocaleEvents::CHANGED => ['onUpdateTotal', 0],
-            PurchasableHolderEvents::PURCHASABLE_ADDED => ['onUpdateTotal', 0],
-            PurchasableHolderEvents::PURCHASABLE_CHANGED => ['onUpdateTotal', 0],
-            PurchasableHolderEvents::PURCHASABLE_REMOVED => ['onUpdateTotal', 0],
-            Events::COUPON_REMOVED => ['onUpdateTotal', 0],
-            Events::COUPON_ADDED => ['onUpdateTotal', 0],
+            Events::TOTAL_UPDATED                                            => ['onTotalUpdated', 0],
+            CurrencyEvents::CHANGED                                          => ['onCurrencyChanged', 0],
+            LocaleEvents::CHANGED                                            => ['onUpdateTotal', 0],
+            PurchasableHolderEvents::PURCHASABLE_ADDED                       => ['onUpdateTotal', 0],
+            PurchasableHolderEvents::PURCHASABLE_CHANGED                     => ['onUpdateTotal', 0],
+            PurchasableHolderEvents::PURCHASABLE_REMOVED                     => ['onUpdateTotal', 0],
+            Events::COUPON_REMOVED                                           => ['onUpdateTotal', 0],
+            Events::COUPON_ADDED                                             => ['onUpdateTotal', 0],
             sprintf('%s.%s', Backend::IDENTIFIER, TransactionEvents::STORED) => ['onTransactionStored', 10]
         ];
     }
