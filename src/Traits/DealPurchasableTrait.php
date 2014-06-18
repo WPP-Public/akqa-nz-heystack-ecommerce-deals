@@ -96,7 +96,7 @@ trait DealPurchasableTrait
      * @param IdentifierInterface $dealIdentifier
      * @param $discountAmount
      */
-    public function setDealDiscount(IdentifierInterface $dealIdentifier, $discountAmount)
+    public function setDealDiscount(IdentifierInterface $dealIdentifier,Money $discountAmount)
     {
         $this->dealDiscounts[$dealIdentifier->getFull()] = $discountAmount;
     }
