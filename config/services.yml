@@ -86,6 +86,8 @@ services:
     class: %deal.result.cheapestpurchasablediscount.class%
     arguments: [@event_dispatcher, @purchasableholder]
     abstract: true
+    tags:
+      - { name: set.currency_service }
 
   dealhandler_schema:
     class: %yaml_data_object_schema.class%
