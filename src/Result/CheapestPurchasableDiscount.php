@@ -232,7 +232,7 @@ class CheapestPurchasableDiscount
 
                 $cheapest = $purchasable;
 
-            } else if ($cheapest instanceof PurchasableInterface && $cheapest->getPrice() > $purchasable->getPrice() && $quantity) {
+            } else if ($cheapest instanceof PurchasableInterface && $cheapest->getPrice()->greaterThan($purchasable->getPrice()) && $quantity) {
 
                 $cheapest = $purchasable;
 

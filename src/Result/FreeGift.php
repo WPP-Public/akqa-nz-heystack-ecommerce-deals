@@ -109,7 +109,7 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
         $purchasable = $this->getPurchasable();
         
         if ($purchasable instanceof $this->purchasableClass) {
-            $total = $this->getPurchasable()->getPrice()->multiply($dealHandler->getConditionsMetCount());
+            $total = $this->getPurchasable()->getUnitPrice()->multiply($dealHandler->getConditionsMetCount());
         } else {
             $total = $this->currencyService->getZeroMoney();
         }
@@ -217,6 +217,10 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
         if (!$purchasable instanceof DealPurchasableInterface) {
 
             $purchasable = \DataList::create($this->purchasableClass)->byID($this->purchasableID);
+
+            if ($purchasable instanceof DealPurchasableInterface) {
+                $purchasable->setUnitPrice($purchasable->getPrice());
+            }
 
         }
 
