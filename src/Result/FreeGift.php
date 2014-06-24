@@ -17,7 +17,6 @@ use Heystack\Deals\Traits\HasDealHandlerTrait;
 use Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
 use Heystack\Ecommerce\Currency\Traits\HasCurrencyServiceTrait;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
-use Heystack\Purchasable\PurchasableHolder\Events as ProductEvents;
 use Heystack\Purchasable\PurchasableHolder\Interfaces\HasPurchasableHolderInterface;
 use Heystack\Purchasable\PurchasableHolder\Traits\HasPurchasableHolderTrait;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -89,8 +88,7 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
     {
         return [
             Events::CONDITIONS_NOT_MET => 'onConditionsNotMet',
-            Events::CONDITIONS_MET     => 'onConditionsMet',
-            ProductEvents::PURCHASABLE_REMOVED => ['onProductRemove', 100]
+            Events::CONDITIONS_MET     => 'onConditionsMet'
         ];
     }
 
@@ -115,6 +113,8 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
         } else {
             $total = $this->currencyService->getZeroMoney();
         }
+
+        $purchasable->setDealDiscount($dealHandler->getIdentifier(), $total);
 
         $this->eventService->dispatch(Events::RESULT_PROCESSED, new ResultEvent($this));
 
@@ -190,19 +190,6 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
         }
     }
 
-    /**
-     * When products are removed we need to set free quantities to 0
-     * This will handle the
-     */
-    public function onProductRemove()
-    {
-        foreach ($this->purchasableHolder->getPurchasables() as $purchasable) {
-            if ($purchasable instanceof DealPurchasableInterface) {
-                $purchasable->setFreeQuantity($this->getDealHandler()->getIdentifier(), 0);
-            }
-        }
-    }
-
     public function onConditionsNotMet(ConditionEvent $event)
     {
         $dealIdentifier = $this->getDealHandler()->getIdentifier();
@@ -230,6 +217,10 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
         if (!$purchasable instanceof DealPurchasableInterface) {
 
             $purchasable = \DataList::create($this->purchasableClass)->byID($this->purchasableID);
+
+            if ($purchasable instanceof DealPurchasableInterface) {
+                $purchasable->setUnitPrice($purchasable->getPrice());
+            }
 
         }
 
