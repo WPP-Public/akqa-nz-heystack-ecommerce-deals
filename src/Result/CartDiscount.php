@@ -10,6 +10,7 @@ use Heystack\Deals\Interfaces\DealPurchasableInterface;
 use Heystack\Deals\Interfaces\HasDealHandlerInterface;
 use Heystack\Deals\Interfaces\ResultInterface;
 use Heystack\Deals\Traits\HasDealHandler;
+use Heystack\Deals\Traits\HasDealHandlerTrait;
 use Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 use Heystack\Purchasable\PurchasableHolder\Interfaces\HasPurchasableHolderInterface;
@@ -26,7 +27,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 class CartDiscount implements ResultInterface, HasPurchasableHolderInterface, HasDealHandlerInterface
 {
     use HasPurchasableHolderTrait;
-    use HasDealHandler;
+    use HasDealHandlerTrait;
 
     const RESULT_TYPE = 'CartDiscount';
     const CART_DISCOUNT_AMOUNTS = 'cart_discount_amounts';
@@ -144,7 +145,7 @@ class CartDiscount implements ResultInterface, HasPurchasableHolderInterface, Ha
             $currencyCode = $currency->getCurrencyCode();
             
             if (isset($this->discountAmounts[$currencyCode])) {
-                $discount = new Money($this->discountAmounts[$currencyCode] * $currency->getSubUnit(), $currency);
+                $discount = new Money(intval($this->discountAmounts[$currencyCode] * $currency->getSubUnit()), $currency);
             }
         }
 
@@ -165,19 +166,20 @@ class CartDiscount implements ResultInterface, HasPurchasableHolderInterface, Ha
 
                     $discountRatio = $purchasable->getTotal()->getAmount() / $total->getAmount();
 
-                    list($purchasableDiscount, ) = $discount->allocateByRatios(
+                    list($purchasableDiscount, ) = $discount->allocateByRatios([
                         $discountRatio,
                         1 - $discountRatio
-                    );
+                    ]);
 
                     $purchasable->setDealDiscount(
                         $this->getDealHandler()->getIdentifier(),
                         $purchasableDiscount
                     );
-
                 }
 
             }
+
+            return $discount;
         }
         
         return $this->currencyService->getZeroMoney();
