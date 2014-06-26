@@ -8,7 +8,9 @@ use Heystack\Deals\Events\ResultEvent;
 use Heystack\Deals\Interfaces\AdaptableConfigurationInterface;
 use Heystack\Deals\Interfaces\DealHandlerInterface;
 use Heystack\Deals\Interfaces\DealPurchasableInterface;
+use Heystack\Deals\Interfaces\HasDealHandlerInterface;
 use Heystack\Deals\Interfaces\ResultInterface;
+use Heystack\Deals\Traits\HasDealHandlerTrait;
 use Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableInterface;
@@ -26,9 +28,11 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 class PurchasableDiscount
     implements
         ResultInterface,
-        HasPurchasableHolderInterface
+        HasPurchasableHolderInterface,
+        HasDealHandlerInterface
 {
     use HasPurchasableHolderTrait;
+    use HasDealHandlerTrait;
 
     const RESULT_TYPE = 'PurchasableDiscount';
     const PURCHASABLE_DISCOUNT_AMOUNTS = 'purchasable_discount_amounts';
@@ -109,7 +113,6 @@ class PurchasableDiscount
             }
 
             $this->discountPercentage = $configuration->getConfig(self::PURCHASABLE_DISCOUNT_PERCENTAGE);
-            $discountConfigured = self::PURCHASABLE_DISCOUNT_PERCENTAGE;
 
         }
 
@@ -175,7 +178,7 @@ class PurchasableDiscount
             $currencyCode = $currency->getCurrencyCode();
             
             if ($this->discountAmounts[$currencyCode]) {
-                $discount = new Money($this->discountAmounts[$currencyCode] * $currency->getSubUnit(), $currency);
+                $discount = new Money(intval($this->discountAmounts[$currencyCode] * $currency->getSubUnit()), $currency);
             } else {
                 $discount = $this->currencyService->getZeroMoney();
             }
@@ -228,8 +231,7 @@ class PurchasableDiscount
                     $total = $total->add($purchasable->getTotal());
 
                     list($purchasableDiscount, ) = $purchasable->getTotal()->allocateByRatios(
-                        $this->discountPercentage,
-                        100 - $this->discountPercentage
+                        [$this->discountPercentage,100 - $this->discountPercentage]
                     );
 
                     $purchasable->setDealDiscount(
