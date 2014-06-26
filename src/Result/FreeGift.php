@@ -13,10 +13,12 @@ use Heystack\Deals\Interfaces\DealHandlerInterface;
 use Heystack\Deals\Interfaces\DealPurchasableInterface;
 use Heystack\Deals\Interfaces\HasDealHandlerInterface;
 use Heystack\Deals\Interfaces\ResultInterface;
+use Heystack\Deals\Interfaces\ResultWithTransactionModifierTypeInterface;
 use Heystack\Deals\Traits\HasDealHandlerTrait;
 use Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
 use Heystack\Ecommerce\Currency\Traits\HasCurrencyServiceTrait;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
+use Heystack\Ecommerce\Transaction\TransactionModifierTypes;
 use Heystack\Purchasable\PurchasableHolder\Interfaces\HasPurchasableHolderInterface;
 use Heystack\Purchasable\PurchasableHolder\Traits\HasPurchasableHolderTrait;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -27,7 +29,11 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * @author     Glenn Bautista <glenn@heyday.co.nz>
  * @package    Ecommerce-Deals
  */
-class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasableHolderInterface
+class FreeGift implements
+    ResultInterface,
+    ResultWithTransactionModifierTypeInterface,
+    HasDealHandlerInterface,
+    HasPurchasableHolderInterface
 {
     use HasDealHandlerTrait;
     use HasPurchasableHolderTrait;
@@ -90,6 +96,16 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
             Events::CONDITIONS_NOT_MET => 'onConditionsNotMet',
             Events::CONDITIONS_MET     => 'onConditionsMet'
         ];
+    }
+
+    /**
+     * Use the neutral type because the total is deducted
+     * by the fact that the products aren't charged for
+     * @return mixed
+     */
+    public function getType()
+    {
+        return TransactionModifierTypes::NEUTRAL;
     }
 
     /**
@@ -157,27 +173,10 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
             if ($purchasable instanceof DealPurchasableInterface) {
                 $purchasableAlreadyInCart = $this->purchasableHolder->getPurchasable($purchasable->getIdentifier());
 
-                if ($purchasableAlreadyInCart instanceof DealPurchasableInterface) {
-
-                    if ($purchasableAlreadyInCart->getFreeQuantity() === 0) {
-
-                        $this->purchasableHolder->addPurchasable($purchasableAlreadyInCart);
-
-                    } else if ($purchasableAlreadyInCart->getFreeQuantity() < $deal->getConditionsMetCount()) {
-
-                        $this->purchasableHolder->addPurchasable($purchasableAlreadyInCart);
-
-                    }
-
-                } else {
-
-                    // make sure there is an appropriate number of the product in the cart
+                if (!$purchasableAlreadyInCart instanceof DealPurchasableInterface) {
                     $this->purchasableHolder->setPurchasable(
                         $purchasable,
-                        max(
-                            $purchasable->getQuantity(),
-                            $conditionsMetCount
-                        )
+                        0
                     );
                 }
 
@@ -197,6 +196,9 @@ class FreeGift implements ResultInterface, HasDealHandlerInterface, HasPurchasab
         if ($dealIdentifier->isMatch($event->getDealHandler()->getIdentifier())) {
             if (($purchasable = $this->getPurchasable()) instanceof DealPurchasableInterface) {
                 $purchasable->setFreeQuantity($dealIdentifier, 0);
+                if ($purchasable->getQuantity() == 0) {
+                    $this->purchasableHolder->removePurchasable($purchasable->getIdentifier());
+                }
             }
         }
 

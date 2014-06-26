@@ -17,6 +17,7 @@ use Heystack\Deals\Interfaces\DealHandlerInterface;
 use Heystack\Deals\Interfaces\HasDealHandlerInterface;
 use Heystack\Deals\Interfaces\ResultInterface;
 use Heystack\Deals\Interfaces\ResultWithConditionsInterface;
+use Heystack\Deals\Interfaces\ResultWithModifierTypeInterface;
 use Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
 use Heystack\Ecommerce\Currency\Traits\HasCurrencyServiceTrait;
 use Heystack\Ecommerce\Transaction\Traits\TransactionModifierSerializeTrait;
@@ -247,7 +248,11 @@ class DealHandler implements
      */
     public function getType()
     {
-        return TransactionModifierTypes::DEDUCTIBLE;
+        if ($this->result instanceof ResultWithModifierTypeInterface) {
+            return $this->result->getType();
+        } else {
+            return TransactionModifierTypes::DEDUCTIBLE;
+        }
     }
 
     /**

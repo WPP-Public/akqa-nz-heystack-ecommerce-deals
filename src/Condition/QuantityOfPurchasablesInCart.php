@@ -123,21 +123,9 @@ class QuantityOfPurchasablesInCart
         }
 
         foreach ($purchasables as $purchasable) {
-
             if ($purchasable instanceof DealPurchasableInterface) {
-
-                $quantity += $purchasable->getQuantity();;
-
-                // TODO: Refactor this coupling
-                if ($this->getDealHandler()->getResult() instanceof FreeGift) {
-
-                    $quantity -= $purchasable->getFreeQuantity();
-
-                }
-
+                $quantity += $purchasable->getQuantity();
             }
-
-
         }
 
         return (int) floor($quantity / $this->minimumQuantity);
