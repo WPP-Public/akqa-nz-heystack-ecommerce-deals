@@ -3,6 +3,7 @@
 namespace Heystack\Deals\Result;
 
 use Heystack\Core\Identifier\Identifier;
+use Heystack\Core\Traits\HasEventServiceTrait;
 use Heystack\Deals\Events;
 use Heystack\Deals\Events\ResultEvent;
 use Heystack\Deals\Interfaces\AdaptableConfigurationInterface;
@@ -12,8 +13,10 @@ use Heystack\Deals\Interfaces\HasDealHandlerInterface;
 use Heystack\Deals\Interfaces\ResultInterface;
 use Heystack\Deals\Traits\HasDealHandlerTrait;
 use Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
+use Heystack\Ecommerce\Currency\Traits\HasCurrencyServiceTrait;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableInterface;
+use Heystack\Ecommerce\Transaction\TransactionModifierTypes;
 use Heystack\Purchasable\PurchasableHolder\Interfaces\HasPurchasableHolderInterface;
 use Heystack\Purchasable\PurchasableHolder\Traits\HasPurchasableHolderTrait;
 use SebastianBergmann\Money\Money;
@@ -33,6 +36,8 @@ class PurchasableDiscount
 {
     use HasPurchasableHolderTrait;
     use HasDealHandlerTrait;
+    use HasCurrencyServiceTrait;
+    use HasEventServiceTrait;
 
     const RESULT_TYPE = 'PurchasableDiscount';
     const PURCHASABLE_DISCOUNT_AMOUNTS = 'purchasable_discount_amounts';
@@ -43,23 +48,16 @@ class PurchasableDiscount
      * @var array of amounts indexed by currency code
      */
     protected $discountAmounts;
+
     /**
      * @var float
      */
     protected $discountPercentage;
+
     /**
      * @var array of \Heystack\Core\Identifier\Identifier
      */
     protected $purchasableIdentifiers = [];
-    /**
-     * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
-     */
-    protected $eventService;
-    /**
-     * @var \Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface
-     */
-    protected $currencyService;
-
 
     /**
      * @param EventDispatcherInterface $eventService
@@ -282,5 +280,23 @@ class PurchasableDiscount
         }
 
         return $quantity;
+    }
+
+    /**
+     * @return \Heystack\Ecommerce\Transaction\Interfaces\TransactionModifierInterface[]
+     */
+    public function getLinkedModifiers()
+    {
+        return [$this->purchasableHolder];
+    }
+
+    /**
+     * Indicates the type of amount the modifier will return
+     * Must return a constant from TransactionModifierTypes
+     * @return string
+     */
+    public function getType()
+    {
+        return TransactionModifierTypes::DEDUCTIBLE;
     }
 }

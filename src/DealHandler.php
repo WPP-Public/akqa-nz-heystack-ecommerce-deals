@@ -17,13 +17,11 @@ use Heystack\Deals\Interfaces\DealHandlerInterface;
 use Heystack\Deals\Interfaces\HasDealHandlerInterface;
 use Heystack\Deals\Interfaces\ResultInterface;
 use Heystack\Deals\Interfaces\ResultWithConditionsInterface;
-use Heystack\Deals\Interfaces\ResultWithTransactionModifierTypeInterface;
 use Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
 use Heystack\Ecommerce\Currency\Traits\HasCurrencyServiceTrait;
+use Heystack\Ecommerce\Transaction\Interfaces\HasLinkedTransactionModifiersInterface;
 use Heystack\Ecommerce\Transaction\Traits\TransactionModifierSerializeTrait;
 use Heystack\Ecommerce\Transaction\Traits\TransactionModifierStateTrait;
-use Heystack\Ecommerce\Transaction\TransactionModifierTypes;
-use SebastianBergmann\Money\Money;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -34,6 +32,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 class DealHandler implements
     DealHandlerInterface,
+    HasLinkedTransactionModifiersInterface,
     StateableInterface,
     \Serializable
 {
@@ -248,11 +247,15 @@ class DealHandler implements
      */
     public function getType()
     {
-        if ($this->result instanceof ResultWithTransactionModifierTypeInterface) {
-            return $this->result->getType();
-        } else {
-            return TransactionModifierTypes::DEDUCTIBLE;
-        }
+        return $this->result->getType();
+    }
+
+    /**
+     * @return \Heystack\Ecommerce\Transaction\Interfaces\TransactionModifierInterface[]
+     */
+    public function getLinkedModifiers()
+    {
+        return $this->result->getLinkedModifiers();
     }
 
     /**

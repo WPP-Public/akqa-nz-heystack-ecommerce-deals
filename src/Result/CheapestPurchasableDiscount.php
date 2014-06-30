@@ -18,6 +18,7 @@ use Heystack\Deals\Traits\HasDealHandlerTrait;
 use Heystack\Ecommerce\Currency\Traits\HasCurrencyServiceTrait;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableInterface;
+use Heystack\Ecommerce\Transaction\TransactionModifierTypes;
 use Heystack\Purchasable\PurchasableHolder\Interfaces\HasPurchasableHolderInterface;
 use Heystack\Purchasable\PurchasableHolder\Traits\HasPurchasableHolderTrait;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -302,11 +303,9 @@ class CheapestPurchasableDiscount
 
     public function getConditions()
     {
-
         $productConfig = [
             Condition\PurchasableHasQuantityInCart::PURCHASABLE_IDENTIFIERS => $this->purchasableIdentifiers,
             Condition\PurchasableHasQuantityInCart::MINIMUM_QUANTITY_KEY => 1
-
         ];
 
         $purchasableInCartCondition = new Condition\PurchasableHasQuantityInCart($this->getPurchasableHolder(), new AdaptableConfiguration($productConfig));
@@ -314,9 +313,24 @@ class CheapestPurchasableDiscount
         return [
             $purchasableInCartCondition
         ];
-
     }
 
+    /**
+     * @return \Heystack\Ecommerce\Transaction\Interfaces\TransactionModifierInterface[]
+     */
+    public function getLinkedModifiers()
+    {
+        return [$this->purchasableHolder];
+    }
 
+    /**
+     * Indicates the type of amount the modifier will return
+     * Must return a constant from TransactionModifierTypes
+     * @return string
+     */
+    public function getType()
+    {
+        return TransactionModifierTypes::DEDUCTIBLE;
+    }
 }
 

@@ -2,13 +2,17 @@
 
 namespace Heystack\Deals\Result;
 
+use Heystack\Core\Traits\HasEventServiceTrait;
 use Heystack\Deals\Events;
 use Heystack\Deals\Events\ResultEvent;
 use Heystack\Deals\Interfaces\AdaptableConfigurationInterface;
 use Heystack\Deals\Interfaces\DealHandlerInterface;
 use Heystack\Deals\Interfaces\ResultInterface;
 use Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
+use Heystack\Ecommerce\Currency\Traits\HasCurrencyServiceTrait;
+use Heystack\Ecommerce\Transaction\TransactionModifierTypes;
 use Heystack\Shipping\Interfaces\ShippingHandlerInterface;
+use Heystack\Shipping\Traits\HasShippingHandlerTrait;
 use SebastianBergmann\Money\Money;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -20,6 +24,10 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 class Shipping implements ResultInterface
 {
+    use HasEventServiceTrait;
+    use HasShippingHandlerTrait;
+    use HasCurrencyServiceTrait;
+
     const RESULT_TYPE = 'Shipping';
     const FREE_SHIPPING = 'free_shipping';
     const SHIPPING_DISCOUNT_AMOUNTS = 'shipping_discount_amounts';
@@ -30,33 +38,20 @@ class Shipping implements ResultInterface
     protected $discountPercentage;
 
     /**
-     * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
-     */
-    protected $eventService;
-    /**
-     * @var \Heystack\Shipping\Interfaces\ShippingHandlerInterface
-     */
-    protected $shippingService;
-    /**
-     * @var \Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface
-     */
-    protected $currencyService;
-
-    /**
      * @param EventDispatcherInterface $eventService
-     * @param ShippingHandlerInterface $shippingService
+     * @param ShippingHandlerInterface $shippingHandler
      * @param CurrencyServiceInterface $currencyService
      * @param AdaptableConfigurationInterface $configuration
      * @throws \Exception when configured improperly
      */
     public function __construct(
         EventDispatcherInterface $eventService,
-        ShippingHandlerInterface $shippingService,
+        ShippingHandlerInterface $shippingHandler,
         CurrencyServiceInterface $currencyService,
         AdaptableConfigurationInterface $configuration
     ) {
         $this->eventService = $eventService;
-        $this->shippingService = $shippingService;
+        $this->shippingHandler = $shippingHandler;
         $this->currencyService = $currencyService;
 
         $discountConfigured = false;
@@ -136,7 +131,7 @@ class Shipping implements ResultInterface
      */
     protected function getTotal()
     {
-        $total = $this->shippingService->getTotal();
+        $total = $this->shippingHandler->getTotal();
 
         if ($this->isFree) {
             return $total;
@@ -165,5 +160,23 @@ class Shipping implements ResultInterface
         }
         
         return $this->currencyService->getZeroMoney();
+    }
+
+    /**
+     * @return \Heystack\Ecommerce\Transaction\Interfaces\TransactionModifierInterface[]
+     */
+    public function getLinkedModifiers()
+    {
+        return [$this->shippingHandler];
+    }
+
+    /**
+     * Indicates the type of amount the modifier will return
+     * Must return a constant from TransactionModifierTypes
+     * @return string
+     */
+    public function getType()
+    {
+        return TransactionModifierTypes::DEDUCTIBLE;
     }
 }

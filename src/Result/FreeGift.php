@@ -13,7 +13,6 @@ use Heystack\Deals\Interfaces\DealHandlerInterface;
 use Heystack\Deals\Interfaces\DealPurchasableInterface;
 use Heystack\Deals\Interfaces\HasDealHandlerInterface;
 use Heystack\Deals\Interfaces\ResultInterface;
-use Heystack\Deals\Interfaces\ResultWithTransactionModifierTypeInterface;
 use Heystack\Deals\Traits\HasDealHandlerTrait;
 use Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
 use Heystack\Ecommerce\Currency\Traits\HasCurrencyServiceTrait;
@@ -31,7 +30,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 class FreeGift implements
     ResultInterface,
-    ResultWithTransactionModifierTypeInterface,
     HasDealHandlerInterface,
     HasPurchasableHolderInterface
 {
@@ -96,16 +94,6 @@ class FreeGift implements
             Events::CONDITIONS_NOT_MET => 'onConditionsNotMet',
             Events::CONDITIONS_MET     => 'onConditionsMet'
         ];
-    }
-
-    /**
-     * Use the neutral type because the total is deducted
-     * by the fact that the products aren't charged for
-     * @return mixed
-     */
-    public function getType()
-    {
-        return TransactionModifierTypes::NEUTRAL;
     }
 
     /**
@@ -227,5 +215,23 @@ class FreeGift implements
         }
 
         return $purchasable;
+    }
+
+    /**
+     * Use the neutral type because the total is deducted
+     * by the fact that the products aren't charged for
+     * @return mixed
+     */
+    public function getType()
+    {
+        return TransactionModifierTypes::NEUTRAL;
+    }
+
+    /**
+     * @return \Heystack\Ecommerce\Transaction\Interfaces\TransactionModifierInterface[]
+     */
+    public function getLinkedModifiers()
+    {
+        return [];
     }
 }

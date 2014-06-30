@@ -13,6 +13,7 @@ use Heystack\Deals\Traits\HasDealHandler;
 use Heystack\Deals\Traits\HasDealHandlerTrait;
 use Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
+use Heystack\Ecommerce\Transaction\TransactionModifierTypes;
 use Heystack\Purchasable\PurchasableHolder\Interfaces\HasPurchasableHolderInterface;
 use Heystack\Purchasable\PurchasableHolder\Traits\HasPurchasableHolderTrait;
 use SebastianBergmann\Money\Money;
@@ -24,7 +25,10 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * @author Glenn Bautista <glenn@heyday.co.nz>
  * @package Ecommerce-Deals
  */
-class CartDiscount implements ResultInterface, HasPurchasableHolderInterface, HasDealHandlerInterface
+class CartDiscount implements
+    ResultInterface,
+    HasPurchasableHolderInterface,
+    HasDealHandlerInterface
 {
     use HasPurchasableHolderTrait;
     use HasDealHandlerTrait;
@@ -183,5 +187,23 @@ class CartDiscount implements ResultInterface, HasPurchasableHolderInterface, Ha
         }
         
         return $this->currencyService->getZeroMoney();
+    }
+
+    /**
+     * @return \Heystack\Ecommerce\Transaction\Interfaces\TransactionModifierInterface[]
+     */
+    public function getLinkedModifiers()
+    {
+        return [$this->purchasableHolder];
+    }
+
+    /**
+     * Indicates the type of amount the modifier will return
+     * Must return a constant from TransactionModifierTypes
+     * @return string
+     */
+    public function getType()
+    {
+        return TransactionModifierTypes::DEDUCTIBLE;
     }
 }
