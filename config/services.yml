@@ -22,8 +22,16 @@ parameters:
   deal.result.cartdiscount.class: Heystack\Deals\Result\CartDiscount
   deal.result.purchasablediscount.class: Heystack\Deals\Result\PurchasableDiscount
   deal.result.cheapestpurchasablediscount.class: Heystack\Deals\Result\CheapestPurchasableDiscount
+  
+  deals_subscriber.class: Heystack\Deals\DealsSubscriber
 
 services:
+  deals_subscriber:
+    class: %deals_subscriber.class%
+    arguments: [@event_dispatcher]
+    tags:
+      - { name: event_dispatcher.subscriber }
+
   coupon_holder:
     class: %coupon_holder.class%
     arguments: [@state, @event_dispatcher]
@@ -49,7 +57,7 @@ services:
 
   deals.subscriber:
     class: %deal.subscriber.class%
-    arguments: [@event_dispatcher, @storage, @purchasableholder, @state, @coupon_holder]
+    arguments: [@event_dispatcher, @storage, @state, @coupon_holder]
     abstract: true
 
   deals.condition.configuration:

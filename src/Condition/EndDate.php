@@ -94,4 +94,12 @@ class EndDate implements ConditionInterface, ConditionAlmostMetInterface
     {
         return $this->currentTime;
     }
+
+    /**
+     * @return int
+     */
+    public function getPriority()
+    {
+        return 0;
+    }
 }

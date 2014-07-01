@@ -234,4 +234,12 @@ class FreeGift implements
     {
         return [];
     }
+
+    /**
+     * @return int
+     */
+    public function getPriority()
+    {
+        return 0;
+    }
 }

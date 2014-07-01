@@ -222,6 +222,11 @@ class QuantityOfPurchasablesInCart
         return $this->purchasableIdentifiers;
     }
 
-
-
+    /**
+     * @return int
+     */
+    public function getPriority()
+    {
+        return 0;
+    }
 }

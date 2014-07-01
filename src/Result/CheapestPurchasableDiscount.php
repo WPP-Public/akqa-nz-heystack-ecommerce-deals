@@ -332,5 +332,13 @@ class CheapestPurchasableDiscount
     {
         return TransactionModifierTypes::DEDUCTIBLE;
     }
+
+    /**
+     * @return int
+     */
+    public function getPriority()
+    {
+        return 100;
+    }
 }
 

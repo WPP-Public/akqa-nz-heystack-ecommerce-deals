@@ -12,6 +12,7 @@ namespace Heystack\Deals\DependencyInjection\CompilerPass;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * Merges extensions definition calls into the container builder.
@@ -30,7 +31,10 @@ class Deals implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
+        $dealsSubscriberDefinition = $container->getDefinition('deals_subscriber');
 
+        foreach ($container->findTaggedServiceIds('deals.deal') as $id => $_) {
+            $dealsSubscriberDefinition->addMethodCall('addDealHandler', [new Reference($id)]);
+        }
     }
-
 }

@@ -179,4 +179,12 @@ class Shipping implements ResultInterface
     {
         return TransactionModifierTypes::DEDUCTIBLE;
     }
+
+    /**
+     * @return int
+     */
+    public function getPriority()
+    {
+        return 0;
+    }
 }

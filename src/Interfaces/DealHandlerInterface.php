@@ -12,7 +12,11 @@ use Heystack\Ecommerce\Transaction\Interfaces\TransactionModifierInterface;
  * @author Glenn Bautista <glenn@heyday.co.nz>
  * @package Ecommerce-Deals
  */
-interface DealHandlerInterface extends TransactionModifierInterface, ParentReferenceInterface, StorableInterface
+interface DealHandlerInterface extends
+    TransactionModifierInterface,
+    ParentReferenceInterface,
+    StorableInterface,
+    HasPriorityInterface
 {
     /**
      * @param ResultInterface $result
@@ -58,4 +62,10 @@ interface DealHandlerInterface extends TransactionModifierInterface, ParentRefer
      * @return bool
      */
     public function almostMet();
+
+    /**
+     * @param \Heystack\Deals\Interfaces\HasPriorityInterface $other
+     * @return int
+     */
+    public function compareTo(HasPriorityInterface $other);
 }

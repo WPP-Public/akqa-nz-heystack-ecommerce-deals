@@ -15,6 +15,7 @@ use Heystack\Deals\Interfaces\ConditionAlmostMetInterface;
 use Heystack\Deals\Interfaces\ConditionInterface;
 use Heystack\Deals\Interfaces\DealHandlerInterface;
 use Heystack\Deals\Interfaces\HasDealHandlerInterface;
+use Heystack\Deals\Interfaces\HasPriorityInterface;
 use Heystack\Deals\Interfaces\ResultInterface;
 use Heystack\Deals\Interfaces\ResultWithConditionsInterface;
 use Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
@@ -390,4 +391,34 @@ DESCRIPTION;
         return [$this->total, $this->conditionsMetCount];
     }
 
+    /**
+     * @return int
+     */
+    public function getPriority()
+    {
+        $priorities = [$this->result->getPriority()];
+        
+        foreach ($this->conditions as $condition) {
+            $priorities[] = $condition->getPriority();
+        }
+
+        return call_user_func_array('max', $priorities);
+    }
+
+    /**
+     * Return 0 for equal, -1 for this less than other and 1 for this greater than other
+     * @param \Heystack\Deals\Interfaces\HasPriorityInterface $other
+     * @return int
+     */
+    public function compareTo(HasPriorityInterface $other)
+    {
+        $resultPriority = $this->getPriority();
+        $otherResultPriority = $other->getPriority();
+
+        if ($resultPriority === $otherResultPriority) {
+            return 0;
+        }
+        
+        return $resultPriority < $otherResultPriority ? -1 : 1;
+    }
 }

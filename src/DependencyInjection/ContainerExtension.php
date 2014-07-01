@@ -66,9 +66,7 @@ class ContainerExtension extends Extension
                 $configArray = $record->getConfigArray();
 
                 if (is_array($configArray)) {
-
                     $dealsDbConfig['deals'][$record->getName()] = $configArray;
-
                 }
             };
             
@@ -107,6 +105,8 @@ class ContainerExtension extends Extension
     {
         $dealDefinitionID = "deals.deal.$dealId";
         $dealDefinition = $this->getDealDefinition($dealId, $deal['promotional_message']);
+
+        $dealDefinition->addTag('deals.deal');
 
         //Add all conditions
         foreach ($deal['conditions'] as $conditionId => $condition) {

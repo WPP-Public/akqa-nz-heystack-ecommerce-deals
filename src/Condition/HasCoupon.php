@@ -89,4 +89,12 @@ class HasCoupon
     {
         return self::CONDITION_TYPE;
     }
+
+    /**
+     * @return int
+     */
+    public function getPriority()
+    {
+        return 0;
+    }
 } 

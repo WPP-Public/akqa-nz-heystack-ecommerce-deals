@@ -11,7 +11,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  * @author Cam Spiers <camspiers@gmail.com>
  * @package Ecommerce-Deals
  */
-interface ResultInterface extends EventSubscriberInterface
+interface ResultInterface extends EventSubscriberInterface, HasPriorityInterface
 {
     /**
      * Returns a short string that describes what the result does

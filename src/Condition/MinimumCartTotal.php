@@ -183,5 +183,11 @@ class MinimumCartTotal
         return $this->amounts;
     }
 
-
+    /**
+     * @return int
+     */
+    public function getPriority()
+    {
+        return 100;
+    }
 }

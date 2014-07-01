@@ -8,7 +8,7 @@ namespace Heystack\Deals\Interfaces;
  * @author Glenn Bautista <glenn@heyday.co.nz>
  * @package Ecommerce-Deals
  */
-interface ConditionInterface
+interface ConditionInterface extends HasPriorityInterface
 {
     /**
      * Return a boolean indicating whether the condition has been met
