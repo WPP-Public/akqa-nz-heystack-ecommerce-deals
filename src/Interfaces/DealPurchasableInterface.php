@@ -45,6 +45,16 @@ interface DealPurchasableInterface extends PurchasableInterface
     public function getFreeQuantity(IdentifierInterface $dealIdentifier = null);
 
     /**
+     * @return array
+     */
+    public function getFreeQuantities();
+
+    /**
+     * @return void
+     */
+    public function removeFreeQuantities();
+
+    /**
      * @param IdentifierInterface $dealIdentifier
      * @param $discountAmount
      * @return mixed
@@ -56,4 +66,15 @@ interface DealPurchasableInterface extends PurchasableInterface
      * @return \SebastianBergmann\Money\Money
      */
     public function getDealDiscount(IdentifierInterface $dealIdentifier = null);
+
+    /**
+     * @return array
+     */
+    public function getDealDiscounts();
+
+    /**
+     * @return void
+     */
+    public function removeDealDiscounts();
+    
 }

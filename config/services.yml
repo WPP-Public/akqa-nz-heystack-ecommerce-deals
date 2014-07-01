@@ -24,12 +24,19 @@ parameters:
   deal.result.cheapestpurchasablediscount.class: Heystack\Deals\Result\CheapestPurchasableDiscount
   
   deals_subscriber.class: Heystack\Deals\DealsSubscriber
+  deal_purchasable_subscriber.class: Heystack\Deals\PurchasableHolderSubscriber
 
 services:
   deals_subscriber:
     class: %deals_subscriber.class%
     arguments: [@event_dispatcher]
     tags:
+      - { name: event_dispatcher.subscriber }
+
+  deal_purchasable_subscriber:
+    class: %deal_purchasable_subscriber.class%
+    tags:
+      - { name: autoinject, setter: true }
       - { name: event_dispatcher.subscriber }
 
   coupon_holder:

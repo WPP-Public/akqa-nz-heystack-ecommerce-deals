@@ -16,8 +16,14 @@ use SebastianBergmann\Money\Money;
  */
 trait DealPurchasableTrait
 {
-
+    /**
+     * @var array
+     */
     protected $freeQuantities = [];
+
+    /**
+     * @var array
+     */
     protected $dealDiscounts = [];
 
     /**
@@ -87,23 +93,34 @@ trait DealPurchasableTrait
         return array_sum($this->freeQuantities);
     }
 
+    /**
+     * @return array
+     */
     public function getFreeQuantities()
     {
         return $this->freeQuantities;
     }
 
     /**
+     * @return void
+     */
+    public function removeFreeQuantities()
+    {
+        $this->freeQuantities = [];
+    }
+
+    /**
      * @param IdentifierInterface $dealIdentifier
      * @param $discountAmount
      */
-    public function setDealDiscount(IdentifierInterface $dealIdentifier,Money $discountAmount)
+    public function setDealDiscount(IdentifierInterface $dealIdentifier, Money $discountAmount)
     {
         $this->dealDiscounts[$dealIdentifier->getFull()] = $discountAmount;
     }
 
     /**
      * @param IdentifierInterface $dealIdentifier
-     * @return float
+     * @return \SebastianBergmann\Money\Money
      */
     public function getDealDiscount(IdentifierInterface $dealIdentifier = null)
     {
@@ -121,7 +138,7 @@ trait DealPurchasableTrait
 
         $total = $this->getCurrencyService()->getZeroMoney();
 
-        foreach ( $this->dealDiscounts as $dealDiscount ) {
+        foreach ($this->dealDiscounts as $dealDiscount) {
 
             if ($dealDiscount instanceof Money) {
                 $total = $total->add($dealDiscount);
@@ -130,6 +147,24 @@ trait DealPurchasableTrait
         }
 
         return $total;
+    }
+
+    /**
+
+    /**
+     * @return array
+     */
+    public function getDealDiscounts()
+    {
+        return $this->dealDiscounts;
+    }
+
+    /**
+     * @return void
+     */
+    public function removeDealDiscounts()
+    {
+        $this->dealDiscounts = [];
     }
 
     /**
