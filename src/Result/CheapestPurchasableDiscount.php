@@ -107,8 +107,9 @@ class CheapestPurchasableDiscount
      */
     public function getDescription()
     {
+        $this->process($this->getDealHandler());
         return sprintf(
-            "Cheapest Purchasable Discount: Discount of '%s'".
+            "Cheapest Purchasable Discount: Discount of '%s'",
             $this->totalDiscount->getAmount() / $this->totalDiscount->getCurrency()->getSubUnit()
         );
     }
