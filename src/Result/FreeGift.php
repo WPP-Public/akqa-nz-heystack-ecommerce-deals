@@ -111,14 +111,20 @@ class FreeGift implements
     public function process(DealHandlerInterface $dealHandler)
     {
         $purchasable = $this->getPurchasable();
-        
+        $purchasableTotal = $purchasable->getTotal();
+        $currentDiscountTotal = $purchasable->getDealDiscountWithExclusions([
+            $this->getDealHandler()->getIdentifier()->getFull()
+        ]);
+
         if ($purchasable instanceof $this->purchasableClass) {
             $total = $this->getPurchasable()->getUnitPrice()->multiply($dealHandler->getConditionsMetCount());
         } else {
             $total = $this->currencyService->getZeroMoney();
         }
 
-        $purchasable->setDealDiscount($dealHandler->getIdentifier(), $total);
+        if ($total->add($currentDiscountTotal)->greaterThan($purchasableTotal)) {
+            $total = $purchasableTotal->subtract($currentDiscountTotal);
+        }
 
         $this->eventService->dispatch(Events::RESULT_PROCESSED, new ResultEvent($this));
 
@@ -173,7 +179,6 @@ class FreeGift implements
 
             $dispatcher->setEnabled(true);
             $purchasableHolder->updateTotal();
-
         }
     }
 

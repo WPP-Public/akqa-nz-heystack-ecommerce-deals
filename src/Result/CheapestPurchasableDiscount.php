@@ -23,6 +23,9 @@ use Heystack\Purchasable\PurchasableHolder\Interfaces\HasPurchasableHolderInterf
 use Heystack\Purchasable\PurchasableHolder\Traits\HasPurchasableHolderTrait;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
+/**
+ * @package Heystack\Deals\Result
+ */
 class CheapestPurchasableDiscount
     implements
         ResultInterface,
@@ -38,20 +41,26 @@ class CheapestPurchasableDiscount
     const PURCHASABLE_IDENTIFIER_STRINGS = 'purchasable_identifier_strings';
 
     /**
-     * Constants used internally
+     * @var array
      */
-    const PURCHASABLE_KEY = 'purchasable';
-    const QUANTITY_KEY = 'quantity';
-
     protected $purchasableIdentifiers = [];
 
-    protected $totalDiscount = 0;
+    /**
+     * @var \SebastianBergmann\Money\Money
+     */
+    protected $totalDiscount;
 
     /**
      * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
      */
     protected $eventService;
 
+    /**
+     * @param EventDispatcherInterface $eventService
+     * @param PurchasableHolderInterface $purchasableHolder
+     * @param AdaptableConfigurationInterface $configuration
+     * @throws \Exception
+     */
     public function __construct(
         EventDispatcherInterface $eventService,
         PurchasableHolderInterface $purchasableHolder,
@@ -83,6 +92,9 @@ class CheapestPurchasableDiscount
 
     }
 
+    /**
+     * @return array
+     */
     public static function getSubscribedEvents()
     {
         return [
@@ -95,7 +107,10 @@ class CheapestPurchasableDiscount
      */
     public function getDescription()
     {
-        return 'Cheapest Purchasable Discount: Discount of ' . $this->totalDiscount;
+        return sprintf(
+            "Cheapest Purchasable Discount: Discount of '%s'".
+            $this->totalDiscount->getAmount() / $this->totalDiscount->getCurrency()->getSubUnit()
+        );
     }
 
     /**
@@ -105,107 +120,84 @@ class CheapestPurchasableDiscount
      */
     public function process(DealHandlerInterface $dealHandler)
     {
-        $this->totalDiscount = $this->getCurrencyService()->getZeroMoney();
+        $discount = $this->getCurrencyService()->getZeroMoney();
+        $dealIdentifier = $dealHandler->getIdentifier();
 
         // Reset the free count for this deal of all the purchasables. We need to do this because
         // a new 'cheaper' product may have been added to the purchasable holder in the meantime
-        $purchasables = $this->purchasableHolder->getPurchasables();
-
-        if (is_array($purchasables) && count($purchasables)) {
-
-            foreach ($purchasables as $purchasable) {
-
-                if ($purchasable instanceof DealPurchasableInterface) {
-
-                    $purchasable->setFreeQuantity($dealHandler->getIdentifier(), 0);
-
-                }
-            }
-
-        }
-
-        $count = $dealHandler->getConditionsMetCount();
-
-        $actionablePurchasables = $this->getActionablePurchasables();
-
-        $cheapestCount = [];
-
-        for ($i = 0; $i < $count; $i++) {
-
-            $cheapest = $this->getCheapest($actionablePurchasables);
-
-            if ($cheapest) {
-
-                $fullIdentifierString = $cheapest->getIdentifier()->getFull();
-
-                if (!isset($cheapestCount[$fullIdentifierString])) {
-
-                    $cheapestCount[$fullIdentifierString] = [
-                        'purchasable' => $cheapest,
-                        'count' => 1
-                    ];
-
-                } else {
-
-                    $cheapestCount[$fullIdentifierString]['count']++;
-
-                }
-
-            }
-
-        }
-
-        foreach ($cheapestCount as $countData) {
-
-            $purchasable = $countData['purchasable'];
-
-            $freeQuantity = $purchasable->getFreeQuantity($dealHandler->getIdentifier());
-
-            if ($freeQuantity != $countData['count'] && (count($this->purchasableHolder->getPurchasables()) > 1 || $purchasable->getQuantity() != 1)) {
-
-                $purchasable->setFreeQuantity($dealHandler->getIdentifier(), $countData['count']);
-
-            }
-
-            $purchasableDiscount = $purchasable->getUnitPrice()->multiply($countData['count']);
-
-            $this->totalDiscount = $this->totalDiscount->add($purchasableDiscount);
-
+        foreach ($this->purchasableHolder->getPurchasables() as $purchasable) {
             if ($purchasable instanceof DealPurchasableInterface) {
-
-                $purchasable->setDealDiscount($dealHandler->getIdentifier(), $this->totalDiscount);
-
+                $purchasable->setFreeQuantity($dealIdentifier, 0);
+                $purchasable->setDealDiscount($dealIdentifier, $discount);
             }
-
         }
 
+        $remainingFreeDiscounts = $dealHandler->getConditionsMetCount();
+        $purchasables = $this->getPurchsablesSortedByUnitPrice();
+
+        $purchasable = current($purchasables);
+        
+        while ($purchasable && $remainingFreeDiscounts > 0) {
+            // Skip if it isn't a deal purchasable
+            if (!$purchasable instanceof DealPurchasableInterface) {
+                $purchasable = next($purchasable);
+                continue;
+            }
+
+            // Get the smaller number, either the quantity of the current purchasable
+            // or the remaining free discounts
+            $freeQuantity = min($purchasable->getQuantity(), $remainingFreeDiscounts);
+            
+            // Get the current discount
+            $currentPurchasableDiscount = $purchasable->getDealDiscountWithExclusions([
+                $dealIdentifier->getFull()
+            ]);
+
+            $purchasableTotal = $purchasable->getTotal();
+            $purchasableDiscount = $purchasable->getUnitPrice()->multiply($freeQuantity);
+            
+            // When the deduction exceeds the remaining money just remove the remaining money
+            if ($currentPurchasableDiscount->add($purchasableDiscount)->greaterThan($purchasableTotal)) {
+                $purchasableDiscount = $purchasableTotal->subtract($currentPurchasableDiscount);
+            }
+
+            $discount = $discount->add($purchasableDiscount);
+
+            $purchasable->setFreeQuantity($dealIdentifier, $freeQuantity);
+            $purchasable->setDealDiscount(
+                $dealHandler->getIdentifier(),
+                $purchasableDiscount
+            );
+
+            $remainingFreeDiscounts -= $freeQuantity;
+
+            // Advance to the next purchasable
+            $purchasable = next($purchasables);
+        }
+
+        $this->purchasableHolder->updateTotal();
         $this->eventService->dispatch(Events::RESULT_PROCESSED, new ResultEvent($this));
 
-        return $this->totalDiscount;
+        return $this->totalDiscount = $discount;
     }
 
+    /**
+     * Remove the deals effects
+     * @param ConditionEvent $event
+     */
     public function onConditionsNotMet(ConditionEvent $event)
     {
+        $eventDealHandler = $event->getDealHandler();
+        $eventDealIdentifier = $eventDealHandler->getIdentifier();
         $dealIdentifier = $this->getDealHandler()->getIdentifier();
 
-        if ($dealIdentifier->isMatch($event->getDealHandler()->getIdentifier())) {
-
-            if (($result = $this->dealHandler->getResult()) instanceof CheapestPurchasableDiscount) {
-
-                foreach ($this->getPurchasables() as $purchasable) {
-
+        if ($dealIdentifier->isMatch($eventDealIdentifier)) {
+            foreach ($this->getPurchasables() as $purchasable) {
+                if ($purchasable instanceof DealPurchasableInterface) {
                     $purchasable->setFreeQuantity($dealIdentifier, 0);
-
-                    if ($purchasable instanceof DealPurchasableInterface) {
-
-                        $purchasable->setDealDiscount($dealIdentifier, $this->getCurrencyService()->getZeroMoney());
-
-                    }
-
+                    $purchasable->setDealDiscount($dealIdentifier, $this->getCurrencyService()->getZeroMoney());
                 }
-
             }
-
         }
 
         // We need to save the purchasable Holder's state because it keeps track of the state of each purchasable
@@ -214,58 +206,17 @@ class CheapestPurchasableDiscount
     }
 
     /**
-     * @param array $actionablePurchasables
-     * @return bool|DealPurchasableInterface|PurchasableInterface
+     * @return \Heystack\Deals\Interfaces\DealPurchasableInterface[]
      */
-    protected function getCheapest(array &$actionablePurchasables)
+    protected function getPurchsablesSortedByUnitPrice()
     {
-        $cheapest = false;
-
-        foreach ($actionablePurchasables as $purchasableData) {
-
-            /**
-             * @var DealPurchasableInterface $purchasable
-             */
-            $purchasable = $purchasableData[self::PURCHASABLE_KEY];
-            $quantity = $purchasableData[self::QUANTITY_KEY];
-
-            if (!$cheapest && $quantity) {
-
-                $cheapest = $purchasable;
-
-            } else if ($cheapest instanceof PurchasableInterface && $cheapest->getUnitPrice()->greaterThan($purchasable->getUnitPrice()) && $quantity) {
-
-                $cheapest = $purchasable;
-
-            }
-
-        }
-
-        if ($cheapest) {
-
-            $actionablePurchasables[$cheapest->getIdentifier()->getFull()][self::QUANTITY_KEY] -= 1;
-
-        }
-
-
-        return $cheapest;
-    }
-
-    protected function getActionablePurchasables()
-    {
-        $actionablePurchasables = [];
         $purchasables = $this->getPurchasables();
-
-        foreach ($purchasables as $purchasable) {
-
-            $actionablePurchasables[$purchasable->getIdentifier()->getFull()] = [
-                self::PURCHASABLE_KEY => $purchasable,
-                self::QUANTITY_KEY => $purchasable->getQuantity()
-            ];
-
-        }
-
-        return $actionablePurchasables;
+        
+        usort($purchasables, function (PurchasableInterface $a, PurchasableInterface $b) {
+            return $a->getUnitPrice()->compareTo($b->getUnitPrice());
+        });
+        
+        return $purchasables;
     }
 
     /**
@@ -283,14 +234,13 @@ class CheapestPurchasableDiscount
 
                 if (is_array($purchasableHolderPurchasables)) {
 
-                    $purchasables = array_merge(
-                        $purchasables,
-                        $purchasableHolderPurchasables
-                    );
+                    $purchasables[] = $purchasableHolderPurchasables;
 
                 }
 
             }
+
+            $purchasables = call_user_func_array('array_merge', $purchasables);
 
         } else {
 
@@ -308,7 +258,10 @@ class CheapestPurchasableDiscount
             Condition\PurchasableHasQuantityInCart::MINIMUM_QUANTITY_KEY => 1
         ];
 
-        $purchasableInCartCondition = new Condition\PurchasableHasQuantityInCart($this->getPurchasableHolder(), new AdaptableConfiguration($productConfig));
+        $purchasableInCartCondition = new Condition\PurchasableHasQuantityInCart(
+            $this->getPurchasableHolder(),
+            new AdaptableConfiguration($productConfig)
+        );
 
         return [
             $purchasableInCartCondition

@@ -74,8 +74,7 @@ trait DealPurchasableTrait
             return false;
         }
 
-        return (isset($this->freeQuantities[$dealIdentifier->getFull(
-            )]) && $this->freeQuantities[$dealIdentifier->getFull()] > 0);
+        return isset($this->freeQuantities[$dealIdentifier->getFull()]) && $this->freeQuantities[$dealIdentifier->getFull()] > 0;
     }
 
     /**
@@ -150,6 +149,26 @@ trait DealPurchasableTrait
     }
 
     /**
+     * @param array $exclude
+     * @return \SebastianBergmann\Money\Money
+     */
+    public function getDealDiscountWithExclusions(array $exclude)
+    {
+        $total = $this->getCurrencyService()->getZeroMoney();
+
+        foreach ($this->dealDiscounts as $dealDiscountIdentifier => $dealDiscount) {
+            if (in_array($dealDiscountIdentifier, $exclude)) {
+                continue;
+            }
+
+            if ($dealDiscount instanceof Money) {
+                $total = $total->add($dealDiscount);
+            }
+
+        }
+
+        return $total;
+    }
 
     /**
      * @return array

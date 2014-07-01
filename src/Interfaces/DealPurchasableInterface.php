@@ -77,4 +77,9 @@ interface DealPurchasableInterface extends PurchasableInterface
      */
     public function removeDealDiscounts();
     
+    /**
+     * @param array $exclude
+     * @return \SebastianBergmann\Money\Money
+     */
+    public function getDealDiscountWithExclusions(array $exclude);
 }

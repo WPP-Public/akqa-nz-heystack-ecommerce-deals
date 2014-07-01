@@ -64,6 +64,12 @@ interface DealHandlerInterface extends
     public function almostMet();
 
     /**
+     * @param \Heystack\Ecommerce\Purchasable\Interfaces\PurchasableInterface[] $purchasbles
+     * @return \SebastianBergmann\Money\Money
+     */
+    public function getPurchasablesTotalWithDiscounts(array $purchasbles);
+
+    /**
      * @param \Heystack\Deals\Interfaces\HasPriorityInterface $other
      * @return int
      */

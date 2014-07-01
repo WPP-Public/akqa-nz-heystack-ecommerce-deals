@@ -14,6 +14,7 @@ use Heystack\Deals\Events\TotalUpdatedEvent;
 use Heystack\Deals\Interfaces\ConditionAlmostMetInterface;
 use Heystack\Deals\Interfaces\ConditionInterface;
 use Heystack\Deals\Interfaces\DealHandlerInterface;
+use Heystack\Deals\Interfaces\DealPurchasableInterface;
 use Heystack\Deals\Interfaces\HasDealHandlerInterface;
 use Heystack\Deals\Interfaces\HasPriorityInterface;
 use Heystack\Deals\Interfaces\ResultInterface;
@@ -23,6 +24,7 @@ use Heystack\Ecommerce\Currency\Traits\HasCurrencyServiceTrait;
 use Heystack\Ecommerce\Transaction\Interfaces\HasLinkedTransactionModifiersInterface;
 use Heystack\Ecommerce\Transaction\Traits\TransactionModifierSerializeTrait;
 use Heystack\Ecommerce\Transaction\Traits\TransactionModifierStateTrait;
+use SebastianBergmann\Money\Money;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -389,6 +391,29 @@ DESCRIPTION;
     public function getData()
     {
         return [$this->total, $this->conditionsMetCount];
+    }
+
+    /**
+     * @param \Heystack\Ecommerce\Purchasable\Interfaces\PurchasableInterface[] $purchasbles
+     * @return \SebastianBergmann\Money\Money
+     */
+    public function getPurchasablesTotalWithDiscounts(array $purchasbles)
+    {
+        $dealIdentifier = $this->getIdentifier()->getFull();
+
+        $parts = [];
+
+        foreach ($purchasbles as $purchaseable) {
+            if ($purchaseable instanceof DealPurchasableInterface) {
+                $parts[] = $purchaseable->getTotal()->subtract($purchaseable->getDealDiscountWithExclusions([$dealIdentifier]));
+            } else {
+                $parts[] = $purchaseable->getTotal();
+            }
+        }
+
+        return array_reduce($parts, function (Money $total, Money $item) {
+            return $total->add($item);
+        }, $this->currencyService->getZeroMoney());
     }
 
     /**

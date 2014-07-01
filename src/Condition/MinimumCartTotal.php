@@ -15,6 +15,7 @@ use Heystack\Ecommerce\Currency\Traits\HasCurrencyServiceTrait;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 use Heystack\Purchasable\PurchasableHolder\Interfaces\HasPurchasableHolderInterface;
 use Heystack\Purchasable\PurchasableHolder\Traits\HasPurchasableHolderTrait;
+use SebastianBergmann\Money\Money;
 
 /**
  *
@@ -81,31 +82,25 @@ class MinimumCartTotal
      */
     public function met()
     {
-        $activeCurrencyCode = $this->currencyService->getActiveCurrencyCode();
-        $total = $this->purchasableHolder->getTotal();
-        $quantity = 0;
+        $currency = $this->currencyService->getActiveCurrency();
+        $activeCurrencyCode = $currency->getCurrencyCode();
+        
+        if (isset($this->amounts[$activeCurrencyCode])) {
+            $total = $this->dealHandler->getPurchasablesTotalWithDiscounts(
+                $this->purchasableHolder->getPurchasables()
+            );
+            
+            $amount = new Money(intval($this->amounts[$activeCurrencyCode] * $currency->getSubUnit()), $currency);
 
-        // iterate over products and discount the total by the free quantity * unit price
-        foreach ($this->purchasableHolder->getPurchasables() as $purchasable) {
-
-            $quantity += $purchasable->getQuantity();
-
-            if ($purchasable instanceof DealPurchasableInterface) {
-
-                if ($purchasable->hasFreeItems()) {
-
-                    $total = $total->subtract($purchasable->getUnitPrice()->multiply($purchasable->getFreeQuantity()));
-
-                }
-
-            }
-
+            return $total->greaterThanOrEqual($amount);
         }
-
-        // TODO: Units..
-        return isset($this->amounts[$activeCurrencyCode]) && ($total->getAmount() / $total->getCurrency()->getSubUnit()) >= $this->amounts[$activeCurrencyCode];
+        
+        return false;
     }
 
+    /**
+     * @return bool|int
+     */
     public function almostMet()
     {
         $purchasableHolder = $this->getPurchasableHolder();
@@ -116,7 +111,6 @@ class MinimumCartTotal
         }
 
         if ($purchasableHolder instanceof HasEventServiceInterface) {
-            // TODO: Refactor?
             $purchasableHolder->getEventService()->setEnabled(false);
         }
 
@@ -125,7 +119,6 @@ class MinimumCartTotal
             // It is not relevant to test adding a non purchasable item to the cart,
             // because the user can never actually add it
             if (!$purchasable instanceof NonPurchasableInterface) {
-
                 $quantity = $purchasable->getQuantity();
 
                 $this->purchasableHolder->setPurchasable($purchasable, $quantity + 1);
@@ -137,13 +130,11 @@ class MinimumCartTotal
                 if ($met) {
                     break;
                 }
-
             }
 
         }
 
         if ($purchasableHolder instanceof HasEventServiceInterface) {
-            // TODO: Refactor?
             $purchasableHolder->getEventService()->setEnabled(true);
         }
 

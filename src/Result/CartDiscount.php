@@ -9,7 +9,6 @@ use Heystack\Deals\Interfaces\DealHandlerInterface;
 use Heystack\Deals\Interfaces\DealPurchasableInterface;
 use Heystack\Deals\Interfaces\HasDealHandlerInterface;
 use Heystack\Deals\Interfaces\ResultInterface;
-use Heystack\Deals\Traits\HasDealHandler;
 use Heystack\Deals\Traits\HasDealHandlerTrait;
 use Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
@@ -109,7 +108,7 @@ class CartDiscount implements
 
             }
 
-            $this->discountPercentage = $configuration->getConfig(self::CART_DISCOUNT_PERCENTAGE);
+            $this->discountPercentage = (float) $configuration->getConfig(self::CART_DISCOUNT_PERCENTAGE);
 
         }
     }
@@ -135,8 +134,9 @@ class CartDiscount implements
      */
     public function process(DealHandlerInterface $dealHandler)
     {
+        $total = $this->getTotal();
         $this->eventService->dispatch(Events::RESULT_PROCESSED, new ResultEvent($this));
-        return $this->getTotal();
+        return $total;
     }
 
     /**
@@ -144,6 +144,9 @@ class CartDiscount implements
      */
     protected function getTotal()
     {
+        $discount = $this->currencyService->getZeroMoney();
+        $total = $this->dealHandler->getPurchasablesTotalWithDiscounts($this->purchasableHolder->getPurchasables());
+
         if ($this->discountAmounts) {
             $currency = $this->currencyService->getActiveCurrency();
             $currencyCode = $currency->getCurrencyCode();
@@ -151,24 +154,30 @@ class CartDiscount implements
             if (isset($this->discountAmounts[$currencyCode])) {
                 $discount = new Money(intval($this->discountAmounts[$currencyCode] * $currency->getSubUnit()), $currency);
             }
+            
+            // This ensures that we aren't taking off more than the allowed amount
+            if ($discount->greaterThan($total)) {
+                $discount = $total;
+            }
         }
 
         if ($this->discountPercentage) {
-            $total = $this->purchasableHolder->getTotal();
             list($discount, ) = $total->allocateByRatios([$this->discountPercentage, 100 - $this->discountPercentage]);
         }
 
         if ($discount instanceof Money) {
-
             $purchasables = $this->purchasableHolder->getPurchasables();
-
-            $total = $this->purchasableHolder->getTotal();
+            $dealIdentifier = $this->getDealHandler()->getIdentifier();
+            $dealIdentifierFull = $dealIdentifier->getFull();
 
             foreach ($purchasables as $purchasable) {
-
                 if ($purchasable instanceof DealPurchasableInterface) {
+                    $purchasableAmount = $purchasable->getTotal()
+                        ->subtract($purchasable->getDealDiscountWithExclusions([
+                            $dealIdentifierFull
+                        ]));
 
-                    $discountRatio = $purchasable->getTotal()->getAmount() / $total->getAmount();
+                    $discountRatio = $purchasableAmount->getAmount() / $total->getAmount();
 
                     list($purchasableDiscount, ) = $discount->allocateByRatios([
                         $discountRatio,
@@ -176,7 +185,7 @@ class CartDiscount implements
                     ]);
 
                     $purchasable->setDealDiscount(
-                        $this->getDealHandler()->getIdentifier(),
+                        $dealIdentifier,
                         $purchasableDiscount
                     );
                 }

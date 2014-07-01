@@ -15,7 +15,6 @@ use Heystack\Deals\Traits\HasDealHandlerTrait;
 use Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
 use Heystack\Ecommerce\Currency\Traits\HasCurrencyServiceTrait;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
-use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableInterface;
 use Heystack\Ecommerce\Transaction\TransactionModifierTypes;
 use Heystack\Purchasable\PurchasableHolder\Interfaces\HasPurchasableHolderInterface;
 use Heystack\Purchasable\PurchasableHolder\Traits\HasPurchasableHolderTrait;
@@ -55,7 +54,7 @@ class PurchasableDiscount
     protected $discountPercentage;
 
     /**
-     * @var array of \Heystack\Core\Identifier\Identifier
+     * @var \Heystack\Core\Identifier\IdentifierInterface[]
      */
     protected $purchasableIdentifiers = [];
 
@@ -160,8 +159,9 @@ class PurchasableDiscount
      */
     public function process(DealHandlerInterface $dealHandler)
     {
+        $total = $this->getTotal();
         $this->eventService->dispatch(Events::RESULT_PROCESSED, new ResultEvent($this));
-        return $this->getTotal();
+        return $total;
     }
 
     /**
@@ -171,115 +171,63 @@ class PurchasableDiscount
      */
     protected function getTotal()
     {
-        if (is_array($this->discountAmounts) && count($this->discountAmounts)) {
-            $currency = $this->currencyService->getActiveCurrency();
-            $currencyCode = $currency->getCurrencyCode();
-            
-            if ($this->discountAmounts[$currencyCode]) {
-                $discount = new Money(intval($this->discountAmounts[$currencyCode] * $currency->getSubUnit()), $currency);
-            } else {
-                $discount = $this->currencyService->getZeroMoney();
-            }
-
-            $quantity = 0;
-
-            foreach ($this->purchasableIdentifiers as $purchasableIdentifier) {
-
-                $quantity += $this->getPurchasableIdentifierQuantity($purchasableIdentifier, $discount);
-
-            }
-
-            return $discount->multiply($quantity);
-        }
-
-        if ($this->discountPercentage) {
-            $total = $this->currencyService->getZeroMoney();
-
-            foreach ($this->purchasableIdentifiers as $purchasableIdentifier) {
-                $total = $total->add($this->getPurchasableIdentifierTotal($purchasableIdentifier));
-            }
-            
-            list($newTotal, ) = $total->allocateByRatios([$this->discountPercentage, 100 - $this->discountPercentage]);
-            
-            return $newTotal;
-        }
-
-        return $this->currencyService->getZeroMoney();
-    }
-
-    /**
-     * Gets the total price from the purchasable holder based on the primary identifier and sets the
-     * deal discount amount on the purchasable
-     *
-     * @param Identifier $purchasableIdentifier
-     * @return \SebastianBergmann\Money\Money
-     */
-    protected function getPurchasableIdentifierTotal(Identifier $purchasableIdentifier)
-    {
         $total = $this->currencyService->getZeroMoney();
 
-        $purchasables = $this->purchasableHolder->getPurchasablesByPrimaryIdentifier($purchasableIdentifier);
-
-        if (is_array($purchasables) && count($purchasables)) {
-
-            foreach ($purchasables as $purchasable) {
-
+        foreach ($this->purchasableIdentifiers as $identifier) {
+            foreach ($this->purchasableHolder->getPurchasablesByPrimaryIdentifier($identifier) as $purchasable) {
                 if ($purchasable instanceof DealPurchasableInterface) {
-
-                    $total = $total->add($purchasable->getTotal());
-
-                    list($purchasableDiscount, ) = $purchasable->getTotal()->allocateByRatios(
-                        [$this->discountPercentage,100 - $this->discountPercentage]
-                    );
+                    $dealDiscount = $this->getDealDiscountForPurchasable($purchasable);
 
                     $purchasable->setDealDiscount(
                         $this->getDealHandler()->getIdentifier(),
-                        $purchasableDiscount
+                        $dealDiscount
                     );
 
+                    $total = $total->add($dealDiscount);
                 }
-
             }
-
         }
 
         return $total;
     }
 
     /**
-     * Gets the total quantity from the purchasable holder based on the primary identifier and sets the
-     * deal discount amount on the purchasable
-     *
-     * @param Identifier $purchasableIdentifier
-     * @param float $discountAmount
-     * @return int
+     * @param \Heystack\Deals\Interfaces\DealPurchasableInterface $purchasable
+     * @return \SebastianBergmann\Money\Money
      */
-    protected function getPurchasableIdentifierQuantity(Identifier $purchasableIdentifier,Money $discountAmount)
+    protected function getDealDiscountForPurchasable(DealPurchasableInterface $purchasable)
     {
-        $quantity = 0;
+        $purchasableTotal = $purchasable->getTotal();
+        $purchasableCurrentDiscount = $purchasable->getDealDiscountWithExclusions([
+            $this->getDealHandler()->getIdentifier()->getFull()
+        ]);
 
-        $purchasables = $this->purchasableHolder->getPurchasablesByPrimaryIdentifier($purchasableIdentifier);
+        if (is_array($this->discountAmounts) && count($this->discountAmounts)) {
+            $currency = $this->currencyService->getActiveCurrency();
+            $currencyCode = $currency->getCurrencyCode();
 
-        if (is_array($purchasables) && count($purchasables)) {
-
-            foreach ($purchasables as $purchasable) {
-
-                if ($purchasable instanceof DealPurchasableInterface) {
-
-                    $quantity += $purchasable->getQuantity();
-
-                    $purchasable->setDealDiscount(
-                        $this->getDealHandler()->getIdentifier(),
-                        $discountAmount->multiply($purchasable->getQuantity())
-                    );
-
-                }
-
+            if ($this->discountAmounts[$currencyCode]) {
+                $purchasableDiscount = new Money(intval($this->discountAmounts[$currencyCode] * $currency->getSubUnit()), $currency);
+                $purchasableDiscount = $purchasableDiscount->multiply($purchasable->getQuantity());
+            } else {
+                $purchasableDiscount = $this->currencyService->getZeroMoney();
             }
-
+            
+        } elseif ($this->discountPercentage) {
+            list($purchasableDiscount,) = $purchasableTotal->allocateByRatios(
+                [$this->discountPercentage, 100 - $this->discountPercentage]
+            );
+        } else {
+            $purchasableDiscount = $this->currencyService->getZeroMoney();
         }
 
-        return $quantity;
+        if ($purchasableCurrentDiscount->add($purchasableDiscount)->greaterThan($purchasableTotal)) {
+            $dealDiscount = $purchasableTotal->subtract($purchasableCurrentDiscount);
+        } else {
+            $dealDiscount = $purchasableDiscount;
+        }
+
+        return $dealDiscount;
     }
 
     /**
