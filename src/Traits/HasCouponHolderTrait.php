@@ -2,15 +2,17 @@
 
 namespace Heystack\Deals\Traits;
 
-
 use Heystack\Deals\Interfaces\CouponHolderInterface;
 
 trait HasCouponHolderTrait
 {
+    /**
+     * @var \Heystack\Deals\Interfaces\CouponHolderInterface
+     */
     protected $couponHolder;
 
     /**
-     * @param CouponHolderInterface $couponHolder
+     * @param \Heystack\Deals\Interfaces\CouponHolderInterface $couponHolder
      */
     public function setCouponHolder(CouponHolderInterface $couponHolder)
     {
@@ -18,7 +20,7 @@ trait HasCouponHolderTrait
     }
 
     /**
-     * @return CouponHolderInterface
+     * @return \Heystack\Deals\Interfaces\CouponHolderInterface
      */
     public function getCouponHolder()
     {

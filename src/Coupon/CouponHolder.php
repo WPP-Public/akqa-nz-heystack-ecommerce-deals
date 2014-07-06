@@ -2,6 +2,7 @@
 
 namespace Heystack\Deals\Coupon;
 
+use Heystack\Core\EventDispatcher;
 use Heystack\Core\Identifier\Identifier;
 use Heystack\Core\Identifier\IdentifierInterface;
 use Heystack\Core\Interfaces\HasDataInterface;
@@ -15,7 +16,6 @@ use Heystack\Deals\Events;
 use Heystack\Deals\Interfaces\CouponHolderInterface;
 use Heystack\Deals\Interfaces\CouponInterface;
 use Heystack\Ecommerce\Transaction\Traits\TransactionModifierStateTrait;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class CouponHolder
     implements
@@ -35,7 +35,7 @@ class CouponHolder
 
     public function __construct(
         State $stateService,
-        EventDispatcherInterface $eventService
+        EventDispatcher $eventService
     )
     {
         $this->setStateService($stateService);
