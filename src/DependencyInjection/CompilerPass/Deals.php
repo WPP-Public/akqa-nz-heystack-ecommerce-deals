@@ -31,10 +31,12 @@ class Deals implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        $dealsSubscriberDefinition = $container->getDefinition('deals_subscriber');
+        if ($container->hasDefinition('deals_subscriber')) {
+            $dealsSubscriberDefinition = $container->getDefinition('deals_subscriber');
 
-        foreach ($container->findTaggedServiceIds('deals.deal') as $id => $_) {
-            $dealsSubscriberDefinition->addMethodCall('addDealHandler', [new Reference($id)]);
+            foreach ($container->findTaggedServiceIds('deals.deal') as $id => $_) {
+                $dealsSubscriberDefinition->addMethodCall('addDealHandler', [new Reference($id)]);
+            }
         }
     }
 }
