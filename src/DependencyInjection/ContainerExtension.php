@@ -70,10 +70,12 @@ class ContainerExtension extends Extension
                 }
             };
             
-            $resource = call_user_func([$config['deals_db']['from'], 'get'])->where($config['deals_db']['where']);
-            
             try {
-                (new DBClosureLoader($handler))->load($resource);
+                (new DBClosureLoader($handler))->load([
+                    $config['deals_db']['select'],
+                    $config['deals_db']['from'],
+                    $config['deals_db']['where']
+                ]);
             } catch (\ReflectionException $e) {}
             
             $configs[] = $dealsDbConfig;
