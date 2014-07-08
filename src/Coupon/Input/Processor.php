@@ -53,29 +53,38 @@ class Processor  implements ProcessorInterface, HasCouponHolderInterface
                 ];
             }
 
-            $coupon = $this->getCouponFromDatabase($couponCode);
-
-            if ($coupon instanceof CouponInterface && $coupon->isValid()) {
-
-                $this->getCouponHolder()->addCoupon($coupon);
-
-                return [
-                    'Success' => true
-                ];
+            $coupons = $this->getCouponsFromDatabase($couponCode);
+            
+            $success = false;
+            
+            foreach ($coupons as $coupon) {
+                if ($coupon instanceof CouponInterface && $coupon->isValid()) {
+                    $this->getCouponHolder()->addCoupon($coupon);
+                    $success = true;
+                }
             }
+
+            return [
+                'Success' => $success
+            ];
 
         } elseif ($request->param('ID') == 'remove') {
 
-            $coupon = $this->getCouponFromDatabase($request->param('OtherID'));
+            $coupons = $this->getCouponsFromDatabase($request->param('OtherID'));
 
-            if ($coupon instanceof CouponInterface) {
+            $success = false;
 
-                $this->getCouponHolder()->removeCoupon($coupon->getIdentifier());
+            foreach ($coupons as $coupon) {
 
-                return [
-                    'Success' => true
-                ];
+                if ($coupon instanceof CouponInterface) {
+                    $this->getCouponHolder()->removeCoupon($coupon->getIdentifier());
+                    $success = true;
+                }
             }
+
+            return [
+                'Success' => $success
+            ];
         }
 
         return [
@@ -83,8 +92,8 @@ class Processor  implements ProcessorInterface, HasCouponHolderInterface
         ];
     }
 
-    protected function getCouponFromDatabase($couponCode)
+    protected function getCouponsFromDatabase($couponCode)
     {
-        return \DataList::create($this->couponClass)->filter("Code", $couponCode)->first();
+        return \DataList::create($this->couponClass)->filter("Code", $couponCode)->toArray();
     }
 }
