@@ -44,6 +44,7 @@ services:
     arguments: [@state, @event_dispatcher]
     tags:
       - { name: state.restore }
+      - { name: autoinject.provides }
 
   coupon_input_processor:
     class: %coupon_input_processor.class%
