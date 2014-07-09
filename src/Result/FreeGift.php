@@ -190,7 +190,9 @@ class FreeGift implements
             if (($purchasable = $this->getPurchasable()) instanceof DealPurchasableInterface) {
                 $purchasable->setFreeQuantity($dealIdentifier, 0);
                 if ($purchasable->getQuantity() == 0) {
+                    $this->eventService->setEnabled(false);
                     $this->purchasableHolder->removePurchasable($purchasable->getIdentifier());
+                    $this->eventService->setEnabled(true);
                 }
             }
         }
