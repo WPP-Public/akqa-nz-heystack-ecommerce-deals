@@ -17,6 +17,9 @@ use Heystack\Deals\Interfaces\CouponHolderInterface;
 use Heystack\Deals\Interfaces\CouponInterface;
 use Heystack\Ecommerce\Transaction\Traits\TransactionModifierStateTrait;
 
+/**
+ * @package Heystack\Deals\Coupon
+ */
 class CouponHolder
     implements
     CouponHolderInterface,
@@ -29,10 +32,20 @@ class CouponHolder
     use HasStateServiceTrait;
     use HasEventServiceTrait;
 
+    /**
+     *
+     */
     const IDENTIFIER = 'coupon_holder';
 
+    /**
+     * @var array
+     */
     protected $coupons = [];
 
+    /**
+     * @param \Heystack\Core\State\State $stateService
+     * @param \Heystack\Core\EventDispatcher $eventService
+     */
     public function __construct(
         State $stateService,
         EventDispatcher $eventService
@@ -42,11 +55,17 @@ class CouponHolder
         $this->setEventService($eventService);
     }
 
+    /**
+     * @return \Heystack\Core\Identifier\Identifier
+     */
     public function getIdentifier()
     {
         return new Identifier(self::IDENTIFIER);
     }
 
+    /**
+     * @param \Heystack\Deals\Interfaces\CouponInterface[] $coupons
+     */
     public function setCoupons(array $coupons)
     {
         $this->coupons = [];
@@ -65,6 +84,10 @@ class CouponHolder
         $this->getEventService()->dispatch(Events::COUPON_ADDED);
     }
 
+    /**
+     * @param \Heystack\Core\Identifier\IdentifierInterface $identifier
+     * @return \Heystack\Deals\Interfaces\CouponInterface|null
+     */
     public function getCoupon(IdentifierInterface $identifier)
     {
         $identifierText = $identifier->getFull();
@@ -72,6 +95,10 @@ class CouponHolder
         return isset($this->coupons[$identifierText]) ? $this->coupons[$identifierText] : null;
     }
 
+    /**
+     * @param \Heystack\Core\Identifier\IdentifierInterface|null $dealIdentifier
+     * @return array
+     */
     public function getCoupons(IdentifierInterface $dealIdentifier = null)
     {
         if ($dealIdentifier instanceof IdentifierInterface) {
@@ -90,6 +117,9 @@ class CouponHolder
         return $this->coupons;
     }
 
+    /**
+     * @param \Heystack\Deals\Interfaces\CouponInterface $coupon
+     */
     public function addCoupon(CouponInterface $coupon)
     {
         $this->coupons[$coupon->getIdentifier()->getFull()] = $coupon;
@@ -98,6 +128,9 @@ class CouponHolder
         $this->getEventService()->dispatch(Events::COUPON_ADDED);
     }
 
+    /**
+     * @param \Heystack\Core\Identifier\IdentifierInterface $identifier
+     */
     public function removeCoupon(IdentifierInterface $identifier)
     {
         $identifierText = $identifier->getFull();
@@ -111,11 +144,18 @@ class CouponHolder
         }
     }
 
+    /**
+     * @return array
+     */
     public function getData()
     {
         return [$this->coupons];
     }
 
+    /**
+     * @param $data
+     * @return void
+     */
     public function setData($data)
     {
         if (is_array($data)) {

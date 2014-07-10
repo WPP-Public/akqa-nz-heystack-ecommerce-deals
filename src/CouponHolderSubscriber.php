@@ -5,12 +5,8 @@ namespace Heystack\Deals;
 use Heystack\Deals\Interfaces\DealPurchasableInterface;
 use Heystack\Purchasable\PurchasableHolder\Traits\HasPurchasableHolderTrait;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Heystack\Purchasable\PurchasableHolder\Events as PurchasableHolderEvents;
 
-/**
- * @package Heystack\Deals
- */
-class PurchasableHolderSubscriber implements EventSubscriberInterface
+class CouponHolderSubscriber implements EventSubscriberInterface
 {
     use HasPurchasableHolderTrait;
 
@@ -37,14 +33,13 @@ class PurchasableHolderSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            PurchasableHolderEvents::PURCHASABLE_ADDED   => ['resetDealPurchasables', 1],
-            PurchasableHolderEvents::PURCHASABLE_CHANGED => ['resetDealPurchasables', 1],
-            PurchasableHolderEvents::PURCHASABLE_REMOVED => ['resetDealPurchasables', 1]
+            Events::COUPON_ADDED => ['resetDealPurchasables', 1],
+            Events::COUPON_REMOVED => ['resetDealPurchasables', 1]
         ];
     }
 
     /**
-     * 
+     *
      */
     public function resetDealPurchasables()
     {

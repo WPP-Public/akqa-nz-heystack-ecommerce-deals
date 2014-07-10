@@ -24,7 +24,8 @@ parameters:
   deal.result.cheapestpurchasablediscount.class: Heystack\Deals\Result\CheapestPurchasableDiscount
   
   deals_subscriber.class: Heystack\Deals\DealsSubscriber
-  deal_purchasable_subscriber.class: Heystack\Deals\PurchasableHolderSubscriber
+  deal_purchasableholder_subscriber.class: Heystack\Deals\PurchasableHolderSubscriber
+  deal_couponholder_subscriber.class: Heystack\Deals\CouponHolderSubscriber
 
 services:
   deals_subscriber:
@@ -33,8 +34,14 @@ services:
     tags:
       - { name: event_dispatcher.subscriber }
 
-  deal_purchasable_subscriber:
-    class: %deal_purchasable_subscriber.class%
+  deal_purchasableholder_subscriber:
+    class: %deal_purchasableholder_subscriber.class%
+    tags:
+      - { name: autoinject, setter: true }
+      - { name: event_dispatcher.subscriber }
+
+  deal_couponholder_subscriber:
+    class: %deal_couponholder_subscriber.class%
     tags:
       - { name: autoinject, setter: true }
       - { name: event_dispatcher.subscriber }

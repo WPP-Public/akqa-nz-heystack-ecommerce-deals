@@ -2,7 +2,6 @@
 
 namespace Heystack\Deals\Coupon\Input;
 
-
 use Heystack\Core\Identifier\Identifier;
 use Heystack\Core\Input\ProcessorInterface;
 use Heystack\Deals\Interfaces\CouponHolderInterface;
@@ -10,10 +9,16 @@ use Heystack\Deals\Interfaces\CouponInterface;
 use Heystack\Deals\Interfaces\HasCouponHolderInterface;
 use Heystack\Deals\Traits\HasCouponHolderTrait;
 
+/**
+ * @package Heystack\Deals\Coupon\Input
+ */
 class Processor  implements ProcessorInterface, HasCouponHolderInterface
 {
     use HasCouponHolderTrait;
 
+    /**
+     * @var string
+     */
     protected $couponClass;
 
     /**
@@ -43,8 +48,9 @@ class Processor  implements ProcessorInterface, HasCouponHolderInterface
      */
     public function process(\SS_HTTPRequest $request)
     {
-        if ($request->param('ID') == 'add') {
+        $couponHolder = $this->getCouponHolder();
 
+        if ($request->param('ID') == 'add') {
             $couponCode = $request->requestVar('couponcode');
 
             if (!$couponCode) {
@@ -53,38 +59,44 @@ class Processor  implements ProcessorInterface, HasCouponHolderInterface
                 ];
             }
 
-            $coupons = $this->getCouponsFromDatabase($couponCode);
+            /** @var CouponInterface[] $dbCoupons */
+            $dbCoupons = array_filter($this->getCouponsFromDatabase($couponCode), function ($coupon) {
+                return $coupon instanceof CouponInterface && $coupon->isValid();
+            });
             
-            $success = false;
-            
-            foreach ($coupons as $coupon) {
-                if ($coupon instanceof CouponInterface && $coupon->isValid()) {
-                    $this->getCouponHolder()->addCoupon($coupon);
-                    $success = true;
-                }
-            }
+            $coupons = $couponHolder->getCoupons();
 
-            return [
-                'Success' => $success
-            ];
+            if (count($dbCoupons) > 0) {
+                foreach ($dbCoupons as $coupon) {
+                    $coupons[] = $coupon;
+                }
+
+                $couponHolder->setCoupons($coupons);
+
+                return [
+                    'Success' => true
+                ];
+            }
 
         } elseif ($request->param('ID') == 'remove') {
+            /** @var CouponInterface[] $dbCoupons */
+            $dbCoupons = array_filter($this->getCouponsFromDatabase($request->param('OtherID')), function ($coupon) {
+                return $coupon instanceof CouponInterface;
+            });
 
-            $coupons = $this->getCouponsFromDatabase($request->param('OtherID'));
-
-            $success = false;
-
-            foreach ($coupons as $coupon) {
-
-                if ($coupon instanceof CouponInterface) {
-                    $this->getCouponHolder()->removeCoupon($coupon->getIdentifier());
-                    $success = true;
+            $coupons = $couponHolder->getCoupons();
+            
+            if (count($dbCoupons) > 0) {
+                foreach ($dbCoupons as $coupon) {
+                    unset($coupons[$coupon->getIdentifier()->getFull()]);
                 }
-            }
+                
+                $couponHolder->setCoupons($coupons);
 
-            return [
-                'Success' => $success
-            ];
+                return [
+                    'Success' => true
+                ];
+            }
         }
 
         return [
@@ -92,6 +104,10 @@ class Processor  implements ProcessorInterface, HasCouponHolderInterface
         ];
     }
 
+    /**
+     * @param $couponCode
+     * @return array
+     */
     protected function getCouponsFromDatabase($couponCode)
     {
         return \DataList::create($this->couponClass)->filter("Code", $couponCode)->toArray();
