@@ -30,7 +30,7 @@ parameters:
 services:
   deals_subscriber:
     class: %deals_subscriber.class%
-    arguments: [@event_dispatcher]
+    arguments: [@event_dispatcher, @purchasableholder]
     tags:
       - { name: event_dispatcher.subscriber }
 

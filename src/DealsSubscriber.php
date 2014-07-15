@@ -5,11 +5,14 @@ namespace Heystack\Deals;
 use Heystack\Core\EventDispatcher;
 use Heystack\Core\Traits\HasEventServiceTrait;
 use Heystack\Deals\Interfaces\DealHandlerInterface;
+use Heystack\Deals\Interfaces\DealPurchasableInterface;
+use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 use Heystack\Purchasable\PurchasableHolder\Events as PurchasableHolderEvents;
 use Heystack\Ecommerce\Currency\Events as CurrencyEvents;
 use Heystack\Ecommerce\Locale\Events as LocaleEvents;
 use Heystack\Ecommerce\Transaction\Events as TransactionEvents;
 use Heystack\Deals\Events\TotalUpdatedEvent;
+use Heystack\Purchasable\PurchasableHolder\Traits\HasPurchasableHolderTrait;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -18,6 +21,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class DealsSubscriber implements EventSubscriberInterface
 {
     use HasEventServiceTrait;
+    use HasPurchasableHolderTrait;
 
     /**
      * @var \Heystack\Deals\Interfaces\DealHandlerInterface[]
@@ -32,9 +36,10 @@ class DealsSubscriber implements EventSubscriberInterface
     /**
      * @param EventDispatcher $eventService
      */
-    public function __construct(EventDispatcher $eventService)
+    public function __construct(EventDispatcher $eventService, PurchasableHolderInterface $purchasableHolder)
     {
         $this->eventService = $eventService;
+        $this->purchasableHolder = $purchasableHolder;
     }
 
     /**
@@ -138,6 +143,13 @@ class DealsSubscriber implements EventSubscriberInterface
      */
     public function onCurrencyChanged()
     {
+        foreach ($this->purchasableHolder->getPurchasables() as $purchasable) {
+            if ($purchasable instanceof DealPurchasableInterface) {
+                $purchasable->removeDealDiscounts();
+                $purchasable->removeFreeQuantities();
+            }
+        }
+
         $this->currencyChanging = true;
         $this->updateTotals();
         $this->currencyChanging = false;
