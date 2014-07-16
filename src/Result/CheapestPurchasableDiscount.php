@@ -240,8 +240,10 @@ class CheapestPurchasableDiscount
                 }
 
             }
-
-            $purchasables = call_user_func_array('array_merge', $purchasables);
+            
+            if (count($purchasables) > 0) {
+                $purchasables = call_user_func_array('array_merge', $purchasables);
+            }
 
         } else {
 
