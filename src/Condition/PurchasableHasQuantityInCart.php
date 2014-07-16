@@ -117,7 +117,9 @@ class PurchasableHasQuantityInCart
 
         }
 
-        $purchasables = call_user_func_array('array_merge', $purchasables);
+        if ($purchasables) {
+            $purchasables = count($purchasables) > 1 ? call_user_func_array('array_merge', $purchasables) : reset($purchasables);
+        }
 
 
         foreach ($purchasables as $purchasable) {
