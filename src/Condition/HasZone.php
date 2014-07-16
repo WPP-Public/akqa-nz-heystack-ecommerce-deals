@@ -15,7 +15,7 @@ class HasZone implements ConditionInterface
 {
     use HasLocaleServiceTrait;
 
-    const CONDITION_TYPE = 'ZoneCondition';
+    const CONDITION_TYPE = 'HasZone';
     const COUNTRY_CODES = 'country_codes';
 
     /**

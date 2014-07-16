@@ -15,6 +15,7 @@ parameters:
   deal.condition.quantityofpurchasablesincart.class: Heystack\Deals\Condition\QuantityOfPurchasablesInCart
   deal.condition.purchasablehasquantityincart.class: Heystack\Deals\Condition\PurchasableHasQuantityInCart
   deal.condition.hascoupon.class: Heystack\Deals\Condition\HasCoupon
+  deal.condition.haszone.class: Heystack\Deals\Condition\HasZone
 
   deal.result.configuration.class: Heystack\Deals\AdaptableConfiguration
   deal.result.freegift.class: Heystack\Deals\Result\FreeGift
@@ -90,6 +91,11 @@ services:
   deals.condition.hascoupon:
     class: %deal.condition.hascoupon.class%
     arguments: [ @coupon_holder ]
+    abstract: true
+
+  deals.condition.haszone:
+    class: %deal.condition.haszone.class%
+    arguments: [@locale_service]
     abstract: true
 
   deals.condition.minimumcarttotal:
