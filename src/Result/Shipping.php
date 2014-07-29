@@ -111,8 +111,7 @@ class Shipping implements ResultInterface
      */
     public function getDescription()
     {
-        $total = $this->getTotal();
-        return 'Free shipping: Discount of ' . ($total->getAmount() / $total->getCurrency()->getSubUnit());
+        return 'Free shipping: Discount of ' . \Heystack\Ecommerce\convertMoneyToString($this->getTotal());
     }
 
     /**
@@ -142,7 +141,7 @@ class Shipping implements ResultInterface
             $currencyCode = $currency->getCurrencyCode();
             
             if (isset($this->discountAmounts[$currencyCode])) {
-                $newTotal = new Money($this->discountAmounts[$currencyCode] * $currency->getSubUnit(), $currency);
+                $newTotal = \Heystack\Ecommerce\convertStringToMoney($this->discountAmounts[$currencyCode], $currency);
                 
                 if ($newTotal->greaterThan($total)) {
                     return $total;

@@ -148,8 +148,7 @@ class PurchasableDiscount
      */
     public function getDescription()
     {
-        $total = $this->getTotal();
-        return 'Purchasable Discount: Discount of ' . ($total->getAmount() / $total->getCurrency()->getSubUnit());
+        return 'Purchasable Discount: Discount of ' . \Heystack\Ecommerce\convertMoneyToString($this->getTotal());
     }
 
     /**
@@ -207,7 +206,7 @@ class PurchasableDiscount
             $currencyCode = $currency->getCurrencyCode();
 
             if ($this->discountAmounts[$currencyCode]) {
-                $purchasableDiscount = new Money(intval($this->discountAmounts[$currencyCode] * $currency->getSubUnit()), $currency);
+                $purchasableDiscount = \Heystack\Ecommerce\convertStringToMoney($this->discountAmounts[$currencyCode], $currency);
                 $purchasableDiscount = $purchasableDiscount->multiply($purchasable->getQuantity());
             } else {
                 $purchasableDiscount = $this->currencyService->getZeroMoney();

@@ -90,7 +90,7 @@ class MinimumCartTotal
                 $this->purchasableHolder->getPurchasables()
             );
             
-            $amount = new Money(intval($this->amounts[$activeCurrencyCode] * $currency->getSubUnit()), $currency);
+            $amount = \Heystack\Ecommerce\convertStringToMoney($this->amounts[$activeCurrencyCode], $currency);
 
             return $total->greaterThanOrEqual($amount);
         }

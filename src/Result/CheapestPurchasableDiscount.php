@@ -110,7 +110,7 @@ class CheapestPurchasableDiscount
         $this->process($this->getDealHandler());
         return sprintf(
             "Cheapest Purchasable Discount: Discount of '%s'",
-            $this->totalDiscount->getAmount() / $this->totalDiscount->getCurrency()->getSubUnit()
+            \Heystack\Ecommerce\convertMoneyToString($this->totalDiscount)
         );
     }
 

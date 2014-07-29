@@ -320,7 +320,7 @@ class DealHandler implements
             'id' => 'Deal',
             'parent' => true,
             'flat' => [
-                'Total' => $this->total->getAmount() /  $this->total->getCurrency()->getSubUnit(),
+                'Total' => \Heystack\Ecommerce\convertMoneyToString($this->total),
                 'Description' => $this->getDescription(),
                 'ParentID' => $this->parentReference
             ]

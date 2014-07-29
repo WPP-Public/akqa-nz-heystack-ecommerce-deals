@@ -123,8 +123,7 @@ class CartDiscount implements
      */
     public function getDescription()
     {
-        $total = $this->getTotal();
-        return 'Cart Discount: Discount of ' . ($total->getAmount() / $total->getCurrency()->getSubUnit());
+        return 'Cart Discount: Discount of ' . \Heystack\Ecommerce\convertMoneyToString($this->getTotal());
     }
 
     /**
@@ -152,7 +151,7 @@ class CartDiscount implements
             $currencyCode = $currency->getCurrencyCode();
             
             if (isset($this->discountAmounts[$currencyCode])) {
-                $discount = new Money(intval($this->discountAmounts[$currencyCode] * $currency->getSubUnit()), $currency);
+                $discount = \Heystack\Ecommerce\convertStringToMoney($this->discountAmounts[$currencyCode], $currency);
             }
             
             // This ensures that we aren't taking off more than the allowed amount
