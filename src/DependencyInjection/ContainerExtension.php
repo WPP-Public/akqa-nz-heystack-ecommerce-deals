@@ -106,7 +106,7 @@ class ContainerExtension extends Extension
     protected function addDeal(ContainerBuilder $container, $dealId, $deal)
     {
         $dealDefinitionID = "deals.deal.$dealId";
-        $dealDefinition = $this->getDealDefinition($dealId, $deal['promotional_message']);
+        $dealDefinition = $this->getDealDefinition($dealId, str_replace('%', '%%', $deal['promotional_message']));
 
         $dealDefinition->addTag('deals.deal');
 
