@@ -27,11 +27,11 @@ class StartDate implements ConditionInterface, ConditionAlmostMetInterface
      */
     protected $startDate;
     /**
-     * @var
+     * @var int
      */
     protected $currentTime;
     /**
-     * @param AdaptableConfigurationInterface $configuration
+     * @param \Heystack\Deals\Interfaces\AdaptableConfigurationInterface $configuration
      * @throws \Exception if the configuration does not have a 'start' value
      */
     public function __construct(AdaptableConfigurationInterface $configuration)
@@ -59,13 +59,16 @@ class StartDate implements ConditionInterface, ConditionAlmostMetInterface
         return self::CONDITION_TYPE;
     }
     /**
-     * @return int
+     * @return bool
      */
     public function met()
     {
         return $this->currentTime > $this->startDate;
     }
 
+    /**
+     * @return bool
+     */
     public function almostMet()
     {
         return $this->met();
@@ -81,6 +84,7 @@ class StartDate implements ConditionInterface, ConditionAlmostMetInterface
 
     /**
      * @param mixed $currentTime
+     * @return void
      */
     public function setCurrentTime($currentTime)
     {

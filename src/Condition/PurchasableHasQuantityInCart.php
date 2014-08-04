@@ -38,8 +38,8 @@ class PurchasableHasQuantityInCart
     protected $configuration;
 
     /**
-     * @param PurchasableHolderInterface $purchasableHolder
-     * @param AdaptableConfigurationInterface $configuration
+     * @param \Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface $purchasableHolder
+     * @param \Heystack\Deals\Interfaces\AdaptableConfigurationInterface $configuration
      * @throws \Exception if the configuration does not have a purchasable identifier
      */
     public function __construct(
@@ -135,6 +135,9 @@ class PurchasableHasQuantityInCart
         return $met;
     }
 
+    /**
+     * @return bool
+     */
     public function almostMet()
     {
         $purchasableHolder = $this->getPurchasableHolder();
@@ -199,6 +202,7 @@ class PurchasableHasQuantityInCart
 
     /**
      * @param mixed $minimumQuantity
+     * @return void
      */
     public function setMinimumQuantity($minimumQuantity)
     {
@@ -215,6 +219,7 @@ class PurchasableHasQuantityInCart
 
     /**
      * @param array $purchasableIdentifiers
+     * @return void
      */
     public function setPurchasableIdentifiers($purchasableIdentifiers)
     {

@@ -6,6 +6,7 @@ use Heystack\Core\EventDispatcher;
 use Heystack\Core\Traits\HasEventServiceTrait;
 use Heystack\Deals\Interfaces\DealHandlerInterface;
 use Heystack\Deals\Interfaces\DealPurchasableInterface;
+use Heystack\Ecommerce\Currency\Event\CurrencyEvent;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 use Heystack\Purchasable\PurchasableHolder\Events as PurchasableHolderEvents;
 use Heystack\Ecommerce\Currency\Events as CurrencyEvents;
@@ -13,6 +14,7 @@ use Heystack\Ecommerce\Locale\Events as LocaleEvents;
 use Heystack\Ecommerce\Transaction\Events as TransactionEvents;
 use Heystack\Deals\Events\TotalUpdatedEvent;
 use Heystack\Purchasable\PurchasableHolder\Traits\HasPurchasableHolderTrait;
+use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -34,9 +36,13 @@ class DealsSubscriber implements EventSubscriberInterface
     protected $currencyChanging;
 
     /**
-     * @param EventDispatcher $eventService
+     * @param \Heystack\Core\EventDispatcher $eventService
+     * @param \Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface $purchasableHolder
      */
-    public function __construct(EventDispatcher $eventService, PurchasableHolderInterface $purchasableHolder)
+    public function __construct(
+        EventDispatcher $eventService,
+        PurchasableHolderInterface $purchasableHolder
+    )
     {
         $this->eventService = $eventService;
         $this->purchasableHolder = $purchasableHolder;
@@ -78,6 +84,7 @@ class DealsSubscriber implements EventSubscriberInterface
 
     /**
      * @param \Heystack\Deals\Interfaces\DealHandlerInterface $dealHandler
+     * @return void
      */
     public function addDealHandler(DealHandlerInterface $dealHandler)
     {
@@ -86,6 +93,7 @@ class DealsSubscriber implements EventSubscriberInterface
 
     /**
      * @param \Heystack\Deals\Interfaces\DealHandlerInterface[] $dealHandlers
+     * @return void
      */
     public function setDealHandlers(array $dealHandlers)
     {
@@ -119,8 +127,12 @@ class DealsSubscriber implements EventSubscriberInterface
     /**
      * Called after the TaxHandler's total is updated.
      * Tells the transaction to update its total.
+     * @param \Heystack\Deals\Events\TotalUpdatedEvent $event
+     * @param string $eventName
+     * @param \Heystack\Core\EventDispatcher $dispatcher
+     * @return void
      */
-    public function onTotalUpdated(TotalUpdatedEvent $event)
+    public function onTotalUpdated(TotalUpdatedEvent $event, $eventName, EventDispatcher $dispatcher)
     {
         $eventDealHandlerIdentifier = $event->getDealHandler()->getIdentifier()->getFull();
         if (!$this->currencyChanging && isset($this->dealHandlers[$eventDealHandlerIdentifier])) {
@@ -130,8 +142,12 @@ class DealsSubscriber implements EventSubscriberInterface
 
     /**
      * Update totals
+     * @param \Symfony\Component\EventDispatcher\Event $event
+     * @param string $eventName
+     * @param \Heystack\Core\EventDispatcher $dispatcher
+     * @return void
      */
-    public function updateTotals()
+    public function updateTotals(Event $event, $eventName, EventDispatcher $dispatcher)
     {
         foreach ($this->getDealHandlersOrderedByPriority() as $dealHandler) {
             $dealHandler->updateTotal();
@@ -139,9 +155,12 @@ class DealsSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * 
+     * @param \Heystack\Ecommerce\Currency\Event\CurrencyEvent $currencyEvent
+     * @param string $eventName
+     * @param \Heystack\Core\EventDispatcher $dispatcher
+     * @return void
      */
-    public function onCurrencyChanged()
+    public function onCurrencyChanged(CurrencyEvent $currencyEvent, $eventName, EventDispatcher $dispatcher)
     {
         foreach ($this->purchasableHolder->getPurchasables() as $purchasable) {
             if ($purchasable instanceof DealPurchasableInterface) {
@@ -151,7 +170,7 @@ class DealsSubscriber implements EventSubscriberInterface
         }
 
         $this->currencyChanging = true;
-        $this->updateTotals();
+        $this->updateTotals($currencyEvent, $eventName, $dispatcher);
         $this->currencyChanging = false;
     }
 }

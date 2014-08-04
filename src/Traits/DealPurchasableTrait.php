@@ -29,6 +29,7 @@ trait DealPurchasableTrait
     /**
      * @param \Heystack\Core\Identifier\IdentifierInterface $dealIdentifier
      * @param int $quantity
+     * @return void
      */
     public function setFreeQuantity(IdentifierInterface $dealIdentifier, $quantity)
     {
@@ -38,6 +39,7 @@ trait DealPurchasableTrait
     /**
      * @param \Heystack\Core\Identifier\IdentifierInterface $dealIdentifier
      * @param int $quantity
+     * @return void
      */
     public function addFreeQuantity(IdentifierInterface $dealIdentifier, $quantity = 1)
     {
@@ -47,6 +49,7 @@ trait DealPurchasableTrait
     /**
      * @param \Heystack\Core\Identifier\IdentifierInterface $dealIdentifier
      * @param int $quantity
+     * @return void
      */
     public function subtractFreeQuantity(IdentifierInterface $dealIdentifier, $quantity = 1)
     {
@@ -54,7 +57,7 @@ trait DealPurchasableTrait
     }
 
     /**
-     * @param \Heystack\Core\Identifier\IdentifierInterface $dealIdentifier
+     * @param \Heystack\Core\Identifier\IdentifierInterface|void $dealIdentifier
      * @return bool
      */
     public function hasFreeItems(IdentifierInterface $dealIdentifier = null)
@@ -78,7 +81,7 @@ trait DealPurchasableTrait
     }
 
     /**
-     * @param \Heystack\Core\Identifier\IdentifierInterface $dealIdentifier
+     * @param \Heystack\Core\Identifier\IdentifierInterface|void $dealIdentifier
      * @return int
      */
     public function getFreeQuantity(IdentifierInterface $dealIdentifier = null)
@@ -109,8 +112,9 @@ trait DealPurchasableTrait
     }
 
     /**
-     * @param IdentifierInterface $dealIdentifier
-     * @param $discountAmount
+     * @param \Heystack\Core\Identifier\IdentifierInterface $dealIdentifier
+     * @param \SebastianBergmann\Money\Money $discountAmount
+     * @return void
      */
     public function setDealDiscount(IdentifierInterface $dealIdentifier, Money $discountAmount)
     {
@@ -118,7 +122,7 @@ trait DealPurchasableTrait
     }
 
     /**
-     * @param IdentifierInterface $dealIdentifier
+     * @param \Heystack\Core\Identifier\IdentifierInterface|void $dealIdentifier
      * @return \SebastianBergmann\Money\Money
      */
     public function getDealDiscount(IdentifierInterface $dealIdentifier = null)

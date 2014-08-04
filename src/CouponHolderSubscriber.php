@@ -39,7 +39,7 @@ class CouponHolderSubscriber implements EventSubscriberInterface
     }
 
     /**
-     *
+     * @return void
      */
     public function resetDealPurchasables()
     {

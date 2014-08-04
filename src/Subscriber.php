@@ -10,6 +10,7 @@
  */
 namespace Heystack\Deals;
 
+use Heystack\Core\EventDispatcher;
 use Heystack\Core\State\State;
 use Heystack\Core\Storage\Backends\SilverStripeOrm\Backend;
 use Heystack\Core\Storage\Event as StorageEvent;
@@ -54,14 +55,14 @@ class Subscriber implements EventSubscriberInterface, HasCouponHolderInterface
 
     /**
      * Creates the ShippingHandler Subscriber object
-     * @param EventDispatcherInterface $eventService
-     * @param Storage $storageService
-     * @param State $stateService
-     * @param CouponHolderInterface $couponHolder
-     * @param DealHandlerInterface $dealHandler
+     * @param \Heystack\Core\EventDispatcher $eventService
+     * @param \Heystack\Core\Storage\Storage $storageService
+     * @param \Heystack\Core\State\State $stateService
+     * @param \Heystack\Deals\Interfaces\CouponHolderInterface $couponHolder
+     * @param \Heystack\Deals\Interfaces\DealHandlerInterface $dealHandler
      */
     public function __construct(
-        EventDispatcherInterface $eventService,
+        EventDispatcher $eventService,
         Storage $storageService,
         State $stateService,
         CouponHolderInterface $couponHolder,
@@ -88,9 +89,12 @@ class Subscriber implements EventSubscriberInterface, HasCouponHolderInterface
 
     /**
      * After the transaction is stored, store the deal.
-     * @param StorageEvent $event
+     * @param \Heystack\Core\Storage\Event $event
+     * @param string $eventName
+     * @param \Heystack\Core\EventDispatcher $dispatcher
+     * @return void
      */
-    public function onTransactionStored(StorageEvent $event)
+    public function onTransactionStored(StorageEvent $event, $eventName, EventDispatcher $dispatcher)
     {
         if ($this->dealHandler->getConditionsMetCount() > 0) {
             $this->dealHandler->setParentReference($event->getParentReference());

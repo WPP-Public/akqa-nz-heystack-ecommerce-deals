@@ -2,6 +2,7 @@
 
 namespace Heystack\Deals\Result;
 
+use Heystack\Core\EventDispatcher;
 use Heystack\Deals\Events;
 use Heystack\Deals\Events\ResultEvent;
 use Heystack\Deals\Interfaces\AdaptableConfigurationInterface;
@@ -16,7 +17,6 @@ use Heystack\Ecommerce\Transaction\TransactionModifierTypes;
 use Heystack\Purchasable\PurchasableHolder\Interfaces\HasPurchasableHolderInterface;
 use Heystack\Purchasable\PurchasableHolder\Traits\HasPurchasableHolderTrait;
 use SebastianBergmann\Money\Money;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  *
@@ -57,14 +57,14 @@ class CartDiscount implements
     protected $currencyService;
 
     /**
-     * @param EventDispatcherInterface $eventService
-     * @param PurchasableHolderInterface $purchasableHolder
-     * @param CurrencyServiceInterface $currencyService
-     * @param AdaptableConfigurationInterface $configuration
+     * @param \Heystack\Core\EventDispatcher $eventService
+     * @param \Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface $purchasableHolder
+     * @param \Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface $currencyService
+     * @param \Heystack\Deals\Interfaces\AdaptableConfigurationInterface $configuration
      * @throws \Exception when configured incorrectly
      */
     public function __construct(
-        EventDispatcherInterface $eventService,
+        EventDispatcher $eventService,
         PurchasableHolderInterface $purchasableHolder,
         CurrencyServiceInterface $currencyService,
         AdaptableConfigurationInterface $configuration
@@ -113,6 +113,9 @@ class CartDiscount implements
         }
     }
 
+    /**
+     * @return array
+     */
     public static function getSubscribedEvents()
     {
         return [];
@@ -120,6 +123,7 @@ class CartDiscount implements
 
     /**
      * Returns a short string that describes what the result does
+     * @return stirng
      */
     public function getDescription()
     {

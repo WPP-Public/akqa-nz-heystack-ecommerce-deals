@@ -11,7 +11,7 @@ class TotalUpdatedEvent extends Event
     use HasDealHandlerTrait;
 
     /**
-     * @param DealHandlerInterface $dealHandler
+     * @param \Heystack\Deals\Interfaces\DealHandlerInterface $dealHandler
      */
     public function __construct(DealHandlerInterface $dealHandler)
     {

@@ -9,6 +9,9 @@ class Processor implements ProcessorInterface
 {
     protected $couponClass;
 
+    /**
+     * @param string $couponClass
+     */
     public function __construct($couponClass)
     {
         $this->couponClass = $couponClass;
@@ -28,6 +31,7 @@ class Processor implements ProcessorInterface
      *
      * @param \Controller $controller The relevant SilverStripe controller
      * @param mixed $result The result from the input processor
+     * @return mixed|null
      */
     public function process(\Controller $controller, $result = null)
     {

@@ -36,8 +36,8 @@ interface DealHandlerInterface extends
     public function updateTotal();
 
     /**
-     * @param $type
-     * @return mixed
+     * @param string $type
+     * @return string
      */
     public function getPromotionalMessage($type);
 

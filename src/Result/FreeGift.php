@@ -51,14 +51,14 @@ class FreeGift implements
     protected $purchasableID;
 
     /**
-     * @param EventDispatcherInterface $eventService
-     * @param PurchasableHolderInterface $purchasableHolder
-     * @param AdaptableConfigurationInterface $configuration
-     * @param CurrencyServiceInterface $currencyService
+     * @param \Heystack\Core\EventDispatcher $eventService
+     * @param \Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface $purchasableHolder
+     * @param \Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface $currencyService
+     * @param \Heystack\Deals\Interfaces\AdaptableConfigurationInterface $configuration
      * @throws \Exception if the configuration is incorrect
      */
     public function __construct(
-        EventDispatcherInterface $eventService,
+        EventDispatcher $eventService,
         PurchasableHolderInterface $purchasableHolder,
         CurrencyServiceInterface $currencyService,
         AdaptableConfigurationInterface $configuration
@@ -88,6 +88,9 @@ class FreeGift implements
         }
     }
 
+    /**
+     * @return array
+     */
     public static function getSubscribedEvents()
     {
         return [
@@ -105,7 +108,7 @@ class FreeGift implements
     }
 
     /**
-     * @param DealHandlerInterface $dealHandler
+     * @param \Heystack\Deals\Interfaces\DealHandlerInterface $dealHandler
      * @return mixed
      */
     public function process(DealHandlerInterface $dealHandler)
@@ -145,9 +148,10 @@ class FreeGift implements
      *  2) when the purchasable has already been added to the cart but the purchasables free quantity is less than the
      *     current amount of times this condition has been met.
      *
-     * @param ConditionEvent $event
-     * @param $eventName
+     * @param \Heystack\Deals\Events\ConditionEvent $event
+     * @param string $eventName
      * @param \Heystack\Core\EventDispatcher $dispatcher
+     * @return void
      */
     public function onConditionsMet(ConditionEvent $event, $eventName, EventDispatcher $dispatcher)
     {
@@ -182,7 +186,13 @@ class FreeGift implements
         }
     }
 
-    public function onConditionsNotMet(ConditionEvent $event)
+    /**
+     * @param \Heystack\Deals\Events\ConditionEvent $event
+     * @param string $eventName
+     * @param \Heystack\Core\EventDispatcher $dispatcher
+     * @return void
+     */
+    public function onConditionsNotMet(ConditionEvent $event, $eventName, EventDispatcher $dispatcher)
     {
         $dealIdentifier = $this->getDealHandler()->getIdentifier();
 
@@ -227,7 +237,7 @@ class FreeGift implements
     /**
      * Use the neutral type because the total is deducted
      * by the fact that the products aren't charged for
-     * @return mixed
+     * @return string
      */
     public function getType()
     {

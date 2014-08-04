@@ -24,7 +24,7 @@ class Processor  implements ProcessorInterface, HasCouponHolderInterface
     /**
      * Creates the Processor object
      * @param string $couponClass
-     * @param CouponHolderInterface $couponHolder
+     * @param \Heystack\Deals\Interfaces\CouponHolderInterface $couponHolder
      */
     public function __construct($couponClass, CouponHolderInterface $couponHolder)
     {
@@ -105,7 +105,7 @@ class Processor  implements ProcessorInterface, HasCouponHolderInterface
     }
 
     /**
-     * @param $couponCode
+     * @param string $couponCode
      * @return array
      */
     protected function getCouponsFromDatabase($couponCode)

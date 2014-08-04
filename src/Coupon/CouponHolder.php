@@ -65,6 +65,8 @@ class CouponHolder
 
     /**
      * @param \Heystack\Deals\Interfaces\CouponInterface[] $coupons
+     * @throws \InvalidArgumentException
+     * @return void
      */
     public function setCoupons(array $coupons)
     {
@@ -96,7 +98,7 @@ class CouponHolder
     }
 
     /**
-     * @param \Heystack\Core\Identifier\IdentifierInterface|null $dealIdentifier
+     * @param \Heystack\Core\Identifier\IdentifierInterface|null|void $dealIdentifier
      * @return array
      */
     public function getCoupons(IdentifierInterface $dealIdentifier = null)
@@ -119,6 +121,8 @@ class CouponHolder
 
     /**
      * @param \Heystack\Deals\Interfaces\CouponInterface $coupon
+     * @throws \InvalidArgumentException
+     * @return void
      */
     public function addCoupon(CouponInterface $coupon)
     {
@@ -130,6 +134,7 @@ class CouponHolder
 
     /**
      * @param \Heystack\Core\Identifier\IdentifierInterface $identifier
+     * @return void
      */
     public function removeCoupon(IdentifierInterface $identifier)
     {
@@ -153,7 +158,7 @@ class CouponHolder
     }
 
     /**
-     * @param $data
+     * @param mixed $data
      * @return void
      */
     public function setData($data)

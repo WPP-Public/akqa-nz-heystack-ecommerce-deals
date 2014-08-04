@@ -2,6 +2,7 @@
 
 namespace Heystack\Deals\Result;
 
+use Heystack\Core\EventDispatcher;
 use Heystack\Core\Traits\HasEventServiceTrait;
 use Heystack\Deals\Events;
 use Heystack\Deals\Events\ResultEvent;
@@ -13,8 +14,6 @@ use Heystack\Ecommerce\Currency\Traits\HasCurrencyServiceTrait;
 use Heystack\Ecommerce\Transaction\TransactionModifierTypes;
 use Heystack\Shipping\Interfaces\ShippingHandlerInterface;
 use Heystack\Shipping\Traits\HasShippingHandlerTrait;
-use SebastianBergmann\Money\Money;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  *
@@ -38,14 +37,14 @@ class Shipping implements ResultInterface
     protected $discountPercentage;
 
     /**
-     * @param EventDispatcherInterface $eventService
-     * @param ShippingHandlerInterface $shippingHandler
-     * @param CurrencyServiceInterface $currencyService
-     * @param AdaptableConfigurationInterface $configuration
-     * @throws \Exception when configured improperly
+     * @param \Heystack\Core\EventDispatcher $eventService
+     * @param \Heystack\Shipping\Interfaces\ShippingHandlerInterface $shippingHandler
+     * @param \Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface $currencyService
+     * @param \Heystack\Deals\Interfaces\AdaptableConfigurationInterface $configuration
+     * @throws \Exception
      */
     public function __construct(
-        EventDispatcherInterface $eventService,
+        EventDispatcher $eventService,
         ShippingHandlerInterface $shippingHandler,
         CurrencyServiceInterface $currencyService,
         AdaptableConfigurationInterface $configuration
@@ -101,6 +100,9 @@ class Shipping implements ResultInterface
         }
     }
 
+    /**
+     * @return array
+     */
     public static function getSubscribedEvents()
     {
         return [];
@@ -108,6 +110,7 @@ class Shipping implements ResultInterface
 
     /**
      * Returns a short string that describes what the result does
+     * @return string
      */
     public function getDescription()
     {

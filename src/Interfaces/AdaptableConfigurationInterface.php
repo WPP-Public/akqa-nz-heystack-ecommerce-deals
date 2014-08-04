@@ -10,7 +10,15 @@ namespace Heystack\Deals\Interfaces;
  */
 interface AdaptableConfigurationInterface
 {
+    /**
+     * @param string $identifier
+     * @return mixed
+     */
     public function getConfig($identifier);
 
+    /**
+     * @param string $identifier
+     * @return mixed
+     */
     public function hasConfig($identifier);
 }

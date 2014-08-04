@@ -2,6 +2,7 @@
 
 namespace Heystack\Deals\Result;
 
+use Heystack\Core\EventDispatcher;
 use Heystack\Core\Identifier\Identifier;
 use Heystack\Deals\AdaptableConfiguration;
 use Heystack\Deals\Condition;
@@ -51,18 +52,18 @@ class CheapestPurchasableDiscount
     protected $totalDiscount;
 
     /**
-     * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
+     * @var \Heystack\Core\EventDispatcher
      */
     protected $eventService;
 
     /**
-     * @param EventDispatcherInterface $eventService
-     * @param PurchasableHolderInterface $purchasableHolder
-     * @param AdaptableConfigurationInterface $configuration
+     * @param \Heystack\Core\EventDispatcher $eventService
+     * @param \Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface $purchasableHolder
+     * @param \Heystack\Deals\Interfaces\AdaptableConfigurationInterface $configuration
      * @throws \Exception
      */
     public function __construct(
-        EventDispatcherInterface $eventService,
+        EventDispatcher $eventService,
         PurchasableHolderInterface $purchasableHolder,
         AdaptableConfigurationInterface $configuration
     )
@@ -104,6 +105,7 @@ class CheapestPurchasableDiscount
 
     /**
      * Returns a short string that describes what the result does
+     * @return string
      */
     public function getDescription()
     {
@@ -184,9 +186,12 @@ class CheapestPurchasableDiscount
 
     /**
      * Remove the deals effects
-     * @param ConditionEvent $event
+     * @param \Heystack\Deals\Events\ConditionEvent $event
+     * @param string $eventName
+     * @param \Heystack\Core\EventDispatcher $dispatcher
+     * @return void
      */
-    public function onConditionsNotMet(ConditionEvent $event)
+    public function onConditionsNotMet(ConditionEvent $event, $eventName, EventDispatcher $dispatcher)
     {
         $eventDealHandler = $event->getDealHandler();
         $eventDealIdentifier = $eventDealHandler->getIdentifier();
@@ -254,6 +259,9 @@ class CheapestPurchasableDiscount
         return $purchasables;
     }
 
+    /**
+     * @return array
+     */
     public function getConditions()
     {
         $productConfig = [

@@ -43,9 +43,9 @@ class MinimumCartTotal
      * The amount condition determines whether the total in the product holder is greater than or equal to the configured threshold amount.
      * It takes into consideration the different currencies.
      *
-     * @param PurchasableHolderInterface $purchasableHolder
-     * @param CurrencyServiceInterface $currencyService
-     * @param AdaptableConfigurationInterface $configuration
+     * @param \Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface $purchasableHolder
+     * @param \Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface $currencyService
+     * @param \Heystack\Deals\Interfaces\AdaptableConfigurationInterface $configuration
      * @throws \Exception if the configuration does not have a configuration identifier
      */
     public function __construct(
@@ -78,7 +78,7 @@ class MinimumCartTotal
     /**
      * Return a boolean indicating whether the condition has been met
      *
-     * @return int
+     * @return bool
      */
     public function met()
     {
@@ -143,6 +143,7 @@ class MinimumCartTotal
 
     /**
      * Returns a short string that describes what the condition does
+     * @return string
      */
     public function getDescription()
     {
@@ -160,6 +161,7 @@ class MinimumCartTotal
 
     /**
      * @param mixed $amounts
+     * @return void
      */
     public function setAmounts($amounts)
     {

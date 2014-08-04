@@ -13,6 +13,7 @@ trait HasCouponHolderTrait
 
     /**
      * @param \Heystack\Deals\Interfaces\CouponHolderInterface $couponHolder
+     * @return void
      */
     public function setCouponHolder(CouponHolderInterface $couponHolder)
     {

@@ -12,7 +12,8 @@ trait HasDealHandlerTrait
     protected $dealHandler;
 
     /**
-     * @param DealHandlerInterface $dealHandler
+     * @param \Heystack\Deals\Interfaces\DealHandlerInterface $dealHandler
+     * @return void
      */
     public function setDealHandler(DealHandlerInterface $dealHandler)
     {

@@ -41,9 +41,9 @@ class ContainerExtension extends Extension
      * Loads a services.yml file into a fresh container, ready to me merged
      * back into the main container
      *
-     * @param  array            $configs
-     * @param  ContainerBuilder $container
-     * @return null
+     * @param array            $configs
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+     * @return void
      */
     public function load(array $configs, ContainerBuilder $container)
     {
@@ -98,10 +98,10 @@ class ContainerExtension extends Extension
 
     }
     /**
-     * @param  ContainerBuilder $container
-     * @param                   $dealId
-     * @param                   $deal
-     * @return mixed
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+     * @param string $dealId
+     * @param array $deal
+     * @return array
      */
     protected function addDeal(ContainerBuilder $container, $dealId, $deal)
     {
@@ -129,9 +129,8 @@ class ContainerExtension extends Extension
         return $deal;
     }
     /**
-     * @param $dealId
-     * @param $promotionalMessage
-     * @return DefinitionDecorator
+     * @param string $dealId
+     * @param array $promotionalMessage
      * @return \Symfony\Component\DependencyInjection\DefinitionDecorator
      */
     protected function getDealDefinition($dealId, $promotionalMessage)
@@ -144,8 +143,8 @@ class ContainerExtension extends Extension
         return $dealDefinition;
     }
     /**
-     * @param  ContainerBuilder $container
-     * @param                   $dealDefintionID
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+     * @param string $dealDefintionID
      * @return void
      */
     protected function addSubscriber(ContainerBuilder $container, $dealDefintionID)
@@ -157,10 +156,11 @@ class ContainerExtension extends Extension
     }
 
     /**
-     * @param ContainerBuilder $container
-     * @param $dealId
-     * @param $deal
-     * @param $dealDefinition
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+     * @param string $dealId
+     * @param array $deal
+     * @param \Symfony\Component\DependencyInjection\DefinitionDecorator $dealDefinition
+     * @return void
      */
     protected function addResult(ContainerBuilder $container, $dealId, $deal, $dealDefinition)
     {
@@ -181,13 +181,11 @@ class ContainerExtension extends Extension
                 new Reference($resultID)
             ]
         );
-
-
     }
     /**
-     * @param  ContainerBuilder $container
-     * @param                   $dealId
-     * @param                   $deal
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+     * @param string $dealId
+     * @param array $deal
      * @return string
      */
     protected function addResultConfiguration(ContainerBuilder $container, $dealId, $deal)
@@ -200,11 +198,12 @@ class ContainerExtension extends Extension
         return $resultConfigurationID;
     }
     /**
-     * @param ContainerBuilder $container
-     * @param                  $dealId
-     * @param                  $condition
-     * @param                  $conditionId
-     * @param                  $dealDefinition
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+     * @param string $dealId
+     * @param array $condition
+     * @param string $conditionId
+     * @param \Symfony\Component\DependencyInjection\DefinitionDecorator $dealDefinition
+     * @return void
      */
     protected function addCondition(ContainerBuilder $container, $dealId, $condition, $conditionId, $dealDefinition)
     {
@@ -228,10 +227,10 @@ class ContainerExtension extends Extension
         );
     }
     /**
-     * @param  ContainerBuilder $container
-     * @param                   $dealId
-     * @param                   $condition
-     * @param                   $conditionId
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+     * @param string $dealId
+     * @param array $condition
+     * @param string $conditionId
      * @return string
      */
     protected function addConditionConfiguration(ContainerBuilder $container, $dealId, $condition, $conditionId)

@@ -2,8 +2,10 @@
 
 namespace Heystack\Deals;
 
+use Heystack\Core\EventDispatcher;
 use Heystack\Deals\Interfaces\DealPurchasableInterface;
 use Heystack\Purchasable\PurchasableHolder\Traits\HasPurchasableHolderTrait;
+use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Heystack\Purchasable\PurchasableHolder\Events as PurchasableHolderEvents;
 
@@ -44,9 +46,12 @@ class PurchasableHolderSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * 
+     * @param \Symfony\Component\EventDispatcher\Event $event
+     * @param string $eventName
+     * @param \Heystack\Core\EventDispatcher $dispatcher
+     * @return void
      */
-    public function resetDealPurchasables()
+    public function resetDealPurchasables(Event $event, $eventName, EventDispatcher $dispatcher)
     {
         foreach ($this->purchasableHolder->getPurchasables() as $purchasable) {
             if ($purchasable instanceof DealPurchasableInterface) {

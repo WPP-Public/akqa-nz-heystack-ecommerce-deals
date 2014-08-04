@@ -27,7 +27,15 @@ class HasCoupon
 
     protected $couponIdentifiers = [];
 
-    public function __construct(CouponHolderInterface $couponHolder, AdaptableConfigurationInterface $configuration)
+    /**
+     * @param \Heystack\Deals\Interfaces\CouponHolderInterface $couponHolder
+     * @param \Heystack\Deals\Interfaces\AdaptableConfigurationInterface $configuration
+     * @throws \Exception
+     */
+    public function __construct(
+        CouponHolderInterface $couponHolder,
+        AdaptableConfigurationInterface $configuration
+    )
     {
         $this->couponHolder = $couponHolder;
 
@@ -53,7 +61,7 @@ class HasCoupon
      * When a condition will complete regardless of user action, return $this->met()
      *
      * @see Heystack\Deals\Interfaces\DealHandlerInterface
-     * @return boolean
+     * @return bool
      */
     public function almostMet()
     {
@@ -63,7 +71,7 @@ class HasCoupon
     /**
      * Return a boolean indicating whether the condition has been met
      *
-     * @return boolean
+     * @return bool
      */
     public function met()
     {

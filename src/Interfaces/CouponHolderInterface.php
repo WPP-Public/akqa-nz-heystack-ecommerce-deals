@@ -15,12 +15,14 @@ interface CouponHolderInterface
     /**
      * Adds a Coupon to the CouponHolder
      * @param \Heystack\Deals\Interfaces\CouponInterface $coupon
+     * @return void
      */
     public function addCoupon(CouponInterface $coupon);
 
     /**
      * Removes a Coupon based on the identifier
      * @param \Heystack\Core\Identifier\IdentifierInterface $identifier
+     * @return void
      */
     public function removeCoupon(IdentifierInterface $identifier);
 
@@ -43,6 +45,7 @@ interface CouponHolderInterface
     /**
      * Sets multiple Coupons on the CouponHolder
      * @param array $coupons
+     * @return void
      */
     public function setCoupons(array $coupons);
 

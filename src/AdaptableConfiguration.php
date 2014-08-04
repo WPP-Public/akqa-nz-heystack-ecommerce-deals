@@ -31,7 +31,7 @@ class AdaptableConfiguration implements AdaptableConfigurationInterface
     }
 
     /**
-     * @param $identifier
+     * @param string $identifier
      * @return mixed
      * @throws \Exception
      */
@@ -45,7 +45,7 @@ class AdaptableConfiguration implements AdaptableConfigurationInterface
     }
 
     /**
-     * @param $identifier
+     * @param string $identifier
      * @return bool
      */
     public function hasConfig($identifier)

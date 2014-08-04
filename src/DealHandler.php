@@ -2,6 +2,7 @@
 
 namespace Heystack\Deals;
 
+use Heystack\Core\EventDispatcher;
 use Heystack\Core\Identifier\Identifier;
 use Heystack\Core\State\State;
 use Heystack\Core\State\StateableInterface;
@@ -25,7 +26,6 @@ use Heystack\Ecommerce\Transaction\Interfaces\HasLinkedTransactionModifiersInter
 use Heystack\Ecommerce\Transaction\Traits\TransactionModifierSerializeTrait;
 use Heystack\Ecommerce\Transaction\Traits\TransactionModifierStateTrait;
 use SebastianBergmann\Money\Money;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  *
@@ -73,20 +73,20 @@ class DealHandler implements
      */
     protected $conditionsMetCount = 0;
     /**
-     * @var
+     * @var string
      */
     protected $promotionalMessage;
 
     /**
-     * @param State $stateService
-     * @param EventDispatcherInterface $eventService
+     * @param \Heystack\Core\State\State $stateService
+     * @param \Heystack\Core\EventDispatcher $eventService
      * @param \Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface $currencyService
-     * @param $dealID
-     * @param $promotionalMessage
+     * @param string $dealID
+     * @param string $promotionalMessage
      */
     public function __construct(
         State $stateService,
-        EventDispatcherInterface $eventService,
+        EventDispatcher $eventService,
         CurrencyServiceInterface $currencyService,
         $dealID,
         $promotionalMessage
@@ -103,7 +103,7 @@ class DealHandler implements
     }
 
     /**
-     * @param $type
+     * @param string $type
      * @return mixed
      */
     public function getPromotionalMessage($type)
@@ -138,7 +138,7 @@ class DealHandler implements
 
     /**
      * @param \Heystack\Deals\Interfaces\ConditionInterface $condition
-     * @return mixed|void
+     * @return void
      */
     public function addCondition(ConditionInterface $condition)
     {
@@ -196,7 +196,7 @@ class DealHandler implements
      *
      * If not all conditions are met and the $data array was null, this will dispatch the Conditions not met event.
      *
-     * @param bool $dispatchEvents
+     * @param bool|void $dispatchEvents
      * @return bool
      */
     public function conditionsMet($dispatchEvents = true)
@@ -247,6 +247,7 @@ class DealHandler implements
     /**
      * Indicates the type of amount the modifier will return
      * Must return a constant from TransactionModifierTypes
+     * @return string
      */
     public function getType()
     {

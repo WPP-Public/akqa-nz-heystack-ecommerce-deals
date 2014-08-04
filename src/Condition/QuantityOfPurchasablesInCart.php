@@ -10,7 +10,6 @@ use Heystack\Deals\Interfaces\ConditionInterface;
 use Heystack\Deals\Interfaces\DealPurchasableInterface;
 use Heystack\Deals\Interfaces\HasDealHandlerInterface;
 use Heystack\Deals\Interfaces\NonPurchasableInterface;
-use Heystack\Deals\Result\FreeGift;
 use Heystack\Deals\Traits\HasDealHandlerTrait;
 use Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface;
 use Heystack\Purchasable\PurchasableHolder\Interfaces\HasPurchasableHolderInterface;
@@ -41,8 +40,8 @@ class QuantityOfPurchasablesInCart
     protected $configuration;
 
     /**
-     * @param PurchasableHolderInterface $purchasableHolder
-     * @param AdaptableConfigurationInterface $configuration
+     * @param \Heystack\Ecommerce\Purchasable\Interfaces\PurchasableHolderInterface $purchasableHolder
+     * @param \Heystack\Deals\Interfaces\AdaptableConfigurationInterface $configuration
      * @throws \Exception if the configuration does not have a purchasable identifier
      */
     public function __construct(
@@ -98,7 +97,7 @@ class QuantityOfPurchasablesInCart
      * If the $data parameter is present then disregard the contents of the cart and determine the if the condition has been
      * met based on the contents of the data array.
      *
-     * @return bool
+     * @return int
      */
     public function met()
     {
@@ -191,7 +190,8 @@ class QuantityOfPurchasablesInCart
     }
 
     /**
-     * @param mixed $minimumQuantity
+     * @param int $minimumQuantity
+     * @return void
      */
     public function setMinimumQuantity($minimumQuantity)
     {
@@ -199,7 +199,7 @@ class QuantityOfPurchasablesInCart
     }
 
     /**
-     * @return mixed
+     * @return int|null
      */
     public function getMinimumQuantity()
     {
@@ -208,6 +208,7 @@ class QuantityOfPurchasablesInCart
 
     /**
      * @param array $purchasableIdentifiers
+     * @return void
      */
     public function setPurchasableIdentifiers($purchasableIdentifiers)
     {
