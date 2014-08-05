@@ -177,16 +177,21 @@ class PurchasableDiscount
         $total = $this->currencyService->getZeroMoney();
 
         foreach ($this->purchasableIdentifiers as $identifier) {
-            foreach ($this->purchasableHolder->getPurchasablesByPrimaryIdentifier($identifier) as $purchasable) {
-                if ($purchasable instanceof DealPurchasableInterface) {
-                    $dealDiscount = $this->getDealDiscountForPurchasable($purchasable);
 
-                    $purchasable->setDealDiscount(
-                        $this->getDealHandler()->getIdentifier(),
-                        $dealDiscount
-                    );
+            $purchasables = $this->purchasableHolder->getPurchasablesByPrimaryIdentifier($identifier);
 
-                    $total = $total->add($dealDiscount);
+            if (is_array($purchasables)) {
+                foreach ($this->purchasableHolder->getPurchasablesByPrimaryIdentifier($identifier) as $purchasable) {
+                    if ($purchasable instanceof DealPurchasableInterface) {
+                        $dealDiscount = $this->getDealDiscountForPurchasable($purchasable);
+
+                        $purchasable->setDealDiscount(
+                            $this->getDealHandler()->getIdentifier(),
+                            $dealDiscount
+                        );
+
+                        $total = $total->add($dealDiscount);
+                    }
                 }
             }
         }
