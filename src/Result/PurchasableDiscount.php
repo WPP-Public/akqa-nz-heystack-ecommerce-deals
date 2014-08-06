@@ -181,7 +181,7 @@ class PurchasableDiscount
             $purchasables = $this->purchasableHolder->getPurchasablesByPrimaryIdentifier($identifier);
 
             if (is_array($purchasables)) {
-                foreach ($this->purchasableHolder->getPurchasablesByPrimaryIdentifier($identifier) as $purchasable) {
+                foreach ((array) $this->purchasableHolder->getPurchasablesByPrimaryIdentifier($identifier) as $purchasable) {
                     if ($purchasable instanceof DealPurchasableInterface) {
                         $dealDiscount = $this->getDealDiscountForPurchasable($purchasable);
 
